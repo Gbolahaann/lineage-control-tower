@@ -170,6 +170,9 @@ def build(master: Path, out: Path) -> Path:
     crlf = '\r\n' in raw
     t = raw.replace('\r\n', '\n')
     assert "name='Parameters'" not in t, 'master already has parameters: build from the Tableau-saved master'
+    import repair_object_ids as roi  # every logical table must hold its own file, and every field its own table
+    assert not roi.graph_mismatches(t) and not roi.mismatches(t), \
+        'master tables or field records point at the wrong table: run tableau/tools/repair_object_ids.py on the master'
     core.load_bases(t)
 
     flags = ''.join(f'    <{f} />\n' for f in MANIFEST_FLAGS if f'<{f} />' not in t)
