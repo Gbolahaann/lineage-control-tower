@@ -121,6 +121,10 @@ for i, n in enumerate(N):
 extra = pd.DataFrame(rows)
 dn = dn.merge(extra, on='node_key', how='left')
 dn['owner_name'] = dn['owner_name'].fillna('No owner')
+# Columns added after the Tableau source was connected go last, so the text connector's
+# column positions (ordinals) for every existing column stay the same
+LATE_COLS = ['open_incident_started_at', 'downstream_keys', 'downstream_consumers_7d', 'downstream_consumers_30d', 'downstream_consumers_90d']
+dn = dn[[c for c in dn.columns if c not in LATE_COLS] + LATE_COLS]
 write(dn, 'dim_nodes')
 owners = pd.concat([owners, pd.DataFrame([dict(owner_name='No owner', owner_team='Unassigned', email=None, slack_channel=None, on_call_rotation='no')])], ignore_index=True)
 write(owners, 'dim_owners')

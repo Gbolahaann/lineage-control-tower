@@ -16,9 +16,54 @@
   <preferences>
     <preference name='ui.encoding.shelf.height' value='24' />
     <preference name='ui.shelf.height' value='26' />
+    <color-palette name='LCT Status' type='regular'>
+      <color>#2F9E6B</color>
+      <color>#E8A33D</color>
+      <color>#D2453F</color>
+      <color>#A3ADB8</color>
+    </color-palette>
+    <color-palette name='LCT Status Tints' type='regular'>
+      <color>#FFFFFF</color>
+      <color>#FDF3E1</color>
+      <color>#FBEAE9</color>
+      <color>#F1F2F4</color>
+      <color>#F7F8F6</color>
+    </color-palette>
+    <color-palette name='LCT Platforms' type='regular'>
+      <color>#005FAE</color>
+      <color>#4BAEE3</color>
+      <color>#5B5FC7</color>
+    </color-palette>
+    <color-palette name='LCT Brand' type='regular'>
+      <color>#002C55</color>
+      <color>#005FAE</color>
+      <color>#83C7EB</color>
+      <color>#C7FFA4</color>
+      <color>#F5F5F3</color>
+      <color>#16212E</color>
+      <color>#4A5563</color>
+      <color>#7A838E</color>
+      <color>#A5ACB4</color>
+    </color-palette>
+    <color-palette name='LCT Charts' type='regular'>
+      <color>#005FAE</color>
+      <color>#D9DCD7</color>
+      <color>#E8A33D</color>
+      <color>#D2453F</color>
+      <color>#C3C9CF</color>
+      <color>#9DB9D6</color>
+      <color>#E9F1F9</color>
+      <color>#CBD0D5</color>
+      <color>#B9C0C7</color>
+    </color-palette>
+    <color-palette name='LCT Coverage' type='ordered-sequential'>
+      <color>#FBEAE9</color>
+      <color>#FDF3E1</color>
+      <color>#EAF6EF</color>
+    </color-palette>
   </preferences>
   <datasources>
-    <datasource caption='mart_node_daily+' inline='true' name='federated.07vo3ft0hzn0yt1e7nb981upju80' version='18.1'>
+    <datasource caption='Lineage Control Tower' inline='true' name='federated.07vo3ft0hzn0yt1e7nb981upju80' version='18.1'>
       <connection class='federated'>
         <named-connections>
           <named-connection caption='mart_node_daily' name='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn'>
@@ -130,6 +175,11 @@
               <column datatype='real' name='avg_daily_consumers_7d' ordinal='66' />
               <column datatype='real' name='avg_daily_consumers_30d' ordinal='67' />
               <column datatype='real' name='avg_daily_consumers_90d' ordinal='68' />
+              <column datatype='datetime' name='open_incident_started_at' ordinal='69' />
+              <column datatype='string' name='downstream_keys' ordinal='70' />
+              <column datatype='real' name='downstream_consumers_7d' ordinal='71' />
+              <column datatype='real' name='downstream_consumers_30d' ordinal='72' />
+              <column datatype='real' name='downstream_consumers_90d' ordinal='73' />
             </columns>
           </relation>
           <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='dim_owners.csv' table='[dim_owners#csv]' type='table'>
@@ -172,8 +222,8 @@
               <column datatype='integer' name='events' ordinal='7' />
               <column datatype='integer' name='unique_consumers' ordinal='8' />
               <column datatype='real' name='avg_latency_sec' ordinal='9' />
-              <column datatype='string' name='metrics_called' ordinal='10' />
-              <column datatype='string' name='failed_calls' ordinal='11' />
+              <column datatype='real' name='metrics_called' ordinal='10' />
+              <column datatype='real' name='failed_calls' ordinal='11' />
               <column datatype='boolean' name='is_observed_only' ordinal='12' />
               <column datatype='real' name='allocated_cost_usd' ordinal='13' />
             </columns>
@@ -224,7 +274,7 @@
               <column datatype='real' name='runs' ordinal='2' />
               <column datatype='real' name='runs_failed' ordinal='3' />
               <column datatype='real' name='runs_skipped' ordinal='4' />
-              <column datatype='string' name='avg_runtime_sec' ordinal='5' />
+              <column datatype='real' name='avg_runtime_sec' ordinal='5' />
               <column datatype='real' name='build_cost_usd' ordinal='6' />
               <column datatype='real' name='consumer_query_cost_usd' ordinal='7' />
               <column datatype='real' name='tests_pass' ordinal='8' />
@@ -237,13 +287,13 @@
               <column datatype='real' name='refresh_ok' ordinal='15' />
               <column datatype='real' name='refresh_failed' ordinal='16' />
               <column datatype='real' name='refresh_skipped' ordinal='17' />
-              <column datatype='string' name='avg_refresh_sec' ordinal='18' />
+              <column datatype='real' name='avg_refresh_sec' ordinal='18' />
               <column datatype='string' name='platform_on_day' ordinal='19' />
               <column datatype='string' name='materialization_on_day' ordinal='20' />
               <column datatype='integer' name='worst_test_code' ordinal='21' />
-              <column datatype='string' name='runtime_7d_avg_sec' ordinal='22' />
-              <column datatype='string' name='runtime_prior28d_avg_sec' ordinal='23' />
-              <column datatype='string' name='runtime_trend_pct' ordinal='24' />
+              <column datatype='real' name='runtime_7d_avg_sec' ordinal='22' />
+              <column datatype='real' name='runtime_prior28d_avg_sec' ordinal='23' />
+              <column datatype='real' name='runtime_trend_pct' ordinal='24' />
             </columns>
           </relation>
           <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_node_reach.csv' table='[mart_node_reach#csv]' type='table'>
@@ -322,6 +372,11 @@
           <map key='[avg_daily_consumers_7d]' value='[dim_nodes.csv].[avg_daily_consumers_7d]' />
           <map key='[avg_daily_consumers_90d (mart_blast_radius.csv)]' value='[mart_blast_radius.csv].[avg_daily_consumers_90d]' />
           <map key='[avg_daily_consumers_90d]' value='[dim_nodes.csv].[avg_daily_consumers_90d]' />
+          <map key='[open_incident_started_at]' value='[dim_nodes.csv].[open_incident_started_at]' />
+          <map key='[downstream_keys]' value='[dim_nodes.csv].[downstream_keys]' />
+          <map key='[downstream_consumers_7d]' value='[dim_nodes.csv].[downstream_consumers_7d]' />
+          <map key='[downstream_consumers_30d]' value='[dim_nodes.csv].[downstream_consumers_30d]' />
+          <map key='[downstream_consumers_90d]' value='[dim_nodes.csv].[downstream_consumers_90d]' />
           <map key='[avg_latency_sec]' value='[mart_exposure_daily.csv].[avg_latency_sec]' />
           <map key='[avg_refresh_sec]' value='[mart_node_daily.csv].[avg_refresh_sec]' />
           <map key='[avg_runtime_sec]' value='[mart_node_daily.csv].[avg_runtime_sec]' />
@@ -2034,6 +2089,69 @@
             <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
           </metadata-record>
           <metadata-record class='column'>
+            <remote-name>open_incident_started_at</remote-name>
+            <remote-type>135</remote-type>
+            <local-name>[open_incident_started_at]</local-name>
+            <parent-name>[dim_nodes.csv]</parent-name>
+            <remote-alias>open_incident_started_at</remote-alias>
+            <ordinal>230</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>downstream_keys</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[downstream_keys]</local-name>
+            <parent-name>[dim_nodes.csv]</parent-name>
+            <remote-alias>downstream_keys</remote-alias>
+            <ordinal>231</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>downstream_consumers_7d</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[downstream_consumers_7d]</local-name>
+            <parent-name>[dim_nodes.csv]</parent-name>
+            <remote-alias>downstream_consumers_7d</remote-alias>
+            <ordinal>232</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>downstream_consumers_30d</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[downstream_consumers_30d]</local-name>
+            <parent-name>[dim_nodes.csv]</parent-name>
+            <remote-alias>downstream_consumers_30d</remote-alias>
+            <ordinal>233</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>downstream_consumers_90d</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[downstream_consumers_90d]</local-name>
+            <parent-name>[dim_nodes.csv]</parent-name>
+            <remote-alias>downstream_consumers_90d</remote-alias>
+            <ordinal>234</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[dim_nodes.csv_273AA73B14884E2FB287033E49518972]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
             <remote-name>owner_name</remote-name>
             <remote-type>129</remote-type>
             <local-name>[owner_name (dim_owners.csv)]</local-name>
@@ -2449,34 +2567,26 @@
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>metrics_called</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[metrics_called]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>metrics_called</remote-alias>
             <ordinal>124</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]</object-id>
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>failed_calls</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[failed_calls]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>failed_calls</remote-alias>
             <ordinal>125</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]</object-id>
           </metadata-record>
           <metadata-record class='column'>
@@ -2985,18 +3095,14 @@
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>avg_runtime_sec</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[avg_runtime_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>avg_runtime_sec</remote-alias>
             <ordinal>164</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
           <metadata-record class='column'>
@@ -3145,18 +3251,14 @@
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>avg_refresh_sec</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[avg_refresh_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>avg_refresh_sec</remote-alias>
             <ordinal>177</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
           <metadata-record class='column'>
@@ -3204,50 +3306,38 @@
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>runtime_7d_avg_sec</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[runtime_7d_avg_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_7d_avg_sec</remote-alias>
             <ordinal>181</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>runtime_prior28d_avg_sec</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[runtime_prior28d_avg_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_prior28d_avg_sec</remote-alias>
             <ordinal>182</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>runtime_trend_pct</remote-name>
-            <remote-type>129</remote-type>
+            <remote-type>5</remote-type>
             <local-name>[runtime_trend_pct]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_trend_pct</remote-alias>
             <ordinal>183</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <approx-count>1</approx-count>
-            <scale>1</scale>
-            <width>1073741823</width>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
-            <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
           <metadata-record class='column'>
@@ -3892,32 +3982,32 @@
         </metadata-records>
       </connection>
       <aliases enabled='yes' />
-      <column caption='dim_date.csv' datatype='table' name='[__tableau_internal_object_id__].[dim_date.csv_DF8950FB8176406B9520773745BC3E0D]' role='measure' type='quantitative' />
-      <column caption='dim_nodes.csv' datatype='table' name='[__tableau_internal_object_id__].[dim_nodes.csv_273AA73B14884E2FB287033E49518972]' role='measure' type='quantitative' />
-      <column caption='dim_owners.csv' datatype='table' name='[__tableau_internal_object_id__].[dim_owners.csv_CD6A95BD170F46E381B9D8C6769F5875]' role='measure' type='quantitative' />
-      <column caption='fct_incidents.csv' datatype='table' name='[__tableau_internal_object_id__].[fct_incidents.csv_84CA4339B68E49DA9E67CC1C1EA0B556]' role='measure' type='quantitative' />
-      <column caption='mart_blast_radius.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_blast_radius.csv_A97ACB5E6CFB4A9CB2D1F5AF5D6338B7]' role='measure' type='quantitative' />
-      <column caption='mart_exposure_daily.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]' role='measure' type='quantitative' />
-      <column caption='mart_job_runs.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_job_runs.csv_4E7CDE473B9A4834BFE44623C17073CA]' role='measure' type='quantitative' />
-      <column caption='mart_lineage_layout.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_lineage_layout.csv_5AD8C02B14FF485F9FE3A3B784E5DEE5]' role='measure' type='quantitative' />
-      <column caption='mart_node_daily.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]' role='measure' type='quantitative' />
-      <column caption='mart_node_reach.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_node_reach.csv_9AD27EF9654E4456B3E384D9D62E2D09]' role='measure' type='quantitative' />
-      <column caption='mart_observed_access.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_observed_access.csv_05342857776743C4B04BCCB29C54F34E]' role='measure' type='quantitative' />
-      <column caption='mart_recovery_episodes.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_recovery_episodes.csv_0A0D98CE20F34EE2AD16C317DC906C91]' role='measure' type='quantitative' />
-      <column caption='mart_run_errors.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_run_errors.csv_D5C0C366DEDB4C04B3768F1CDE973AC5]' role='measure' type='quantitative' />
-      <column caption='mart_test_daily.csv' datatype='table' name='[__tableau_internal_object_id__].[mart_test_daily.csv_34C9F211FF984FF6ADF37D0DD0E2E144]' role='measure' type='quantitative' />
+      <column caption='Dates' datatype='table' name='[__tableau_internal_object_id__].[dim_date.csv_DF8950FB8176406B9520773745BC3E0D]' role='measure' type='quantitative' />
+      <column caption='Nodes' datatype='table' name='[__tableau_internal_object_id__].[dim_nodes.csv_273AA73B14884E2FB287033E49518972]' role='measure' type='quantitative' />
+      <column caption='Owners' datatype='table' name='[__tableau_internal_object_id__].[dim_owners.csv_CD6A95BD170F46E381B9D8C6769F5875]' role='measure' type='quantitative' />
+      <column caption='Incidents' datatype='table' name='[__tableau_internal_object_id__].[fct_incidents.csv_84CA4339B68E49DA9E67CC1C1EA0B556]' role='measure' type='quantitative' />
+      <column caption='Blast Radius' datatype='table' name='[__tableau_internal_object_id__].[mart_blast_radius.csv_A97ACB5E6CFB4A9CB2D1F5AF5D6338B7]' role='measure' type='quantitative' />
+      <column caption='Exposure Daily' datatype='table' name='[__tableau_internal_object_id__].[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]' role='measure' type='quantitative' />
+      <column caption='Job Runs' datatype='table' name='[__tableau_internal_object_id__].[mart_job_runs.csv_4E7CDE473B9A4834BFE44623C17073CA]' role='measure' type='quantitative' />
+      <column caption='Lineage Layout' datatype='table' name='[__tableau_internal_object_id__].[mart_lineage_layout.csv_5AD8C02B14FF485F9FE3A3B784E5DEE5]' role='measure' type='quantitative' />
+      <column caption='Node Daily' datatype='table' name='[__tableau_internal_object_id__].[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]' role='measure' type='quantitative' />
+      <column caption='Node Reach' datatype='table' name='[__tableau_internal_object_id__].[mart_node_reach.csv_9AD27EF9654E4456B3E384D9D62E2D09]' role='measure' type='quantitative' />
+      <column caption='Observed Access' datatype='table' name='[__tableau_internal_object_id__].[mart_observed_access.csv_05342857776743C4B04BCCB29C54F34E]' role='measure' type='quantitative' />
+      <column caption='Recovery Episodes' datatype='table' name='[__tableau_internal_object_id__].[mart_recovery_episodes.csv_0A0D98CE20F34EE2AD16C317DC906C91]' role='measure' type='quantitative' />
+      <column caption='Run Errors' datatype='table' name='[__tableau_internal_object_id__].[mart_run_errors.csv_D5C0C366DEDB4C04B3768F1CDE973AC5]' role='measure' type='quantitative' />
+      <column caption='Test Daily' datatype='table' name='[__tableau_internal_object_id__].[mart_test_daily.csv_34C9F211FF984FF6ADF37D0DD0E2E144]' role='measure' type='quantitative' />
       <column caption='Access Path' datatype='string' name='[access_path]' role='dimension' type='nominal' />
       <column caption='Allocated Cost Usd' datatype='real' name='[allocated_cost_usd]' role='measure' type='quantitative' />
-      <column caption='Avg Daily Consumers 30D (Mart Blast Radius.Csv)' datatype='real' name='[avg_daily_consumers_30d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
+      <column caption='Avg Daily Consumers 30D (Blast Radius)' datatype='real' name='[avg_daily_consumers_30d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
       <column caption='Avg Daily Consumers 30D' datatype='real' name='[avg_daily_consumers_30d]' role='measure' type='quantitative' />
-      <column caption='Avg Daily Consumers 7D (Mart Blast Radius.Csv)' datatype='real' name='[avg_daily_consumers_7d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
+      <column caption='Avg Daily Consumers 7D (Blast Radius)' datatype='real' name='[avg_daily_consumers_7d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
       <column caption='Avg Daily Consumers 7D' datatype='real' name='[avg_daily_consumers_7d]' role='measure' type='quantitative' />
-      <column caption='Avg Daily Consumers 90D (Mart Blast Radius.Csv)' datatype='real' name='[avg_daily_consumers_90d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
+      <column caption='Avg Daily Consumers 90D (Blast Radius)' datatype='real' name='[avg_daily_consumers_90d (mart_blast_radius.csv)]' role='measure' type='quantitative' />
       <column caption='Avg Daily Consumers 90D' datatype='real' name='[avg_daily_consumers_90d]' role='measure' type='quantitative' />
       <column caption='Avg Latency Sec' datatype='real' name='[avg_latency_sec]' role='measure' type='quantitative' />
-      <column caption='Avg Refresh Sec' datatype='string' name='[avg_refresh_sec]' role='dimension' type='nominal' />
-      <column caption='Avg Runtime Sec' datatype='string' name='[avg_runtime_sec]' role='dimension' type='nominal' />
-      <column caption='Bi Tool (Mart Blast Radius.Csv)' datatype='string' name='[bi_tool (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Avg Refresh Sec' datatype='real' name='[avg_refresh_sec]' role='measure' type='quantitative' />
+      <column caption='Avg Runtime Sec' datatype='real' name='[avg_runtime_sec]' role='measure' type='quantitative' />
+      <column caption='Bi Tool (Blast Radius)' datatype='string' name='[bi_tool (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
       <column caption='Build Cost Usd' datatype='real' name='[build_cost_usd]' role='measure' type='quantitative' />
       <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
@@ -3929,26 +4019,26 @@
       <column caption='Column Name' datatype='string' name='[column_name]' role='dimension' type='nominal' />
       <column caption='Connection Type' datatype='string' name='[connection_type]' role='dimension' type='nominal' />
       <column caption='Consumer Query Cost Usd' datatype='real' name='[consumer_query_cost_usd]' role='measure' type='quantitative' />
-      <column caption='Consumption Type (Mart Exposure Daily.Csv)' datatype='string' name='[consumption_type (mart_exposure_daily.csv)]' role='dimension' type='nominal' />
+      <column caption='Consumption Type (Exposure Daily)' datatype='string' name='[consumption_type (mart_exposure_daily.csv)]' role='dimension' type='nominal' />
       <column caption='Consumption Type' datatype='string' name='[consumption_type]' role='dimension' type='nominal' />
       <column caption='Created Date' datatype='date' name='[created_date]' role='dimension' type='ordinal' />
       <column caption='Culprit Count' datatype='real' name='[culprit_count]' role='measure' type='quantitative' />
       <column caption='Culprit Nodes' datatype='string' name='[culprit_nodes]' role='dimension' type='nominal' />
       <column caption='Current Status' datatype='string' name='[current_status]' role='dimension' type='nominal' />
       <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
-      <column caption='Database Name' datatype='string' name='[database_name]' role='dimension' type='nominal' />
-      <column caption='Date (Dim Date.Csv)' datatype='date' name='[date (dim_date.csv)]' role='dimension' type='ordinal' />
-      <column caption='Date (Mart Exposure Daily.Csv)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
-      <column caption='Date (Mart Observed Access.Csv)' datatype='date' name='[date (mart_observed_access.csv)]' role='dimension' type='ordinal' />
-      <column caption='Date (Mart Run Errors.Csv)' datatype='date' name='[date (mart_run_errors.csv)]' role='dimension' type='ordinal' />
-      <column caption='Date (Mart Test Daily.Csv)' datatype='date' name='[date (mart_test_daily.csv)]' role='dimension' type='ordinal' />
+      <column caption='Database Name' datatype='string' hidden='true' name='[database_name]' role='dimension' type='nominal' />
+      <column caption='Date (Dates)' datatype='date' name='[date (dim_date.csv)]' role='dimension' type='ordinal' />
+      <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
+      <column caption='Date (Observed Access)' datatype='date' name='[date (mart_observed_access.csv)]' role='dimension' type='ordinal' />
+      <column caption='Date (Run Errors)' datatype='date' name='[date (mart_run_errors.csv)]' role='dimension' type='ordinal' />
+      <column caption='Date (Test Daily)' datatype='date' name='[date (mart_test_daily.csv)]' role='dimension' type='ordinal' />
       <column caption='Date' datatype='date' name='[date]' role='dimension' type='ordinal' />
-      <column caption='Day Index' datatype='integer' name='[day_index]' role='dimension' type='quantitative' />
+      <column caption='Day Index' datatype='integer' name='[day_index]' role='dimension' type='ordinal' />
       <column caption='Day Name' datatype='string' name='[day_name]' role='dimension' type='nominal' />
       <column caption='Day Of Week' datatype='integer' name='[day_of_week]' role='dimension' type='quantitative' />
-      <column caption='Days Before As Of' datatype='integer' name='[days_before_as_of]' role='measure' type='quantitative' />
+      <column caption='Days Before As Of' datatype='integer' name='[days_before_as_of]' role='dimension' type='ordinal' />
       <column caption='Dbt Job' datatype='string' name='[dbt_job]' role='dimension' type='nominal' />
-      <column caption='Dbt Project (Mart Job Runs.Csv)' datatype='string' name='[dbt_project (mart_job_runs.csv)]' role='dimension' type='nominal' />
+      <column caption='Dbt Project (Job Runs)' datatype='string' name='[dbt_project (mart_job_runs.csv)]' role='dimension' type='nominal' />
       <column caption='Dbt Project' datatype='string' name='[dbt_project]' role='dimension' type='nominal' />
       <column caption='Direction' datatype='string' name='[direction]' role='dimension' type='nominal' />
       <column caption='Display Name' datatype='string' name='[display_name]' role='dimension' type='nominal' />
@@ -3958,7 +4048,7 @@
       <column caption='Duration Min' datatype='real' name='[duration_min]' role='measure' type='quantitative' />
       <column caption='Duration Sec' datatype='real' name='[duration_sec]' role='measure' type='quantitative' />
       <column caption='Edge Id' datatype='string' name='[edge_id]' role='dimension' type='nominal' />
-      <column caption='Edge Key' datatype='string' name='[edge_key]' role='dimension' type='nominal' />
+      <column caption='Edge Key' datatype='string' hidden='true' name='[edge_key]' role='dimension' type='nominal' />
       <column caption='Email' datatype='string' name='[email]' role='dimension' type='nominal' />
       <column caption='Environment' datatype='string' name='[environment]' role='dimension' type='nominal' />
       <column caption='Error After Minutes' datatype='real' name='[error_after_minutes]' role='measure' type='quantitative' />
@@ -3967,20 +4057,20 @@
       <column caption='Est Cost Usd' datatype='real' name='[est_cost_usd]' role='measure' type='quantitative' />
       <column caption='Events' datatype='integer' name='[events]' role='measure' type='quantitative' />
       <column caption='Exposure Group' datatype='string' name='[exposure_group]' role='dimension' type='nominal' />
-      <column caption='Exposure Id (Mart Blast Radius.Csv)' datatype='string' name='[exposure_id (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Exposure Id (Blast Radius)' datatype='string' name='[exposure_id (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Exposure Id' datatype='string' name='[exposure_id]' role='dimension' type='nominal' />
       <column caption='Exposure Name' datatype='string' name='[exposure_name]' role='dimension' type='nominal' />
       <column caption='Exposure Owner' datatype='string' name='[exposure_owner]' role='dimension' type='nominal' />
       <column caption='Exposure Status' datatype='string' name='[exposure_status]' role='dimension' type='nominal' />
       <column caption='Exposure Team' datatype='string' name='[exposure_team]' role='dimension' type='nominal' />
       <column caption='Exposure Trust' datatype='string' name='[exposure_trust]' role='dimension' type='nominal' />
-      <column caption='Exposure Type (Mart Blast Radius.Csv)' datatype='string' name='[exposure_type (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Exposure Type (Blast Radius)' datatype='string' name='[exposure_type (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Exposure Type' datatype='string' name='[exposure_type]' role='dimension' type='nominal' />
       <column caption='Exposure Url' datatype='string' name='[exposure_url]' role='dimension' type='nominal' />
       <column caption='Exposures Affected' datatype='integer' name='[exposures_affected]' role='measure' type='quantitative' />
       <column caption='Exposures Fed' datatype='integer' name='[exposures_fed]' role='measure' type='quantitative' />
       <column caption='Failed At' datatype='datetime' name='[failed_at]' role='dimension' type='ordinal' />
-      <column caption='Failed Calls' datatype='string' name='[failed_calls]' role='dimension' type='nominal' />
+      <column caption='Failed Calls' datatype='real' name='[failed_calls]' role='measure' type='quantitative' />
       <column caption='Fails' datatype='integer' name='[fails]' role='measure' type='quantitative' />
       <column caption='Fresh Checks Error' datatype='real' name='[fresh_checks_error]' role='measure' type='quantitative' />
       <column caption='Fresh Checks Pass' datatype='real' name='[fresh_checks_pass]' role='measure' type='quantitative' />
@@ -3989,8 +4079,8 @@
       <column caption='Has Description' datatype='boolean' name='[has_description]' role='dimension' type='nominal' />
       <column caption='Health Score' datatype='real' name='[health_score]' role='measure' type='quantitative' />
       <column caption='Health Score Now' datatype='real' name='[health_score_now]' role='measure' type='quantitative' />
-      <column caption='Hops (Mart Node Reach.Csv)' datatype='integer' name='[hops (mart_node_reach.csv)]' role='measure' type='quantitative' />
-      <column caption='Hops' datatype='integer' name='[hops]' role='measure' type='quantitative' />
+      <column caption='Hops (Node Reach)' datatype='integer' name='[hops (mart_node_reach.csv)]' role='dimension' type='ordinal' />
+      <column caption='Hops' datatype='integer' name='[hops]' role='dimension' type='ordinal' />
       <column caption='Hours To Recover' datatype='real' name='[hours_to_recover]' role='measure' type='quantitative' />
       <column caption='Incident Id' datatype='string' name='[incident_id]' role='dimension' type='nominal' />
       <column caption='Inferred Exposure Id' datatype='string' name='[inferred_exposure_id]' role='dimension' type='nominal' />
@@ -4000,14 +4090,14 @@
       <column caption='Is Month End' datatype='boolean' name='[is_month_end]' role='dimension' type='nominal' />
       <column caption='Is Month End Close Window' datatype='boolean' name='[is_month_end_close_window]' role='dimension' type='nominal' />
       <column caption='Is Observed Only' datatype='boolean' name='[is_observed_only]' role='dimension' type='nominal' />
-      <column caption='Is Open (Fct Incidents.Csv)' datatype='boolean' name='[is_open (fct_incidents.csv)]' role='dimension' type='nominal' />
+      <column caption='Is Open (Incidents)' datatype='boolean' name='[is_open (fct_incidents.csv)]' role='dimension' type='nominal' />
       <column caption='Is Open' datatype='boolean' name='[is_open]' role='dimension' type='nominal' />
-      <column caption='Is Registered (Mart Blast Radius.Csv)' datatype='boolean' name='[is_registered (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Is Registered (Blast Radius)' datatype='boolean' name='[is_registered (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Is Registered' datatype='boolean' name='[is_registered]' role='dimension' type='nominal' />
       <column caption='Is Weekend' datatype='boolean' name='[is_weekend]' role='dimension' type='nominal' />
       <column caption='Iso Week' datatype='integer' name='[iso_week]' role='dimension' type='quantitative' />
       <column caption='Job Name' datatype='string' name='[job_name]' role='dimension' type='nominal' />
-      <column caption='Job Run Id (Mart Job Runs.Csv)' datatype='string' name='[job_run_id (mart_job_runs.csv)]' role='dimension' type='nominal' />
+      <column caption='Job Run Id (Job Runs)' datatype='string' name='[job_run_id (mart_job_runs.csv)]' role='dimension' type='nominal' />
       <column caption='Job Run Id' datatype='string' name='[job_run_id]' role='dimension' type='nominal' />
       <column caption='Kind' datatype='string' name='[kind]' role='dimension' type='nominal' />
       <column caption='Last Error Message' datatype='string' name='[last_error_message]' role='dimension' type='nominal' />
@@ -4017,8 +4107,8 @@
       <column caption='Last Run Status' datatype='string' name='[last_run_status]' role='dimension' type='nominal' />
       <column caption='Last Runtime Sec' datatype='real' name='[last_runtime_sec]' role='measure' type='quantitative' />
       <column caption='Layer' datatype='string' name='[layer]' role='dimension' type='nominal' />
-      <column caption='Layer Column' datatype='integer' name='[layer_column]' role='measure' type='quantitative' />
-      <column caption='Layer Order' datatype='integer' name='[layer_order]' role='measure' type='quantitative' />
+      <column caption='Layer Column' datatype='integer' name='[layer_column]' role='dimension' type='ordinal' />
+      <column caption='Layer Order' datatype='integer' name='[layer_order]' role='dimension' type='ordinal' />
       <column caption='Layout Scope' datatype='string' name='[layout_scope]' role='dimension' type='nominal' />
       <column caption='Load Every Minutes' datatype='real' name='[load_every_minutes]' role='measure' type='quantitative' />
       <column caption='Mapped Exposure Id' datatype='string' name='[mapped_exposure_id]' role='dimension' type='nominal' />
@@ -4028,7 +4118,7 @@
       <column caption='Maturity' datatype='string' name='[maturity]' role='dimension' type='nominal' />
       <column caption='Max Lag Min' datatype='real' name='[max_lag_min]' role='measure' type='quantitative' />
       <column caption='Max Rows Built' datatype='real' name='[max_rows_built]' role='measure' type='quantitative' />
-      <column caption='Metrics Called' datatype='string' name='[metrics_called]' role='dimension' type='nominal' />
+      <column caption='Metrics Called' datatype='real' name='[metrics_called]' role='measure' type='quantitative' />
       <column caption='Migrated From Platform' datatype='string' name='[migrated_from_platform]' role='dimension' type='nominal' />
       <column caption='Migration Date' datatype='date' name='[migration_date]' role='dimension' type='ordinal' />
       <column caption='Models Failed' datatype='integer' name='[models_failed]' role='measure' type='quantitative' />
@@ -4036,32 +4126,32 @@
       <column caption='Models Skipped' datatype='integer' name='[models_skipped]' role='measure' type='quantitative' />
       <column caption='Month' datatype='integer' name='[month]' role='dimension' type='quantitative' />
       <column caption='Month Name' datatype='string' name='[month_name]' role='dimension' type='nominal' />
-      <column caption='Node Id (Dim Nodes.Csv)' datatype='string' name='[node_id (dim_nodes.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Blast Radius.Csv)' datatype='string' name='[node_id (mart_blast_radius.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Lineage Layout.Csv)' datatype='string' name='[node_id (mart_lineage_layout.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Node Reach.Csv)' datatype='string' name='[node_id (mart_node_reach.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Observed Access.Csv)' datatype='string' name='[node_id (mart_observed_access.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Recovery Episodes.Csv)' datatype='string' name='[node_id (mart_recovery_episodes.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Run Errors.Csv)' datatype='string' name='[node_id (mart_run_errors.csv)]' role='dimension' type='nominal' />
-      <column caption='Node Id (Mart Test Daily.Csv)' datatype='string' name='[node_id (mart_test_daily.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Nodes)' datatype='string' name='[node_id (dim_nodes.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Blast Radius)' datatype='string' name='[node_id (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Lineage Layout)' datatype='string' name='[node_id (mart_lineage_layout.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Node Reach)' datatype='string' name='[node_id (mart_node_reach.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Observed Access)' datatype='string' name='[node_id (mart_observed_access.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Recovery Episodes)' datatype='string' name='[node_id (mart_recovery_episodes.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Run Errors)' datatype='string' name='[node_id (mart_run_errors.csv)]' role='dimension' type='nominal' />
+      <column caption='Node Id (Test Daily)' datatype='string' name='[node_id (mart_test_daily.csv)]' role='dimension' type='nominal' />
       <column caption='Node Id' datatype='string' name='[node_id]' role='dimension' type='nominal' />
-      <column caption='Node Key (Mart Lineage Layout.Csv)' datatype='integer' name='[node_key (mart_lineage_layout.csv)]' role='dimension' type='ordinal' />
+      <column caption='Node Key (Lineage Layout)' datatype='integer' name='[node_key (mart_lineage_layout.csv)]' role='dimension' type='ordinal' />
       <column caption='Node Key' datatype='integer' name='[node_key]' role='dimension' type='ordinal' />
       <column caption='Node Name' datatype='string' name='[node_name]' role='dimension' type='nominal' />
       <column caption='On Call Rotation' datatype='string' name='[on_call_rotation]' role='dimension' type='nominal' />
       <column caption='Open Incident Id' datatype='string' name='[open_incident_id]' role='dimension' type='nominal' />
-      <column caption='Owner Name (Dim Owners.Csv)' datatype='string' name='[owner_name (dim_owners.csv)]' role='dimension' type='nominal' />
+      <column caption='Owner Name (Owners)' datatype='string' name='[owner_name (dim_owners.csv)]' role='dimension' type='nominal' />
       <column caption='Owner Name' datatype='string' name='[owner_name]' role='dimension' type='nominal' />
-      <column caption='Owner Team (Dim Owners.Csv)' datatype='string' name='[owner_team (dim_owners.csv)]' role='dimension' type='nominal' />
+      <column caption='Owner Team (Owners)' datatype='string' name='[owner_team (dim_owners.csv)]' role='dimension' type='nominal' />
       <column caption='Owner Team' datatype='string' name='[owner_team]' role='dimension' type='nominal' />
-      <column caption='Platform (Mart Job Runs.Csv)' datatype='string' name='[platform (mart_job_runs.csv)]' role='dimension' type='nominal' />
-      <column caption='Platform (Mart Run Errors.Csv)' datatype='string' name='[platform (mart_run_errors.csv)]' role='dimension' type='nominal' />
+      <column caption='Platform (Job Runs)' datatype='string' name='[platform (mart_job_runs.csv)]' role='dimension' type='nominal' />
+      <column caption='Platform (Run Errors)' datatype='string' name='[platform (mart_run_errors.csv)]' role='dimension' type='nominal' />
       <column caption='Platform' datatype='string' name='[platform]' role='dimension' type='nominal' />
       <column caption='Platform Filter Values' datatype='string' name='[platform_filter_values]' role='dimension' type='nominal' />
       <column caption='Platform Now' datatype='string' name='[platform_now]' role='dimension' type='nominal' />
-      <column caption='Platform On Day (Mart Recovery Episodes.Csv)' datatype='string' name='[platform_on_day (mart_recovery_episodes.csv)]' role='dimension' type='nominal' />
+      <column caption='Platform On Day (Recovery Episodes)' datatype='string' name='[platform_on_day (mart_recovery_episodes.csv)]' role='dimension' type='nominal' />
       <column caption='Platform On Day' datatype='string' name='[platform_on_day]' role='dimension' type='nominal' />
-      <column caption='Point Order' datatype='real' name='[point_order]' role='measure' type='quantitative' />
+      <column caption='Point Order' datatype='real' name='[point_order]' role='dimension' type='ordinal' />
       <column caption='Principal' datatype='string' name='[principal]' role='dimension' type='nominal' />
       <column caption='Principal Type' datatype='string' name='[principal_type]' role='dimension' type='nominal' />
       <column caption='Quarter' datatype='integer' name='[quarter]' role='dimension' type='quantitative' />
@@ -4073,7 +4163,7 @@
       <column caption='Refresh Skipped' datatype='real' name='[refresh_skipped]' role='measure' type='quantitative' />
       <column caption='Refreshes Per Day' datatype='real' name='[refreshes_per_day]' role='dimension' type='quantitative' />
       <column caption='Related Layer' datatype='string' name='[related_layer]' role='dimension' type='nominal' />
-      <column caption='Related Layer Column' datatype='integer' name='[related_layer_column]' role='measure' type='quantitative' />
+      <column caption='Related Layer Column' datatype='integer' name='[related_layer_column]' role='dimension' type='ordinal' />
       <column caption='Related Name' datatype='string' name='[related_name]' role='dimension' type='nominal' />
       <column caption='Related Node Id' datatype='string' name='[related_node_id]' role='dimension' type='nominal' />
       <column caption='Related Owner' datatype='string' name='[related_owner]' role='dimension' type='nominal' />
@@ -4085,23 +4175,23 @@
       <column caption='Row Type' datatype='string' name='[row_type]' role='dimension' type='nominal' />
       <column caption='Run Completed At' datatype='datetime' name='[run_completed_at]' role='dimension' type='ordinal' />
       <column caption='Run Date' datatype='date' name='[run_date]' role='dimension' type='ordinal' />
-      <column caption='Run Started At (Mart Job Runs.Csv)' datatype='datetime' name='[run_started_at (mart_job_runs.csv)]' role='dimension' type='ordinal' />
+      <column caption='Run Started At (Job Runs)' datatype='datetime' name='[run_started_at (mart_job_runs.csv)]' role='dimension' type='ordinal' />
       <column caption='Run Started At' datatype='datetime' name='[run_started_at]' role='dimension' type='ordinal' />
       <column caption='Runs' datatype='real' name='[runs]' role='measure' type='quantitative' />
       <column caption='Runs Failed' datatype='real' name='[runs_failed]' role='measure' type='quantitative' />
       <column caption='Runs Skipped' datatype='real' name='[runs_skipped]' role='measure' type='quantitative' />
-      <column caption='Runtime 7D Avg Sec' datatype='string' name='[runtime_7d_avg_sec]' role='dimension' type='nominal' />
-      <column caption='Runtime Prior28D Avg Sec' datatype='string' name='[runtime_prior28d_avg_sec]' role='dimension' type='nominal' />
-      <column caption='Runtime Trend Pct' datatype='string' name='[runtime_trend_pct]' role='dimension' type='nominal' />
+      <column caption='Runtime 7D Avg Sec' datatype='real' name='[runtime_7d_avg_sec]' role='measure' type='quantitative' />
+      <column caption='Runtime Prior28D Avg Sec' datatype='real' name='[runtime_prior28d_avg_sec]' role='measure' type='quantitative' />
+      <column caption='Runtime Trend Pct' datatype='real' name='[runtime_trend_pct]' role='measure' type='quantitative' />
       <column caption='Schedule' datatype='string' name='[schedule]' role='dimension' type='nominal' />
       <column caption='Schema Name' datatype='string' name='[schema_name]' role='dimension' type='nominal' />
       <column caption='Semantic Object Type' datatype='string' name='[semantic_object_type]' role='dimension' type='nominal' />
       <column caption='Service Principal' datatype='string' name='[service_principal]' role='dimension' type='nominal' />
-      <column caption='Severity (Fct Incidents.Csv)' datatype='string' name='[severity (fct_incidents.csv)]' role='dimension' type='nominal' />
+      <column caption='Severity (Incidents)' datatype='string' name='[severity (fct_incidents.csv)]' role='dimension' type='nominal' />
       <column caption='Severity' datatype='string' name='[severity]' role='dimension' type='nominal' />
-      <column caption='Slack Channel (Mart Blast Radius.Csv)' datatype='string' name='[slack_channel (mart_blast_radius.csv)]' role='dimension' type='nominal' />
+      <column caption='Slack Channel (Blast Radius)' datatype='string' name='[slack_channel (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Slack Channel' datatype='string' name='[slack_channel]' role='dimension' type='nominal' />
-      <column caption='Start Date (Fct Incidents.Csv)' datatype='date' name='[start_date (fct_incidents.csv)]' role='dimension' type='ordinal' />
+      <column caption='Start Date (Incidents)' datatype='date' name='[start_date (fct_incidents.csv)]' role='dimension' type='ordinal' />
       <column caption='Start Date' datatype='date' name='[start_date]' role='dimension' type='ordinal' />
       <column caption='Start Minute Of Day' datatype='integer' name='[start_minute_of_day]' role='dimension' type='quantitative' />
       <column caption='Started At' datatype='datetime' name='[started_at]' role='dimension' type='ordinal' />
@@ -4110,7 +4200,7 @@
       <column caption='Status Eod Code' datatype='integer' name='[status_eod_code]' role='dimension' type='ordinal' />
       <column caption='Status Reason' datatype='string' name='[status_reason]' role='dimension' type='nominal' />
       <column caption='Status Worst Code' datatype='integer' name='[status_worst_code]' role='dimension' type='ordinal' />
-      <column caption='Tags' datatype='string' name='[tags]' role='dimension' type='nominal' />
+      <column caption='Tags' datatype='string' hidden='true' name='[tags]' role='dimension' type='nominal' />
       <column caption='Test Count' datatype='integer' name='[test_count]' role='measure' type='quantitative' />
       <column caption='Test Id' datatype='string' name='[test_id]' role='dimension' type='nominal' />
       <column caption='Test Name' datatype='string' name='[test_name]' role='dimension' type='nominal' />
@@ -4133,16 +4223,21 @@
       <column caption='Weekday' datatype='string' name='[weekday]' role='dimension' type='nominal' />
       <column caption='Worst Test Code' datatype='integer' name='[worst_test_code]' role='dimension' type='ordinal' />
       <column caption='X' datatype='real' name='[x]' role='measure' type='quantitative' />
-      <column caption='X Label' datatype='real' name='[x_label]' role='measure' type='quantitative' />
+      <column caption='X Label' datatype='real' hidden='true' name='[x_label]' role='measure' type='quantitative' />
       <column caption='Y' datatype='real' name='[y]' role='measure' type='quantitative' />
       <column caption='Year' datatype='integer' name='[year]' role='dimension' type='quantitative' />
+      <column caption='Open Incident Started At' datatype='datetime' name='[open_incident_started_at]' role='dimension' type='ordinal' />
+      <column caption='Downstream Keys' datatype='string' name='[downstream_keys]' role='dimension' type='nominal' />
+      <column caption='Downstream Consumers 7D' datatype='real' name='[downstream_consumers_7d]' role='measure' type='quantitative' />
+      <column caption='Downstream Consumers 30D' datatype='real' name='[downstream_consumers_30d]' role='measure' type='quantitative' />
+      <column caption='Downstream Consumers 90D' datatype='real' name='[downstream_consumers_90d]' role='measure' type='quantitative' />
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
       </semantic-values>
       <object-graph>
         <objects>
-          <object caption='dim_date.csv' id='dim_date.csv_DF8950FB8176406B9520773745BC3E0D'>
+          <object caption='Dates' id='dim_date.csv_DF8950FB8176406B9520773745BC3E0D'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='dim_date.csv' table='[dim_date#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4165,7 +4260,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='dim_nodes.csv' id='dim_nodes.csv_273AA73B14884E2FB287033E49518972'>
+          <object caption='Nodes' id='dim_nodes.csv_273AA73B14884E2FB287033E49518972'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='dim_nodes.csv' table='[dim_nodes#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4238,11 +4333,16 @@
                   <column datatype='real' name='avg_daily_consumers_7d' ordinal='66' />
                   <column datatype='real' name='avg_daily_consumers_30d' ordinal='67' />
                   <column datatype='real' name='avg_daily_consumers_90d' ordinal='68' />
+              <column datatype='datetime' name='open_incident_started_at' ordinal='69' />
+              <column datatype='string' name='downstream_keys' ordinal='70' />
+              <column datatype='real' name='downstream_consumers_7d' ordinal='71' />
+              <column datatype='real' name='downstream_consumers_30d' ordinal='72' />
+              <column datatype='real' name='downstream_consumers_90d' ordinal='73' />
                 </columns>
               </relation>
             </properties>
           </object>
-          <object caption='dim_owners.csv' id='dim_owners.csv_CD6A95BD170F46E381B9D8C6769F5875'>
+          <object caption='Owners' id='dim_owners.csv_CD6A95BD170F46E381B9D8C6769F5875'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='dim_owners.csv' table='[dim_owners#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4255,7 +4355,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='fct_incidents.csv' id='fct_incidents.csv_84CA4339B68E49DA9E67CC1C1EA0B556'>
+          <object caption='Incidents' id='fct_incidents.csv_84CA4339B68E49DA9E67CC1C1EA0B556'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='fct_incidents.csv' table='[fct_incidents#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4273,7 +4373,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_blast_radius.csv' id='mart_blast_radius.csv_A97ACB5E6CFB4A9CB2D1F5AF5D6338B7'>
+          <object caption='Blast Radius' id='mart_blast_radius.csv_A97ACB5E6CFB4A9CB2D1F5AF5D6338B7'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_blast_radius.csv' table='[mart_blast_radius#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4296,7 +4396,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_exposure_daily.csv' id='mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF'>
+          <object caption='Exposure Daily' id='mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_exposure_daily.csv' table='[mart_exposure_daily#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4310,15 +4410,15 @@
                   <column datatype='integer' name='events' ordinal='7' />
                   <column datatype='integer' name='unique_consumers' ordinal='8' />
                   <column datatype='real' name='avg_latency_sec' ordinal='9' />
-                  <column datatype='string' name='metrics_called' ordinal='10' />
-                  <column datatype='string' name='failed_calls' ordinal='11' />
+                  <column datatype='real' name='metrics_called' ordinal='10' />
+                  <column datatype='real' name='failed_calls' ordinal='11' />
                   <column datatype='boolean' name='is_observed_only' ordinal='12' />
                   <column datatype='real' name='allocated_cost_usd' ordinal='13' />
                 </columns>
               </relation>
             </properties>
           </object>
-          <object caption='mart_job_runs.csv' id='mart_job_runs.csv_4E7CDE473B9A4834BFE44623C17073CA'>
+          <object caption='Job Runs' id='mart_job_runs.csv_4E7CDE473B9A4834BFE44623C17073CA'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_job_runs.csv' table='[mart_job_runs#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4344,7 +4444,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_lineage_layout.csv' id='mart_lineage_layout.csv_5AD8C02B14FF485F9FE3A3B784E5DEE5'>
+          <object caption='Lineage Layout' id='mart_lineage_layout.csv_5AD8C02B14FF485F9FE3A3B784E5DEE5'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_lineage_layout.csv' table='[mart_lineage_layout#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4365,7 +4465,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_node_daily.csv' id='mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F'>
+          <object caption='Node Daily' id='mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_node_daily.csv' table='[mart_node_daily#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4374,7 +4474,7 @@
                   <column datatype='real' name='runs' ordinal='2' />
                   <column datatype='real' name='runs_failed' ordinal='3' />
                   <column datatype='real' name='runs_skipped' ordinal='4' />
-                  <column datatype='string' name='avg_runtime_sec' ordinal='5' />
+                  <column datatype='real' name='avg_runtime_sec' ordinal='5' />
                   <column datatype='real' name='build_cost_usd' ordinal='6' />
                   <column datatype='real' name='consumer_query_cost_usd' ordinal='7' />
                   <column datatype='real' name='tests_pass' ordinal='8' />
@@ -4387,18 +4487,18 @@
                   <column datatype='real' name='refresh_ok' ordinal='15' />
                   <column datatype='real' name='refresh_failed' ordinal='16' />
                   <column datatype='real' name='refresh_skipped' ordinal='17' />
-                  <column datatype='string' name='avg_refresh_sec' ordinal='18' />
+                  <column datatype='real' name='avg_refresh_sec' ordinal='18' />
                   <column datatype='string' name='platform_on_day' ordinal='19' />
                   <column datatype='string' name='materialization_on_day' ordinal='20' />
                   <column datatype='integer' name='worst_test_code' ordinal='21' />
-                  <column datatype='string' name='runtime_7d_avg_sec' ordinal='22' />
-                  <column datatype='string' name='runtime_prior28d_avg_sec' ordinal='23' />
-                  <column datatype='string' name='runtime_trend_pct' ordinal='24' />
+                  <column datatype='real' name='runtime_7d_avg_sec' ordinal='22' />
+                  <column datatype='real' name='runtime_prior28d_avg_sec' ordinal='23' />
+                  <column datatype='real' name='runtime_trend_pct' ordinal='24' />
                 </columns>
               </relation>
             </properties>
           </object>
-          <object caption='mart_node_reach.csv' id='mart_node_reach.csv_9AD27EF9654E4456B3E384D9D62E2D09'>
+          <object caption='Node Reach' id='mart_node_reach.csv_9AD27EF9654E4456B3E384D9D62E2D09'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_node_reach.csv' table='[mart_node_reach#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4416,7 +4516,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_observed_access.csv' id='mart_observed_access.csv_05342857776743C4B04BCCB29C54F34E'>
+          <object caption='Observed Access' id='mart_observed_access.csv_05342857776743C4B04BCCB29C54F34E'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_observed_access.csv' table='[mart_observed_access#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4435,7 +4535,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_recovery_episodes.csv' id='mart_recovery_episodes.csv_0A0D98CE20F34EE2AD16C317DC906C91'>
+          <object caption='Recovery Episodes' id='mart_recovery_episodes.csv_0A0D98CE20F34EE2AD16C317DC906C91'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_recovery_episodes.csv' table='[mart_recovery_episodes#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4451,7 +4551,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_run_errors.csv' id='mart_run_errors.csv_D5C0C366DEDB4C04B3768F1CDE973AC5'>
+          <object caption='Run Errors' id='mart_run_errors.csv_D5C0C366DEDB4C04B3768F1CDE973AC5'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_run_errors.csv' table='[mart_run_errors#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
@@ -4466,7 +4566,7 @@
               </relation>
             </properties>
           </object>
-          <object caption='mart_test_daily.csv' id='mart_test_daily.csv_34C9F211FF984FF6ADF37D0DD0E2E144'>
+          <object caption='Test Daily' id='mart_test_daily.csv_34C9F211FF984FF6ADF37D0DD0E2E144'>
             <properties context=''>
               <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='mart_test_daily.csv' table='[mart_test_daily#csv]' type='table'>
                 <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
