@@ -35,7 +35,7 @@ TABLES = {
             "domain": "Business domain: Finance, Commerce, Marketing, Product, Operations, Customer.",
             "owner_name": "Owning person. Blank means no owner (story 8, and the undeclared consumers).",
             "owner_team": "Owning team. Staging models and sources belong to Data Platform.",
-            "tags": "Pipe-separated dbt tags (layer, domain, job, pii). Split on '|' in Tableau.",
+            "tags": "Pipe-separated dbt tags (layer, domain, job, pii). Split on the pipe character in Tableau.",
             "has_description": "Whether the node has a description in dbt / the BI tool. Feeds documentation coverage.",
             "test_count": "Number of dbt tests defined on the model. Feeds test coverage.",
             "created_date": "When the node first appeared. Sprawl dashboards and undeclared consumers appear inside the window.",
@@ -313,7 +313,8 @@ def write_dictionary(cfg: dict) -> None:
                   f"**Grain.** {meta['grain']}. **Rows:** {len(df):,}.", "",
                   "| Column | Type | Null % | Example | Description |", "|---|---|---|---|---|"]
         for c in df.columns:
-            dtype = str(df[c].dtype).replace("object", "text").replace("float64", "number").replace("int64", "integer")
+            dtype = {"object": "text", "str": "text", "string": "text", "float64": "number", "int64": "integer",
+                     "bool": "boolean"}.get(str(df[c].dtype), str(df[c].dtype))
             if df[c].dtype == object and df[c].dropna().astype(str).isin(["true", "false"]).all() and df[c].notna().any():
                 dtype = "boolean"
             null_pct = f"{df[c].isna().mean() * 100:.0f}%"

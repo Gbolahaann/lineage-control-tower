@@ -32,43 +32,43 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `node_id` | str | 0% | model.acme_product.stg_experiments__assignments | Unique id in dbt's style: resource_type.project.name (e.g. model.acme_core.fct_orders). Exposures found only in query history use the project 'observed'. |
-| `node_name` | str | 0% | stg_experiments__assignments | Machine name (source as schema.table, model name, semantic object name, exposure name). |
-| `display_name` | str | 0% | stg_experiments__assignments | Human-friendly name for labels. Same as node_name except for exposures. |
-| `resource_type` | str | 0% | model | source / model / semantic / exposure. |
-| `layer` | str | 0% | staging | Where the node sits in the chain: source, staging, intermediate, mart, semantic, exposure. |
+| `node_id` | text | 0% | model.acme_product.stg_experiments__assignments | Unique id in dbt's style: resource_type.project.name (e.g. model.acme_core.fct_orders). Exposures found only in query history use the project 'observed'. |
+| `node_name` | text | 0% | stg_experiments__assignments | Machine name (source as schema.table, model name, semantic object name, exposure name). |
+| `display_name` | text | 0% | stg_experiments__assignments | Human-friendly name for labels. Same as node_name except for exposures. |
+| `resource_type` | text | 0% | model | source / model / semantic / exposure. |
+| `layer` | text | 0% | staging | Where the node sits in the chain: source, staging, intermediate, mart, semantic, exposure. |
 | `layer_order` | integer | 0% | 1 | 0 to 5, left to right in the lineage graph. |
-| `platform` | str | 0% | databricks | Warehouse the node lives on today (snowflake / databricks / redshift). Migrated marketing nodes say snowflake. |
-| `dbt_project` | str | 10% | acme_core | acme_core, acme_product or acme_marketing. Blank for semantic objects and undeclared consumers. |
-| `dbt_job` | str | 45% | product_every_2h | The dbt Cloud job that builds this model. |
-| `database_name` | str | 26% | ACME_ANALYTICS | Database (Snowflake/Redshift) or catalog (Databricks). |
-| `schema_name` | str | 26% | marts_finance | Schema: raw schema for sources, staging / intermediate / marts_<domain> for models. |
-| `materialization` | str | 45% | view | view / table / incremental for models. This is the current state; fct_model_runs has it at run time. |
-| `domain` | str | 0% | Product | Business domain: Finance, Commerce, Marketing, Product, Operations, Customer. |
-| `owner_name` | str | 3% | Zara Ahmed | Owning person. Blank means no owner (story 8, and the undeclared consumers). |
-| `owner_team` | str | 3% | Data Platform | Owning team. Staging models and sources belong to Data Platform. |
-| `tags` | str | 0% | staging\|product\|product_daily | Pipe-separated dbt tags (layer, domain, job, pii). Split on '|' in Tableau. |
-| `has_description` | bool | 0% | True | Whether the node has a description in dbt / the BI tool. Feeds documentation coverage. |
+| `platform` | text | 0% | databricks | Warehouse the node lives on today (snowflake / databricks / redshift). Migrated marketing nodes say snowflake. |
+| `dbt_project` | text | 10% | acme_core | acme_core, acme_product or acme_marketing. Blank for semantic objects and undeclared consumers. |
+| `dbt_job` | text | 45% | product_every_2h | The dbt Cloud job that builds this model. |
+| `database_name` | text | 26% | ACME_ANALYTICS | Database (Snowflake/Redshift) or catalog (Databricks). |
+| `schema_name` | text | 26% | marts_finance | Schema: raw schema for sources, staging / intermediate / marts_<domain> for models. |
+| `materialization` | text | 45% | view | view / table / incremental for models. This is the current state; fct_model_runs has it at run time. |
+| `domain` | text | 0% | Product | Business domain: Finance, Commerce, Marketing, Product, Operations, Customer. |
+| `owner_name` | text | 3% | Zara Ahmed | Owning person. Blank means no owner (story 8, and the undeclared consumers). |
+| `owner_team` | text | 3% | Data Platform | Owning team. Staging models and sources belong to Data Platform. |
+| `tags` | text | 0% | staging\|product\|product_daily | Pipe-separated dbt tags (layer, domain, job, pii). Split on the pipe character in Tableau. |
+| `has_description` | boolean | 0% | True | Whether the node has a description in dbt / the BI tool. Feeds documentation coverage. |
 | `test_count` | integer | 0% | 2 | Number of dbt tests defined on the model. Feeds test coverage. |
-| `created_date` | str | 0% | 2023-03-22 | When the node first appeared. Sprawl dashboards and undeclared consumers appear inside the window. |
-| `migrated_from_platform` | str | 83% | redshift | redshift for nodes moved to Snowflake in story 3, otherwise blank. |
-| `migration_date` | str | 83% | 2026-09-03 | Cutover date for migrated nodes. |
+| `created_date` | text | 0% | 2023-03-22 | When the node first appeared. Sprawl dashboards and undeclared consumers appear inside the window. |
+| `migrated_from_platform` | text | 83% | redshift | redshift for nodes moved to Snowflake in story 3, otherwise blank. |
+| `migration_date` | text | 83% | 2026-09-03 | Cutover date for migrated nodes. |
 | `load_every_minutes` | number | 82% | 60.0 | Sources only: how often the loader (Fivetran, Airbyte...) syncs this table. |
 | `warn_after_minutes` | number | 82% | 120.0 | Sources only: freshness warn threshold from the dbt source definition. |
 | `error_after_minutes` | number | 82% | 240.0 | Sources only: freshness error threshold. |
-| `semantic_object_type` | str | 92% | published_data_source | published_data_source / sigma_dataset / pbi_semantic_model. |
-| `connection_type` | str | 92% | live | extract (keeps its own copy, refreshed on a schedule) or live (queries the warehouse each time). |
+| `semantic_object_type` | text | 92% | published_data_source | published_data_source / sigma_dataset / pbi_semantic_model. |
+| `connection_type` | text | 92% | live | extract (keeps its own copy, refreshed on a schedule) or live (queries the warehouse each time). |
 | `refreshes_per_day` | number | 94% | 1.0 | Extract refresh schedule for semantic objects. |
 | `close_window_refreshes_per_day` | number | 99% | 4.0 | Extra refreshes during month-end close (Finance Close data source). |
-| `exposure_type` | str | 82% | notebook | dashboard / notebook / ml / data_app / agent / data_hub. |
-| `bi_tool` | str | 80% | tableau | tableau / sigma / power_bi for BI objects and dashboards. |
-| `exposure_url` | str | 84% | https://apps.acme-retail.example/churn_prediction_model | Where the product lives (fictional .example URLs). |
-| `maturity` | str | 82% | low | high / medium / low, as declared on the dbt exposure. |
-| `access_path` | str | 82% | direct_warehouse | How the consumer reaches data: bi_semantic_layer, direct_warehouse, dbt_semantic_layer, mcp_server, extract. |
-| `build_method` | str | 82% | hand_built | hand_built or ai_assisted. Story 10's sprawl dashboards are ai_assisted. |
-| `is_declared` | bool | 0% | True | false for consumers found only in query history (story 11). |
-| `service_principal` | str | 74% | svc_sigma | The warehouse login the consumer queries with, used to match query history to exposures. |
-| `consumption_type` | str | 82% | query | What one usage event means for this consumer: view, query, app_session or agent_call. |
+| `exposure_type` | text | 82% | notebook | dashboard / notebook / ml / data_app / agent / data_hub. |
+| `bi_tool` | text | 80% | tableau | tableau / sigma / power_bi for BI objects and dashboards. |
+| `exposure_url` | text | 84% | https://apps.acme-retail.example/churn_prediction_model | Where the product lives (fictional .example URLs). |
+| `maturity` | text | 82% | low | high / medium / low, as declared on the dbt exposure. |
+| `access_path` | text | 82% | direct_warehouse | How the consumer reaches data: bi_semantic_layer, direct_warehouse, dbt_semantic_layer, mcp_server, extract. |
+| `build_method` | text | 82% | hand_built | hand_built or ai_assisted. Story 10's sprawl dashboards are ai_assisted. |
+| `is_declared` | boolean | 0% | True | false for consumers found only in query history (story 11). |
+| `service_principal` | text | 74% | svc_sigma | The warehouse login the consumer queries with, used to match query history to exposures. |
+| `consumption_type` | text | 82% | query | What one usage event means for this consumer: view, query, app_session or agent_call. |
 
 ## dim_owners
 
@@ -80,11 +80,11 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `owner_name` | str | 0% | Kwame Mensah | Person's name (fictional). |
-| `owner_team` | str | 0% | Product Analytics | Team. Six domain teams plus Data Platform. |
-| `email` | str | 0% | kwame.mensah@acme-retail.example | Fake email on the reserved .example domain. |
-| `slack_channel` | str | 0% | #data-product | Team channel to notify. |
-| `on_call_rotation` | str | 0% | no | yes / no. |
+| `owner_name` | text | 0% | Kwame Mensah | Person's name (fictional). |
+| `owner_team` | text | 0% | Product Analytics | Team. Six domain teams plus Data Platform. |
+| `email` | text | 0% | kwame.mensah@acme-retail.example | Fake email on the reserved .example domain. |
+| `slack_channel` | text | 0% | #data-product | Team channel to notify. |
+| `on_call_rotation` | text | 0% | no | yes / no. |
 
 ## dim_date
 
@@ -96,19 +96,19 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `date` | str | 0% | 2026-09-05 | Calendar date. |
+| `date` | text | 0% | 2026-09-05 | Calendar date. |
 | `year` | integer | 0% | 2026 | Year. |
 | `quarter` | integer | 0% | 3 | Quarter number. |
 | `month` | integer | 0% | 9 | Month number. |
-| `month_name` | str | 0% | September | Month name. |
+| `month_name` | text | 0% | September | Month name. |
 | `iso_week` | integer | 0% | 36 | ISO week number. |
-| `week_start` | str | 0% | 2026-08-31 | Monday of the week. |
+| `week_start` | text | 0% | 2026-08-31 | Monday of the week. |
 | `day_of_week` | integer | 0% | 6 | 1 = Monday ... 7 = Sunday. |
-| `day_name` | str | 0% | Saturday | Day name. |
-| `is_weekend` | bool | 0% | True | Saturday or Sunday. |
-| `is_month_end` | bool | 0% | False | Last calendar day of the month. |
-| `is_month_end_close_window` | bool | 0% | False | Last 3 or first 3 business days of a month (public holidays ignored). |
-| `is_board_prep_window` | bool | 0% | False | The board meeting day and the 3 days before it. |
+| `day_name` | text | 0% | Saturday | Day name. |
+| `is_weekend` | boolean | 0% | True | Saturday or Sunday. |
+| `is_month_end` | boolean | 0% | False | Last calendar day of the month. |
+| `is_month_end_close_window` | boolean | 0% | False | Last 3 or first 3 business days of a month (public holidays ignored). |
+| `is_board_prep_window` | boolean | 0% | False | The board meeting day and the 3 days before it. |
 | `days_before_as_of` | integer | 0% | 44 | 0 on 19 Oct, 1 on 18 Oct, and so on. Handy for 'last N days' filters. |
 
 ## fct_lineage_edges
@@ -121,11 +121,11 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `edge_id` | str | 0% | E0097 | Unique edge id. |
-| `parent_node_id` | str | 0% | source.acme_marketing.raw_meta_ads.ad_insights | The upstream node. |
-| `child_node_id` | str | 0% | model.acme_marketing.stg_meta_ads__ad_insights | The downstream node. |
-| `edge_source` | str | 0% | manifest | Where the link is known from: manifest (declared in dbt), bi_metadata (BI APIs) or query_history (observed only). |
-| `crosses_platform` | bool | 0% | False | true when parent and child live on different warehouses today (e.g. Databricks to Snowflake for Customer 360). |
+| `edge_id` | text | 0% | E0097 | Unique edge id. |
+| `parent_node_id` | text | 0% | source.acme_marketing.raw_meta_ads.ad_insights | The upstream node. |
+| `child_node_id` | text | 0% | model.acme_marketing.stg_meta_ads__ad_insights | The downstream node. |
+| `edge_source` | text | 0% | manifest | Where the link is known from: manifest (declared in dbt), bi_metadata (BI APIs) or query_history (observed only). |
+| `crosses_platform` | boolean | 0% | False | true when parent and child live on different warehouses today (e.g. Databricks to Snowflake for Customer 360). |
 
 ## fct_exposure_upstream
 
@@ -137,8 +137,8 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `exposure_id` | str | 0% | exposure.acme_core.inventory_health | The consumer. |
-| `upstream_node_id` | str | 0% | source.acme_core.raw_wms.inventory | Any node upstream of it, at any distance. |
+| `exposure_id` | text | 0% | exposure.acme_core.inventory_health | The consumer. |
+| `upstream_node_id` | text | 0% | source.acme_core.raw_wms.inventory | Any node upstream of it, at any distance. |
 | `depth` | integer | 0% | 5 | Shortest number of hops from the exposure (1 = direct parent). |
 
 ## fct_lineage_layout
@@ -151,12 +151,12 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `layout_scope` | str | 0% | exposure.acme_core.lineage_control_tower | 'global' for the full graph, or an exposure node_id for that exposure's own readable layout. |
-| `row_type` | str | 0% | edge | node or edge. |
-| `node_id` | str | 93% | source.acme_core.raw_shopify.orders | Node rows only. |
-| `edge_id` | str | 7% | E0015 | Edge rows only. |
-| `parent_node_id` | str | 7% | source.acme_core.raw_dbt_artifacts.run_results | Edge rows only, so set actions can highlight edges. |
-| `child_node_id` | str | 7% | model.acme_core.stg_dbt__run_results | Edge rows only. |
+| `layout_scope` | text | 0% | exposure.acme_core.lineage_control_tower | 'global' for the full graph, or an exposure node_id for that exposure's own readable layout. |
+| `row_type` | text | 0% | edge | node or edge. |
+| `node_id` | text | 93% | source.acme_core.raw_shopify.orders | Node rows only. |
+| `edge_id` | text | 7% | E0015 | Edge rows only. |
+| `parent_node_id` | text | 7% | source.acme_core.raw_dbt_artifacts.run_results | Edge rows only, so set actions can highlight edges. |
+| `child_node_id` | text | 7% | model.acme_core.stg_dbt__run_results | Edge rows only. |
 | `point_order` | number | 7% | 7.0 | Edge rows only: order of points along the curve. Put it on Path in Tableau. |
 | `x` | number | 0% | 3.0909 | Horizontal position: layer, nudged right for marts that read other marts. |
 | `y` | number | 0% | 0.0 | Vertical position within the layer, centred on 0; higher is nearer the top. |
@@ -171,21 +171,21 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `job_run_id` | str | 0% | JR002129 | Unique run id. |
-| `job_name` | str | 0% | product_every_2h | dbt Cloud job (core_hourly, product_every_2h, ci__acme_core ...). |
-| `dbt_project` | str | 0% | acme_product | Project the job belongs to. |
-| `platform` | str | 0% | databricks | Platform most of the run's models ran on (mixed during the migration). |
-| `schedule` | str | 0% | hourly | hourly / daily / weekly / on_pull_request. |
-| `environment` | str | 0% | prod | prod or ci. Health metrics use prod only. |
-| `run_started_at` | str | 0% | 2026-09-04 18:20:39 | Start time (UTC). |
-| `run_completed_at` | str | 0% | 2026-09-04 19:05:15 | End time, including the test step. |
+| `job_run_id` | text | 0% | JR002129 | Unique run id. |
+| `job_name` | text | 0% | product_every_2h | dbt Cloud job (core_hourly, product_every_2h, ci__acme_core ...). |
+| `dbt_project` | text | 0% | acme_product | Project the job belongs to. |
+| `platform` | text | 0% | databricks | Platform most of the run's models ran on (mixed during the migration). |
+| `schedule` | text | 0% | hourly | hourly / daily / weekly / on_pull_request. |
+| `environment` | text | 0% | prod | prod or ci. Health metrics use prod only. |
+| `run_started_at` | text | 0% | 2026-09-04 18:20:39 | Start time (UTC). |
+| `run_completed_at` | text | 0% | 2026-09-04 19:05:15 | End time, including the test step. |
 | `duration_sec` | number | 0% | 2676.1 | Wall-clock duration. |
-| `status` | str | 0% | success | success / error / cancelled. |
+| `status` | text | 0% | success | success / error / cancelled. |
 | `models_run` | integer | 0% | 14 | Models that executed (success or error). |
 | `models_failed` | integer | 0% | 0 | Models that errored. |
 | `models_skipped` | integer | 0% | 0 | Models skipped because a parent failed. |
 | `tests_failed` | integer | 0% | 0 | Tests that failed or errored. |
-| `triggered_by` | str | 0% | schedule | schedule / manual / ci. |
+| `triggered_by` | text | 0% | schedule | schedule / manual / ci. |
 
 ## fct_model_runs
 
@@ -197,17 +197,17 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `job_run_id` | str | 0% | JR002139 | The job run this belongs to. Join to fct_job_runs for environment. |
-| `node_id` | str | 0% | model.acme_core.stg_shopify__order_items | The model. |
-| `platform` | str | 0% | snowflake | Platform at run time. Migrated models switch from redshift to snowflake mid-window. |
-| `materialization` | str | 0% | view | Materialization at run time (fct_sessions is 'table' until the story 1 fix). |
-| `run_started_at` | str | 0% | 2026-09-04 22:05:23 | When the model started (after its parents finished). |
-| `run_completed_at` | str | 0% | 2026-09-04 22:05:27 | When it finished. |
+| `job_run_id` | text | 0% | JR002139 | The job run this belongs to. Join to fct_job_runs for environment. |
+| `node_id` | text | 0% | model.acme_core.stg_shopify__order_items | The model. |
+| `platform` | text | 0% | snowflake | Platform at run time. Migrated models switch from redshift to snowflake mid-window. |
+| `materialization` | text | 0% | view | Materialization at run time (fct_sessions is 'table' until the story 1 fix). |
+| `run_started_at` | text | 0% | 2026-09-04 22:05:23 | When the model started (after its parents finished). |
+| `run_completed_at` | text | 0% | 2026-09-04 22:05:27 | When it finished. |
 | `execution_time_sec` | number | 0% | 4.88 | Runtime in seconds. 0 for skipped models. |
-| `status` | str | 0% | success | success / error / skipped. |
+| `status` | text | 0% | success | success / error / skipped. |
 | `rows_affected` | number | 48% | 632.0 | Rows written. Blank for views and failures. 0 for incremental models when the source is stale. |
-| `error_category` | str | 99% | permission | compilation / database / timeout / permission / schema_change, or upstream_skip for skipped rows. |
-| `error_message` | str | 99% | Database Error in model stg_hubspot__deal_stages: 003001 (42... | The adapter's error message. |
+| `error_category` | text | 99% | permission | compilation / database / timeout / permission / schema_change, or upstream_skip for skipped rows. |
+| `error_message` | text | 99% | Database Error in model stg_hubspot__deal_stages: 003001 (42... | The adapter's error message. |
 
 ## fct_test_results
 
@@ -219,16 +219,16 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `test_id` | str | 0% | test.acme_core.not_null_fct_payments_payment_id | Unique test id in dbt's style. |
-| `test_name` | str | 0% | not_null_fct_payments_payment_id | Test name, e.g. unique_dim_customers_customer_id. |
-| `test_type` | str | 0% | not_null | not_null / unique / accepted_values / relationships / custom. |
-| `node_id` | str | 0% | model.acme_core.fct_payments | Model under test. |
-| `column_name` | str | 0% | payment_id | Column under test. |
-| `job_run_id` | str | 0% | JR002139 | Job run the test executed in. |
-| `run_at` | str | 0% | 2026-09-04 22:10:02 | Execution time. |
-| `status` | str | 0% | pass | pass / warn / fail / error. |
+| `test_id` | text | 0% | test.acme_core.not_null_fct_payments_payment_id | Unique test id in dbt's style. |
+| `test_name` | text | 0% | not_null_fct_payments_payment_id | Test name, e.g. unique_dim_customers_customer_id. |
+| `test_type` | text | 0% | not_null | not_null / unique / accepted_values / relationships / custom. |
+| `node_id` | text | 0% | model.acme_core.fct_payments | Model under test. |
+| `column_name` | text | 0% | payment_id | Column under test. |
+| `job_run_id` | text | 0% | JR002139 | Job run the test executed in. |
+| `run_at` | text | 0% | 2026-09-04 22:10:02 | Execution time. |
+| `status` | text | 0% | pass | pass / warn / fail / error. |
 | `failures_count` | integer | 0% | 0 | Rows that failed the test. |
-| `severity` | str | 0% | error | error or warn, as configured. A failing warn-severity test reports status warn. |
+| `severity` | text | 0% | error | error or warn, as configured. A failing warn-severity test reports status warn. |
 
 ## fct_source_freshness
 
@@ -240,13 +240,13 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `source_node_id` | str | 0% | source.acme_core.raw_dbt_artifacts.run_results | The source. |
-| `checked_at` | str | 0% | 2026-09-05 00:00:00 | Check time (on the hour). |
-| `max_loaded_at` | str | 0% | 2026-09-04 23:16:00 | Newest data landed before the check. |
+| `source_node_id` | text | 0% | source.acme_core.raw_dbt_artifacts.run_results | The source. |
+| `checked_at` | text | 0% | 2026-09-05 00:00:00 | Check time (on the hour). |
+| `max_loaded_at` | text | 0% | 2026-09-04 23:16:00 | Newest data landed before the check. |
 | `lag_minutes` | number | 0% | 44.0 | checked_at minus max_loaded_at. |
 | `warn_after_minutes` | integer | 0% | 120 | Threshold for warn. |
 | `error_after_minutes` | integer | 0% | 240 | Threshold for error. |
-| `status` | str | 0% | pass | pass / warn / error. |
+| `status` | text | 0% | pass | pass / warn / error. |
 
 ## fct_semantic_refresh
 
@@ -258,14 +258,14 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `refresh_id` | str | 0% | RF01333 | Unique refresh id. |
-| `node_id` | str | 0% | semantic.power_bi.pbi_inventory | The semantic object. |
-| `bi_tool` | str | 0% | power_bi | tableau / power_bi. |
-| `refresh_started_at` | str | 0% | 2026-09-04 14:15:27 | Start time. |
+| `refresh_id` | text | 0% | RF01333 | Unique refresh id. |
+| `node_id` | text | 0% | semantic.power_bi.pbi_inventory | The semantic object. |
+| `bi_tool` | text | 0% | power_bi | tableau / power_bi. |
+| `refresh_started_at` | text | 0% | 2026-09-04 14:15:27 | Start time. |
 | `duration_sec` | number | 0% | 55.2 | Duration. |
-| `status` | str | 0% | success | success / failed / skipped_upstream (an upstream mart failed in its latest dbt run, so the refresh waited). |
+| `status` | text | 0% | success | success / failed / skipped_upstream (an upstream mart failed in its latest dbt run, so the refresh waited). |
 | `rows_refreshed` | number | 4% | 7069597.0 | Rows in the extract after a successful refresh. |
-| `error_message` | str | 96% | Skipped: upstream model failed in its latest dbt run (fct_ca... | Why it failed or skipped. |
+| `error_message` | text | 96% | Skipped: upstream model failed in its latest dbt run (fct_ca... | Why it failed or skipped. |
 
 ## fct_consumption
 
@@ -277,9 +277,9 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `date` | str | 0% | 2026-08-15 | Day. |
-| `exposure_id` | str | 0% | exposure.acme_core.inventory_health | The consumer. |
-| `consumption_type` | str | 0% | view | view / query / app_session / agent_call. |
+| `date` | text | 0% | 2026-08-15 | Day. |
+| `exposure_id` | text | 0% | exposure.acme_core.inventory_health | The consumer. |
+| `consumption_type` | text | 0% | view | view / query / app_session / agent_call. |
 | `events` | integer | 0% | 9 | Number of usage events that day. |
 | `unique_consumers` | integer | 0% | 4 | Distinct viewers, users or calling sessions. |
 | `avg_latency_sec` | number | 7% | 3.98 | Average load or response time. |
@@ -296,14 +296,14 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `date` | str | 0% | 2026-09-06 | Day. |
-| `principal` | str | 0% | svc_powerbi_gateway:pbi_support | Login or query tag. BI tools use one tag per semantic object (service:object). |
-| `principal_type` | str | 0% | service | human / service / agent / app. |
-| `node_id` | str | 0% | model.acme_product.fct_support_sla_daily | Model read. |
+| `date` | text | 0% | 2026-09-06 | Day. |
+| `principal` | text | 0% | svc_powerbi_gateway:pbi_support | Login or query tag. BI tools use one tag per semantic object (service:object). |
+| `principal_type` | text | 0% | service | human / service / agent / app. |
+| `node_id` | text | 0% | model.acme_product.fct_support_sla_daily | Model read. |
 | `query_count` | integer | 0% | 4 | Queries that day. |
 | `bytes_scanned` | integer | 0% | 80000000 | Bytes scanned. |
-| `mapped_exposure_id` | str | 3% | exposure.acme_product.churn_prediction_model | Declared consumer this principal belongs to. For BI service accounts, the semantic object. Blank means undeclared. |
-| `inferred_exposure_id` | str | 0% | semantic.power_bi.pbi_support | Added column: the consumer this traffic belongs to, including the undeclared ones, so they can be shown in lineage. |
+| `mapped_exposure_id` | text | 3% | exposure.acme_product.churn_prediction_model | Declared consumer this principal belongs to. For BI service accounts, the semantic object. Blank means undeclared. |
+| `inferred_exposure_id` | text | 0% | semantic.power_bi.pbi_support | Added column: the consumer this traffic belongs to, including the undeclared ones, so they can be shown in lineage. |
 
 ## fct_warehouse_cost
 
@@ -315,12 +315,12 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `date` | str | 0% | 2026-09-05 | Day. |
-| `node_id` | str | 0% | model.acme_marketing.int_ads__attribution | Model the cost is attributed to. |
-| `platform` | str | 0% | redshift | Platform the cost was incurred on (switches for migrated models). |
-| `warehouse_or_cluster` | str | 0% | marketing-serverless | Snowflake warehouse, Databricks cluster/SQL warehouse or Redshift workgroup. |
-| `cost_type` | str | 0% | build | Added column: build (dbt building it) or consumer_query (a direct consumer reading it). |
-| `principal` | str | 84% | svc_store_ops_hub | Added column: for consumer_query rows, which login ran the queries. |
+| `date` | text | 0% | 2026-09-05 | Day. |
+| `node_id` | text | 0% | model.acme_marketing.int_ads__attribution | Model the cost is attributed to. |
+| `platform` | text | 0% | redshift | Platform the cost was incurred on (switches for migrated models). |
+| `warehouse_or_cluster` | text | 0% | marketing-serverless | Snowflake warehouse, Databricks cluster/SQL warehouse or Redshift workgroup. |
+| `cost_type` | text | 0% | build | Added column: build (dbt building it) or consumer_query (a direct consumer reading it). |
+| `principal` | text | 84% | svc_store_ops_hub | Added column: for consumer_query rows, which login ran the queries. |
 | `compute_units` | number | 0% | 21.5918 | Snowflake credits, Databricks DBUs or Redshift RPU-hours. |
 | `est_cost_usd` | number | 0% | 8.1 | Estimated cost at illustrative list prices (see config.yaml). |
 | `bytes_scanned` | integer | 0% | 79703722154 | Indicative bytes scanned. |
@@ -335,11 +335,11 @@ Acme Retail Co. is fictional. All data is synthetic, from 2026-07-22 to 2026-10-
 
 | Column | Type | Null % | Example | Description |
 |---|---|---|---|---|
-| `incident_id` | str | 0% | INC-005 | Incident id. |
-| `title` | str | 0% | Redshift to Snowflake cutover errors (ads_marketing) | What happened. |
-| `root_node_id` | str | 0% | model.acme_marketing.stg_google_ads__campaigns | Node where it started. |
-| `started_at` | str | 0% | 2026-09-11 00:41:10 | First bad signal in the data. |
-| `resolved_at` | str | 25% | 2026-09-12 20:40:29 | First good signal after it. Blank means still open. |
-| `severity` | str | 0% | medium | low / medium / high / critical. |
+| `incident_id` | text | 0% | INC-005 | Incident id. |
+| `title` | text | 0% | Redshift to Snowflake cutover errors (ads_marketing) | What happened. |
+| `root_node_id` | text | 0% | model.acme_marketing.stg_google_ads__campaigns | Node where it started. |
+| `started_at` | text | 0% | 2026-09-11 00:41:10 | First bad signal in the data. |
+| `resolved_at` | text | 25% | 2026-09-12 20:40:29 | First good signal after it. Blank means still open. |
+| `severity` | text | 0% | medium | low / medium / high / critical. |
 | `exposures_affected` | integer | 0% | 1 | Declared exposures downstream of the root. |
-| `category` | str | 0% | migration | freshness / schema_change / test / performance, plus migration and semantic_refresh (added). |
+| `category` | text | 0% | migration | freshness / schema_change / test / performance, plus migration and semantic_refresh (added). |
