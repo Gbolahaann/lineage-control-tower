@@ -270,4 +270,49 @@ o['is_registered'] = o.mapped_exposure_id.notna()
 o['inferred_exposure_name'] = o.inferred_exposure_id.map(lambda s: N[nid[s]]['n'] if isinstance(s, str) and s in nid else None)
 o['date'] = o.date.dt.date
 write(o, 'mart_observed_access')
+
+# ---------- 14. mart_exposure_tiles.geojson : rounded tile shapes for the Health grid (map layers) ----------
+# Tiles are drawn as polygons in a small lat/lon box near 0,0 so Tableau map layers can stack the tile, its status
+# dot and its text in one sheet. Near the equator Web Mercator is almost linear (under 0.2% stretch here), so the
+# shapes stay true. Two layouts are pre-computed: every exposure, and only the ones that need attention.
+TILE_W, TILE_H, GAP_X, GAP_Y, HEAD_H, RADIUS, COLS = 1.0, 0.34, 0.06, 0.06, 0.20, 0.045, 5
+GROUPS = ['BI dashboards', 'Apps, ML and notebooks', 'AI agents and data hubs', 'Unregistered, found in query history']
+def rounded_rect(x0, y_top, w, h, r, k=6):
+    pts = []
+    corners = [(x0 + w - r, y_top - r, 90), (x0 + w - r, y_top - h + r, 0), (x0 + r, y_top - h + r, 270), (x0 + r, y_top - r, 180)]
+    for cx, cy, start in corners:  # clockwise around the box, arc at each corner
+        for j in range(k + 1):
+            a = math.radians(start - 90 * j / k)
+            pts.append([round(cx + r * math.cos(a), 6), round(cy + r * math.sin(a), 6)])
+    pts.append(pts[0]); return pts
+feats = []
+exp_rows = [(i, N[i]) for i in EXP]
+for layout, keep in (('All', lambda i: True), ('Needs attention', lambda i: A['CUR'][str(i)]['s'] >= 2)):
+    y = 0.0
+    for gi, gname in enumerate(GROUPS):
+        members = [i for i, n in exp_rows if exp_group(n) == gname and keep(i)]
+        if not members: continue
+        members.sort(key=lambda i: (-A['CUR'][str(i)]['s'], N[i]['n']))
+        hy = y - HEAD_H * 0.55
+        feats.append(dict(type='Feature', geometry=dict(type='Polygon', coordinates=[rounded_rect(0, y, 0.02, 0.02, 0.005, 1)]),
+                          properties=dict(feature_type='header', layout=layout, node_id=None, group_label=gname, group_order=gi + 1,
+                                          group_count=len(members), label_lon=0.0, label_lat=round(hy, 6))))
+        y -= HEAD_H
+        for k, i in enumerate(members):
+            row, col = divmod(k, COLS)
+            x0 = col * (TILE_W + GAP_X); yt = y - row * (TILE_H + GAP_Y)
+            feats.append(dict(type='Feature', geometry=dict(type='Polygon', coordinates=[rounded_rect(x0, yt, TILE_W, TILE_H, RADIUS)]),
+                              properties=dict(feature_type='tile', layout=layout, node_id=N[i]['id'], group_label=gname, group_order=gi + 1,
+                                              group_count=len(members), tile_row=row + 1, tile_col=col + 1,
+                                              name_lon=round(x0 + 0.05, 6), name_lat=round(yt - 0.075, 6),
+                                              meta_lon=round(x0 + 0.05, 6), meta_lat=round(yt - 0.165, 6),
+                                              trust_lon=round(x0 + 0.05, 6), trust_lat=round(yt - TILE_H + 0.075, 6),
+                                              score_lon=round(x0 + TILE_W - 0.05, 6), score_lat=round(yt - TILE_H + 0.075, 6),
+                                              dot_lon=round(x0 + TILE_W - 0.06, 6), dot_lat=round(yt - 0.075, 6),
+                                              label_lon=None, label_lat=None)))
+        rows_used = math.ceil(len(members) / COLS)
+        y -= rows_used * TILE_H + (rows_used - 1) * GAP_Y + 0.12
+gj = dict(type='FeatureCollection', name='mart_exposure_tiles', features=feats)
+json.dump(gj, open(os.path.join(OUT, 'mart_exposure_tiles.geojson'), 'w'))
+print(f"{'mart_exposure_tiles.geojson':28s} {len(feats):>7,d} features")
 print('done ->', OUT)

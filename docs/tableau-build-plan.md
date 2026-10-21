@@ -42,7 +42,7 @@ The review follows the order of importance we agreed: information, chart choice,
 | # | Tab | Chart | Verdict |
 |---|---|---|---|
 | C1 | Health | KPI bar trends (90 bars, the period in accent) | Keep. At 181px wide each bar is about 2px. That still reads as a texture, and the window colour change is the point. |
-| C2 | Health | Exposure tiles (status grid) | Keep. This is the hero view. The open question is where the group labels go (decision D1). |
+| C2 | Health | Exposure tiles (status grid) | Keep. This is the hero view. **Update 21 Oct (GB): build with map layers for rounded tiles, see [tableau-tiles-map-layers.md](tableau-tiles-map-layers.md). That doc also settles D1: group labels are a layer of the same sheet.** |
 | C3 | Health | Health by layer (100% stacked bars) | Keep. |
 | C4 | Lineage | Node-link graph | Keep. Edges are line marks on densified points, and nodes are Gantt bars on a dual axis (calc pack 4.2). |
 | C5 | Runs | Failed and skipped bars, job Gantt, MTTR area line | Keep all three. |
@@ -108,7 +108,7 @@ The review follows the order of importance we agreed: information, chart choice,
 | Prototype behaviour | Tableau stand-in | Cost |
 |---|---|---|
 | Hover a lineage node to light up its path | Click a node to light up its path (calc pack compromise 1) | Low |
-| Rounded tiles and pills inside a sheet | Square marks are square. The card around them is rounded, which is where the eye goes | Low |
+| Rounded tiles and pills inside a sheet | Exposure tiles: solved with map layers (tableau-tiles-map-layers.md). Pills elsewhere stay square | Low |
 | Hover states on tiles, rows and buttons | None. Tooltips carry the "Click to…" hints | Low |
 | Copy incident message | Email button plus a tooltip (I8) | Low |
 | Nav count badges | Dropped (I3) | Low |

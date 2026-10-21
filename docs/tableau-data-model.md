@@ -100,6 +100,7 @@ Leave every relationship's performance options on the defaults (many-to-many, so
 | mart_recovery_episodes | one failure to its next success | 182 | node_id, start_date, hours_to_recover | Health MTTR, Runs MTTR trend |
 | fct_incidents | one incident | 8 | incident_id, root_node_id, start_date | Annotations, Health alerts |
 | mart_observed_access | principal × node × day | 3,979 | principal, node_id, date, is_registered | Governance unregistered consumers |
+| mart_exposure_tiles.geojson (spatial) | tile or group header × layout | 47 | node_id, layout, feature_type | Health exposure tiles as map layers, see [tableau-tiles-map-layers.md](tableau-tiles-map-layers.md) |
 
 ### What `dim_nodes` carries beyond the raw attributes
 
