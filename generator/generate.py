@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lct.calendar import build_dim_date  # noqa: E402
 from lct.catalog import build_world  # noqa: E402
+from lct.dictionary import write_dictionary  # noqa: E402
 from lct.consumption import build_consumption, build_observed_access  # noqa: E402
 from lct.cost import build_warehouse_cost  # noqa: E402
 from lct.freshness import build_load_timeline, build_source_freshness  # noqa: E402
@@ -86,6 +87,8 @@ def main() -> None:
     for name, df in tables.items():
         write_csv(df, name)
         print(f"  {name:<24} {len(df):>9,} rows")
+    write_dictionary(cfg)
+    print("  docs/data_dictionary.md written")
     print(f"Done in {time.time() - t0:.1f}s")
 
 

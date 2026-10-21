@@ -187,10 +187,12 @@ def simulate_runs(w: World, dim_date: pd.DataFrame, stories: Stories, timeline: 
             started = max([jstart + pd.Timedelta(seconds=15)] + [end_at[p] for p in parents_here])
             platform = stories.platform_at(name, mm["original_platform"], started)
             run_platforms.append(platform)
+            # What the model was at run time (fct_sessions was a table until story 1's fix)
+            mat_now = "table" if stories.is_full_refresh_table(name, started) else mm["mat"]
 
             if any(status[p] in ("error", "skipped") for p in parents_here):
                 status[m], end_at[m] = "skipped", started
-                model_rows.append(dict(job_run_id=job_run_id, node_id=m, platform=platform,
+                model_rows.append(dict(job_run_id=job_run_id, node_id=m, platform=platform, materialization=mat_now,
                                        run_started_at=started, run_completed_at=started, execution_time_sec=0.0,
                                        status="skipped", rows_affected=None, error_category="upstream_skip",
                                        error_message=f"Skipping {name} due to an upstream error"))
@@ -243,7 +245,7 @@ def simulate_runs(w: World, dim_date: pd.DataFrame, stories: Stories, timeline: 
 
             st = "error" if err else "success"
             status[m], end_at[m] = st, done
-            model_rows.append(dict(job_run_id=job_run_id, node_id=m, platform=platform,
+            model_rows.append(dict(job_run_id=job_run_id, node_id=m, platform=platform, materialization=mat_now,
                                    run_started_at=started, run_completed_at=done, execution_time_sec=runtime,
                                    status=st, rows_affected=rows_affected,
                                    error_category=err[0] if err else None, error_message=err[1] if err else None))

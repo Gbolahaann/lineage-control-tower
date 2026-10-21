@@ -126,9 +126,16 @@ pricing:
 # Thresholds (set in the dataset phase, see the README for the reasoning)
 # ---------------------------------------------------------------------------
 thresholds:
-  zombie_max_events_30d: null          # set after the data exists
-  zombie_min_cost_per_event_usd: null
-  incremental_min_rows: null
+  # Zombie: fewer than 10 consumption events in 30 days AND more than $5 of allocated
+  # build cost per event. The quietest real product (a new sprawl dashboard) still gets
+  # ~70 views a month, and the most expensive healthy product costs ~$1.20 per event,
+  # so both cut-offs sit in the wide gap between normal products and the zombie.
+  zombie_max_events_30d: 10
+  zombie_min_cost_per_event_usd: 5.0
+  # Incremental candidate: materialization 'table' AND more than 10M rows AND runtime
+  # trend above +25%. Only 3 tables exceed 10M rows; normal growth keeps their trend
+  # under +15%, so only a real creep like fct_sessions trips it.
+  incremental_min_rows: 10000000
   incremental_min_runtime_trend: 0.25  # from the spec
 
 # ---------------------------------------------------------------------------
