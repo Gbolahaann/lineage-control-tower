@@ -304,6 +304,8 @@ def run(t, size=9, color=INK2, font=BOOK, align=None, **kw) -> dict:
     if isinstance(t, Ref):
         ref, t = t, f'&lt;{t.ref}&gt;'
     elif not (t.startswith('&lt;[') or set(t.split(NL)) == {''}):
+        if t.strip() == '':
+            t = t.replace(' ', '\u00a0')  # a run of plain spaces is dropped by Tableau; no-break spaces are kept
         t = esc(t)
     bold = font.endswith('|bold')
     r = {'fontcolor': color, 'fontname': font.split('|')[0], 'fontsize': str(size), 't': t}
@@ -329,10 +331,11 @@ def runs_xml(runs, ind) -> str:
 
 class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
-                 tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True):
+                 tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
+        self.mark_color = mark_color
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields
@@ -357,6 +360,8 @@ class Pane:
                     "                <format attr='mark-labels-cull' value='false' />"]
         if self.size is not None:
             mark_fmt.append(f"                <format attr='size' value='{self.size}' />")
+        if self.mark_color:
+            mark_fmt.append(f"                <format attr='mark-color' value='{self.mark_color}' />")
         return (f"          <pane {ident}selection-relaxation-option='selection-relaxation-allow'{ax}>\n"
                 "            <view>\n              <breakdown value='auto' />\n            </view>\n"
                 f"            <mark class='{self.mark}' />\n"
@@ -394,12 +399,14 @@ class Sheet:
     """
 
     def __init__(self, name, *, rows=(), cols=(), panes=None, filters=(), formats=None, hide=(), fixed=None,
-                 header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view'):
+                 header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view',
+                 sync=()):
         self.name, self.rows, self.cols = name, list(rows), list(cols)
         self.panes = panes if isinstance(panes, list) else [panes or Pane()]
         self.filters, self.formats, self.hide = list(filters), formats or {}, list(hide)
         self.fixed, self.header_font, self.header_width = fixed or {}, header_font, header_width or {}
         self.row_height, self.divider, self.tooltip, self.zoom = row_height, divider, tooltip, zoom
+        self.sync = list(sync)  # second measure of a dual axis whose axis is synchronised with the first
 
     def _shelf_refs(self, items):
         out = []
@@ -459,9 +466,11 @@ class Sheet:
         axis = [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
                 f"max='{mx}' min='{mn}' range-type='fixed' scope='{self.scope(r)}' type='space' />"
                 for r, (mn, mx) in self.fixed.items()]
+        axis += [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
+                 f"scope='{self.scope(r)}' synchronized='true' type='space' />" for r in self.sync]
         axis += [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
                  for r in self.hide if r.suffix == 'qk']
-        head = [f"            <format attr='display' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
+        head = [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
                 for r in self.hide if r.suffix != 'qk']
         if self.header_font:
             head += [f"            <format attr='{k}' value='{v}' />" for k, v in self.header_font.items()]
@@ -601,6 +610,13 @@ class Z:
             a['is-scaled'], a['param'], a['type-v2'] = '1', f'Image/{self.image}', 'bitmap'
         elif self.kind == 'paramctrl':
             a['mode'], a['param'], a['type-v2'] = 'compact', f'[Parameters].{PARAM_ID[self.param]}', 'paramctrl'
+        elif self.kind == 'imgbutton':
+            a['type-v2'] = 'dashboard-object'
+            b = self.button
+            inner.append(
+                f"{ind}  <button action='tabdoc:goto-sheet window-id=&quot;{window_ids[b['target']]}&quot;'>\n"
+                f"{ind}    <button-visual-state>\n{ind}      <image-path>Image/{b['image']}</image-path>\n"
+                f"{ind}    </button-visual-state>\n{ind}  </button>")
         elif self.kind == 'button':
             a['type-v2'] = 'dashboard-object'
             b = self.button

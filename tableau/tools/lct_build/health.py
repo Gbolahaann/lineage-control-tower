@@ -45,9 +45,20 @@ def change_text_calcs():
     return f
 
 
+def window_split_calcs():
+    """Each trend split into the selected window and the rest, so each half gets a fixed pane colour."""
+    f = {}
+    for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost', 'Exposures At Risk'):
+        f[f'{k} - Trend In Period'] = (f'// {k} - Trend In Period\n// The trend bars inside the selected window (accent colour set on the pane).\n'
+                                       f'IF ATTR([In Period]) THEN [{k} - Trend] END')
+        f[f'{k} - Trend Out Period'] = (f'// {k} - Trend Out Period\n// The trend bars outside the selected window (grey #D9DCD7 set on the pane).\n'
+                                        f'IF NOT ATTR([In Period]) THEN [{k} - Trend] END')
+    return f
+
+
 NEW = {
     **change_text_calcs(),
-    'In Period (Warn)': '// In Period (Warn)\n// Same as In Period, as its own field so the Exposures at risk trend can colour the window amber (#E8A33D)\n// while every other trend uses the accent.\n[In Period]',
+    **window_split_calcs(),
     'Tile Name Short': '// Tile Name Short\n// Tile title cut to fit a 163px tile: 22 characters, then "…". The tooltip has the full name.\nIF LEN([display_name]) > 23 THEN LEFT([display_name], 22) + "…" ELSE [display_name] END',
     'Tile Score Text': '// Tile Score Text\n// 7-day health score on the tile, one decimal: "99.7".\nIF ISNULL([health_score_now]) THEN ""\nELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + "." + STR(INT(ROUND([health_score_now] * 10)) % 10)\nEND',
     'Is Tile View Button Row': '// Is Tile View Button Row\n// Keeps the 2 scaffold rows that carry the All / Needs attention buttons. Put on Filters (True).\nNOT ISNULL([Tile View Option])',
@@ -69,7 +80,7 @@ TYPES = {
     # KPIs (3.2 to 3.7)
     'Exposures At Risk Now': I_MEA, 'Exposures In Scope': I_MEA, 'Exposures At Risk Of Label': S_MEA,
     'Exposures Critical Now': I_MEA, 'Exposures Warning Now': I_MEA, 'Exposures At Risk - Trend': I_MEA,
-    'MTTR - Focus Label': S_MEA, 'In Period (Warn)': B_DIM,
+    'MTTR - Focus Label': S_MEA,
     # tiles (3.9)
     'Is Exposure': B_DIM, 'Show Exposure Tile': B_DIM, 'Exposure Group Sort': I_DIM, 'Exposure Group Label': S_DIM,
     'Tile Sort Key': S_DIM, 'Tile Column': I_MEA, 'Tile Row': I_MEA, 'Tile Owner Text': S_DIM,
@@ -90,6 +101,9 @@ for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost')
     for s in ('Focus', 'Prior', 'Change', 'Change Good', 'Change Bad', 'Trend'):
         TYPES[f'{k} - {s}'] = R_MEA
     TYPES[f'{k} - Change Good Text'] = S_MEA
+for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost', 'Exposures At Risk'):
+    TYPES[f'{k} - Trend In Period'] = R_MEA
+    TYPES[f'{k} - Trend Out Period'] = R_MEA
     TYPES[f'{k} - Change Bad Text'] = S_MEA
 
 CALCS.add(formulas=NEW, types=TYPES, table_calc={
@@ -119,8 +133,6 @@ def _definition_tip(title, definition):
 
 
 def kpi_sheets() -> list[Sheet]:
-    color_map(R('In Period'), {'true': ACCENT, 'false': OUT_OF_WINDOW})
-    color_map(R('In Period (Warn)'), {'true': WARN, 'false': OUT_OF_WINDOW})
     out = []
     for key, title, plat, ban, fmt, cap, tfmt, definition in KPIS:
         good, bad, comp = R(f'{key} - Change Good Text'), R(f'{key} - Change Bad Text'), R('Compare Label', 'attr')
@@ -133,7 +145,7 @@ def kpi_sheets() -> list[Sheet]:
                              run(comp, 8, INK3, BOOK)],
                              tooltip=_definition_tip(title, definition))))
         date, trend = R(DATE, kind='qk'), R(f'{key} - Trend')
-        out.append(trend_sheet(f'HO {SHEET_NAME[key]} KPI Trend', trend, R(plat), 'In Period', cap, tfmt))
+        out.append(trend_sheet(f'HO {SHEET_NAME[key]} KPI Trend', key, R(plat), ACCENT, cap, tfmt))
     # Exposures at risk (calc pack 3.5): Nodes for the BAN, Exposure Daily for the trend
     out.insert(6, Sheet('HO Exposures At Risk KPI', filters=[R('Is Platform Match Node')],
                         panes=Pane('Text', valign='top', text=[R('Exposures At Risk Now'), R('Exposures At Risk Of Label'),
@@ -144,18 +156,23 @@ def kpi_sheets() -> list[Sheet]:
                             run(R('Exposures Critical Now'), 8, CRIT_INK, SEMI), run(' critical', 8, CRIT_INK, SEMI),
                             run('  ·  ', 8, INK3), run(R('Exposures Warning Now'), 8, INK3), run(' warning', 8, INK3)],
                             tooltip=_definition_tip('EXPOSURES AT RISK', 'Exposures whose upstream chain has a failing model, late source, failed refresh or failing test right now. Bars show the count at the end of each day.'))))
-    out.insert(7, trend_sheet('HO Exposures At Risk KPI Trend', R('Exposures At Risk - Trend'),
-                              R('Is Platform Match Node'), 'In Period (Warn)', 'At risk at end of day', 'n#,##0'))
+    out.insert(7, trend_sheet('HO Exposures At Risk KPI Trend', 'Exposures At Risk',
+                              R('Is Platform Match Node'), WARN, 'At risk at end of day', 'n#,##0'))
     return out
 
 
-def trend_sheet(name, trend, plat, window, caption, fmt) -> Sheet:
+def trend_sheet(name, key, plat, in_colour, caption, fmt) -> Sheet:
+    """90 daily bars, the selected window in the accent and the rest in grey: two measures on a synchronised
+    dual axis, each pane with a fixed colour, so no palette is involved."""
     date = R(DATE, kind='qk')
-    return Sheet(name, cols=[date], rows=[trend], filters=[plat], hide=[date, trend],
-                 formats={date: '*d mmm yyyy', trend: fmt},
-                 panes=Pane('Bar', color=R(window), size=0.75, label_show=False, tooltip=[
-                     run(R(DATE, kind='qk'), 9, INK1, SEMI), run(NL, 7, INK3),
-                     run(caption.upper() + '   ', 7, INK3, SEMI), run(trend, 9, NAVY, SEMI)]))
+    tin, tout = R(f'{key} - Trend In Period'), R(f'{key} - Trend Out Period')
+    tip = lambda m: [run(R(DATE, kind='qk'), 9, INK1, SEMI), run(NL, 7, INK3),
+                     run(caption.upper() + '   ', 7, INK3, SEMI), run(m, 9, NAVY, SEMI)]
+    return Sheet(name, cols=[date], rows=[(tin, tout)], filters=[plat], hide=[date, tin, tout], sync=[tout],
+                 formats={date: '*d mmm yyyy', tin: fmt, tout: fmt},
+                 panes=[Pane('Bar', size=0.75, label_show=False),
+                        Pane('Bar', axis=tin, size=0.75, label_show=False, mark_color=in_colour, tooltip=tip(tin)),
+                        Pane('Bar', axis=tout, size=0.75, label_show=False, mark_color=OUT_OF_WINDOW, tooltip=tip(tout))])
 
 
 def tile_sheets() -> list[Sheet]:
@@ -173,7 +190,7 @@ def tile_sheets() -> list[Sheet]:
         hide=[R('Exposure Group Sort'), R('Tile Row', kind='ok'), R('Tile Column', kind='ok')],
         header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
         header_width={R('Exposure Group Label'): 110}, divider=True,
-        panes=Pane('Square', color=tint, text=texts, size=10, valign='center',
+        panes=Pane('Square', color=tint, text=texts, size=0.9, valign='center',
                    lod=[R('Tile Sort Key'), a('node_id (dim_nodes.csv)'), a('Clear Node Value'), a('Clear Node Key Value')],
                    tooltip_fields=tips,
                    label=[run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
@@ -195,14 +212,14 @@ def tile_sheets() -> list[Sheet]:
 
 def attention_sheet() -> Sheet:
     color_map(R('Status Tint Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
-    node = R('node_id (dim_nodes.csv)')
-    texts = [R('Attention Icon Critical'), R('Attention Icon Warning'), R('display_name'), R('Attention Incident Tag'),
+    name = R('display_name')
+    texts = [R('Attention Icon Critical'), R('Attention Icon Warning'), R('Attention Incident Tag'),
              R('Attention Reason'), R('Attention Meta'), R('Attention Open Since')]
     return Sheet(
-        'HO Needs Attention List', rows=[R('Attention Order'), node], hide=[R('Attention Order'), node],
-        filters=[R('Is Attention Node'), R('Is Platform Match Node')], row_height=(node, 74), zoom='fit-width',
+        'HO Needs Attention List', rows=[R('Attention Order'), name], hide=[R('Attention Order'), name],
+        filters=[R('Is Attention Node'), R('Is Platform Match Node')], row_height=(name, 74), zoom='fit-width',
         divider=False,
-        panes=Pane('Square', color=R('Status Tint Key'), text=texts, lod=[R('node_key')], size=10,
+        panes=Pane('Square', color=R('Status Tint Key'), text=texts, lod=[R('node_id (dim_nodes.csv)'), R('node_key')], size=0.95,
                    label=[run(R('Attention Icon Critical'), 9, CRIT, SEMI), run(R('Attention Icon Warning'), 9, WARN_INK, SEMI),
                           run('  ', 9, INK1), run(R('display_name'), 9, INK1, SEMI), run('   ', 9, INK1),
                           run(R('Attention Incident Tag'), 7, INK2, SEMI), run(NL, 8, INK3),
@@ -222,7 +239,7 @@ def layer_sheet() -> Sheet:
         fixed={share: (0, 1.15), pos: (0, 1.15)},
         header_font={'font-size': '8', 'color': INK2}, header_width={R('Layer Name'): 112},
         panes=[Pane(),
-               Pane('Bar', axis=share, color=R('Status Stack Order'), size=0.45, label_show=False,
+               Pane('Bar', axis=share, color=R('Status Stack Order'), size=0.75, label_show=False,
                     tooltip_fields=[a('Status Label'), R('Node Count'), a('Layer Total Text')],
                     tooltip=[run(a('Layer Name'), 9, INK1, SEMI), run(NL, 7, INK3),
                              run(a('Status Label'), 7, INK3, SEMI), run('   ', 7, INK3), run(R('Node Count'), 9, NAVY, SEMI),
@@ -258,10 +275,11 @@ def content() -> Z:
         kpis.append(card(f'HO KPI {n} Card', [sheet(f'HO {n} KPI', 66), sheet(f'HO {n} KPI Trend', None, **{'padding-top': '8'})],
                          fixed=w, pad=(12, 14, 10, 14), margins=margins))
     exposure = card('HO Exposure Card', margins={'right': 7}, kids=[
-        Z('horz', friendly='HO Exposure Card Header', fixed=44, kids=[
+        Z('horz', friendly='HO Exposure Card Header', fixed=58, kids=[
             card_header('Exposure status', 'Every data product, traced through its full upstream chain. Score is the '
                         '7-day health score (0 to 100). Click a tile to open its lineage.', None),
-            _track('HO Tile View Track', 'HO Tile View Buttons', 190)]),
+            blank(24),
+            _track('HO Tile View Track', 'HO Tile View Buttons', 230)]),
         sheet('HO Exposure Status Tiles'),
         legend([('Trusted', GOOD), ('Use with caution', WARN), ('Do not use', CRIT)],
                right='Trust badges can be surfaced inside each dashboard for business users')])

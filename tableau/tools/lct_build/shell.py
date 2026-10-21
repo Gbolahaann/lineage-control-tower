@@ -56,7 +56,7 @@ def segmented(name, order_field, option_field, active_field, act_label, inact_la
                                                                       run(R(inact_label), 9, INK2, BOOK)]
     lod = [R(option_field)] if option_field != order_field else []
     return Sheet(name, cols=[R(order_field)], hide=[R(order_field)], filters=[R(row_filter)], tooltip=False,
-                 panes=Pane('Square', color=R(active_field), text=texts, lod=lod, label=label, size=4, align='center'))
+                 panes=Pane('Square', color=R(active_field), text=texts, lod=lod, label=label, size=1, align='center'))
 
 
 def gl_sheets() -> list[Sheet]:
@@ -73,6 +73,8 @@ def gl_sheets() -> list[Sheet]:
         Sheet('GL Data Updated', tooltip=False, panes=Pane('Text', text=[R('Data Updated Date Text'), R('History Label')],
               align='right', label=[run('Data updated on ', 8, INK3), run(R('Data Updated Date Text'), 8, INK1, SEMI),
                                     run(NL, 8, INK3), run(R('History Label'), 8, INK3)])),
+        Sheet('GL Nav Data Updated', tooltip=False, panes=Pane('Text', text=[R('Data Updated Date Text')], label=[
+            run('Data updated on ', 8, INK3), run(R('Data Updated Date Text'), 8, INK1, SEMI)])),
         Sheet('GL Info Button', tooltip=False, filters=[R('Is Info Button Row')],
               panes=Pane('Text', text=[R('Info Button Glyph')], lod=[R('Info Toggle Value')], align='center',
                          label=[run(R('Info Button Glyph'), 12, INK2, BOOK)])),
@@ -135,14 +137,11 @@ INFO_ROWS = {  # build plan 2.5: (bold lead, rest) x 4
 
 def nav(prefix: str, active: str) -> Z:
     def item(tab):
+        # one image button per page: icon + left-aligned Arial label baked in (Tableau centres button text)
         name, icon = tab[1], tab[4]
-        on = name == active
-        bg = LIME if on else CARD
-        btn = Z('button', button=dict(target=name, caption=name, color=NAVY if on else INK2, font=SEMI if on else MEDIUM,
-                                      size=9, format={'background-color': bg, 'border-style': 'none', 'text-align': 'left'}))
-        return Z('horz', friendly=f'{prefix} Nav {name}', fixed=38,
-                 kids=[Z('bitmap', fixed=26, image=f"nav-{icon}-{'on' if on else 'off'}.png"), btn],
-                 style={'background-color': bg, 'corner-radius': '8', 'padding-left': '10', 'margin-bottom': '4'})
+        state = 'on' if name == active else 'off'
+        return Z('imgbutton', friendly=f'{prefix} Nav {name}', fixed=38, style={'margin-bottom': '4'},
+                 button=dict(target=name, image=f'navbtn-{icon}-{state}.png'))
 
     def group(label):
         # 29px label + the 4px nav gap below it (prototype: Monitor at y 115, first item at y 148)
@@ -158,10 +157,11 @@ def nav(prefix: str, active: str) -> Z:
     for g in ('Monitor', 'Investigate', 'Optimise', 'Govern'):
         kids.append(group(g))
         kids += [item(t) for t in TABS if t[4] and t[2] == g]
-    kids += [blank(), blank(1, LINE_SOFT),
-             text([run('Refreshes hourly from dbt_ops', 8, INK3), run(NL + NL, 8, INK3),
-                   run('●  Synthetic data, fictional company', 8, INK2)], fixed=64,
-                  **{'padding-top': '14', 'padding-left': '8'})]
+    kids += [blank(), blank(1, LINE_SOFT), blank(12),
+             sheet('GL Nav Data Updated', 20, **{'padding-left': '4'}),
+             text([run('Refreshes hourly from dbt_ops', 8, INK3)], fixed=20, **{'padding-left': '8'}),
+             text([run('●  Synthetic data, fictional company', 8, INK2)], fixed=26,
+                  **{'padding-top': '6', 'padding-left': '8'})]
     return Z('vert', friendly=f'{prefix} Nav', fixed=231, kids=kids,
              style={'background-color': CARD, 'padding-top': '22', 'padding-right': '14',
                     'padding-bottom': '18', 'padding-left': '14'})
