@@ -17,6 +17,11 @@
     <preference name='ui.encoding.shelf.height' value='24' />
     <preference name='ui.shelf.height' value='26' />
   </preferences>
+  <style>
+    <style-rule element='all'>
+      <format attr='font-family' value='Tableau Book' />
+    </style-rule>
+  </style>
   <datasources>
     <datasource caption='Lineage Control Tower' inline='true' name='federated.07vo3ft0hzn0yt1e7nb981upju80' version='18.1'>
       <connection class='federated'>
