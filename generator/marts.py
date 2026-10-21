@@ -81,6 +81,8 @@ cons = {int(k): v for k, v in A['CONS'].items()}
 def avg_consumers(e, days):
     c = cons.get(e); return round(float(np.mean(c['uc'][ND - days:])), 2) if c else 0.0
 open_inc = {r.root_node_id: r.incident_id for r in inc[inc.resolved_at.isna()].itertuples()}
+# Start time of that open incident, so the Health alert list can say "open since 19 Oct" from dim_nodes alone
+open_inc_at = {r.root_node_id: r.started_at for r in inc[inc.resolved_at.isna()].itertuples()}
 
 # ---------- 1. dim_nodes (shared) : attributes + current status snapshot ----------
 dn = raw_nodes.copy()
@@ -99,7 +101,15 @@ for i, n in enumerate(N):
                materialization_now={'t': 'table', 'i': 'incremental', 'v': 'view'}.get((g(A['MATD'], i, '') or '')[-1:], n['mat']),
                max_rows_built=g(A['ROWSMAX'], i), exposures_fed=len(FEEDS.get(i, [])),
                downstream_models=sum(1 for u in DOWN[i] if N[u]['rt'] == 'model'),
-               open_incident_id=open_inc.get(n['id']))
+               open_incident_id=open_inc.get(n['id']), open_incident_started_at=open_inc_at.get(n['id']),
+               # Every node downstream of this one, as |key|key|, so Observed Access sheets can test
+               # "is this reader downstream of the selected node?" without reaching the lineage tables
+               downstream_keys='|' + '|'.join(str(k) for k in sorted(DOWN[i])) + '|' if DOWN[i] else None,
+               # Average daily consumers of every exposure this node feeds, per period option,
+               # so the risk score (consumers x failure rate) can be built on Node Daily
+               downstream_consumers_7d=round(sum(avg_consumers(e, 7) for e in FEEDS.get(i, [])), 2),
+               downstream_consumers_30d=round(sum(avg_consumers(e, 30) for e in FEEDS.get(i, [])), 2),
+               downstream_consumers_90d=round(sum(avg_consumers(e, 90) for e in FEEDS.get(i, [])), 2))
     if n['rt'] == 'exposure':
         cu = A['CUR'][str(i)]
         row.update(current_status_code=cu['s'], current_status=STATUS[cu['s']], trust_badge=TRUST[cu['s']],

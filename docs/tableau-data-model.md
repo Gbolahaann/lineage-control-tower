@@ -109,7 +109,8 @@ Leave every relationship's performance options on the defaults (many-to-many, so
 - `platform_now`, `platform_filter_values` (`|snowflake|redshift|` for migrated nodes)
 - `current_status_code` (0 no data, 1 healthy, 2 warning, 3 critical), `current_status`, `status_reason`, `last_event_at`, `last_run_status`, `last_runtime_sec`, `last_rows`, `last_error_message`
 - `tests_passing`, `tests_warning`, `tests_failing`, `freshness_lag_min`, `last_refresh_sec`, `materialization_now`, `max_rows_built`
-- `exposures_fed`, `downstream_models`, `open_incident_id`
+- `exposures_fed`, `downstream_models`, `open_incident_id`, `open_incident_started_at`
+- `downstream_keys` (`|key|key|` of every node downstream) and `downstream_consumers_7d / 30d / 90d` (daily consumers of every exposure the node feeds), so Blast radius can find unregistered readers downstream and build the risk score on Node Daily
 - Exposures only: `trust_badge`, `culprit_nodes`, `culprit_count`, `health_score_now`, `exposure_group`, `upstream_node_count`, `avg_daily_consumers_7d / 30d / 90d`
 
 The consumer averages are pre-computed for the three period options, because they need an exposure-level average inside a node-level view.
@@ -150,6 +151,8 @@ Every sheet only ever uses one base table, so nothing is lost. You only give up 
 | p_selected_node_key | integer | node_key | Same actions as p_selected_node, drives the path highlight |
 | p_gantt_date | date | 22 Jul to 19 Oct 2026, default 19 Oct | Parameter action from the daily failures chart |
 | p_show_info | boolean | | Info button, drives dynamic zone visibility |
+| p_tile_view | string | All, Needs attention | Buttons above the Health exposure tiles |
+| p_lineage_view | string | Graph, Table | Buttons on the Lineage graph card |
 
 The core filter calcs (full calc pack comes next):
 
@@ -189,4 +192,4 @@ The core filter calcs (full calc pack comes next):
 
 ## Handing over to Claude Code
 
-The connected workbook is `tableau/Lineage_Control_Tower_Project_Dashboard.twb` (14 tables, 19 relationships, checked). Its CSV paths point at the owner's local copy of `data/marts/`, so reconnect to that folder if Tableau asks. The next step is the calc pack: every calculation in your naming standard with a `//` header comment, the sheet list, the container tree, and the parameter and action plan, tab by tab.
+The connected workbook is `tableau/Lineage_Control_Tower_Project_Dashboard.twb` (14 tables, 19 relationships, checked). Its CSV paths point at the owner's local copy of `data/marts/`, so reconnect to that folder if Tableau asks. The calc pack is in `docs/tableau-calc-pack.md` (every calculation, sheet list, base tables, parameters and actions, tab by tab), with paste-ready parameter lists in `docs/tableau-parameter-lists.md`.
