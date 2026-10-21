@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8' ?>
 
 <!-- build 20263.26.1015.1742                               -->
-<workbook _.fcp.WorkbookFingerprinting.true...author-id='970349a3671cc96a9a38b1aa98a9f8eb81ef3254b50e1dd9bade70cc520f1753' _.fcp.WorkbookFingerprinting.true...creator-author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-license-type='paid' _.fcp.WorkbookFingerprinting.true...creator-machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...license-type='paid' _.fcp.WorkbookFingerprinting.true...machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' original-version='18.1' source-build='2026.3.0 (20263.26.1015.1742)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+<workbook _.fcp.WorkbookFingerprinting.true...author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-license-type='paid' _.fcp.WorkbookFingerprinting.true...creator-machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...license-type='paid' _.fcp.WorkbookFingerprinting.true...machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' original-version='18.1' source-build='2026.3.0 (20263.26.1015.1742)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
   <document-format-change-manifest>
     <AnimationOnByDefault />
     <MarkAnimation />
@@ -16,51 +16,6 @@
   <preferences>
     <preference name='ui.encoding.shelf.height' value='24' />
     <preference name='ui.shelf.height' value='26' />
-    <color-palette name='LCT Status' type='regular'>
-      <color>#2F9E6B</color>
-      <color>#E8A33D</color>
-      <color>#D2453F</color>
-      <color>#A3ADB8</color>
-    </color-palette>
-    <color-palette name='LCT Status Tints' type='regular'>
-      <color>#FFFFFF</color>
-      <color>#FDF3E1</color>
-      <color>#FBEAE9</color>
-      <color>#F1F2F4</color>
-      <color>#F7F8F6</color>
-    </color-palette>
-    <color-palette name='LCT Platforms' type='regular'>
-      <color>#005FAE</color>
-      <color>#4BAEE3</color>
-      <color>#5B5FC7</color>
-    </color-palette>
-    <color-palette name='LCT Brand' type='regular'>
-      <color>#002C55</color>
-      <color>#005FAE</color>
-      <color>#83C7EB</color>
-      <color>#C7FFA4</color>
-      <color>#F5F5F3</color>
-      <color>#16212E</color>
-      <color>#4A5563</color>
-      <color>#7A838E</color>
-      <color>#A5ACB4</color>
-    </color-palette>
-    <color-palette name='LCT Charts' type='regular'>
-      <color>#005FAE</color>
-      <color>#D9DCD7</color>
-      <color>#E8A33D</color>
-      <color>#D2453F</color>
-      <color>#C3C9CF</color>
-      <color>#9DB9D6</color>
-      <color>#E9F1F9</color>
-      <color>#CBD0D5</color>
-      <color>#B9C0C7</color>
-    </color-palette>
-    <color-palette name='LCT Coverage' type='ordered-sequential'>
-      <color>#FBEAE9</color>
-      <color>#FDF3E1</color>
-      <color>#EAF6EF</color>
-    </color-palette>
   </preferences>
   <datasources>
     <datasource caption='Lineage Control Tower' inline='true' name='federated.07vo3ft0hzn0yt1e7nb981upju80' version='18.1'>
@@ -372,11 +327,6 @@
           <map key='[avg_daily_consumers_7d]' value='[dim_nodes.csv].[avg_daily_consumers_7d]' />
           <map key='[avg_daily_consumers_90d (mart_blast_radius.csv)]' value='[mart_blast_radius.csv].[avg_daily_consumers_90d]' />
           <map key='[avg_daily_consumers_90d]' value='[dim_nodes.csv].[avg_daily_consumers_90d]' />
-          <map key='[open_incident_started_at]' value='[dim_nodes.csv].[open_incident_started_at]' />
-          <map key='[downstream_keys]' value='[dim_nodes.csv].[downstream_keys]' />
-          <map key='[downstream_consumers_7d]' value='[dim_nodes.csv].[downstream_consumers_7d]' />
-          <map key='[downstream_consumers_30d]' value='[dim_nodes.csv].[downstream_consumers_30d]' />
-          <map key='[downstream_consumers_90d]' value='[dim_nodes.csv].[downstream_consumers_90d]' />
           <map key='[avg_latency_sec]' value='[mart_exposure_daily.csv].[avg_latency_sec]' />
           <map key='[avg_refresh_sec]' value='[mart_node_daily.csv].[avg_refresh_sec]' />
           <map key='[avg_runtime_sec]' value='[mart_node_daily.csv].[avg_runtime_sec]' />
@@ -417,6 +367,10 @@
           <map key='[display_name]' value='[dim_nodes.csv].[display_name]' />
           <map key='[display_short]' value='[dim_nodes.csv].[display_short]' />
           <map key='[domain]' value='[dim_nodes.csv].[domain]' />
+          <map key='[downstream_consumers_30d]' value='[dim_nodes.csv].[downstream_consumers_30d]' />
+          <map key='[downstream_consumers_7d]' value='[dim_nodes.csv].[downstream_consumers_7d]' />
+          <map key='[downstream_consumers_90d]' value='[dim_nodes.csv].[downstream_consumers_90d]' />
+          <map key='[downstream_keys]' value='[dim_nodes.csv].[downstream_keys]' />
           <map key='[downstream_models]' value='[dim_nodes.csv].[downstream_models]' />
           <map key='[duration_min]' value='[mart_job_runs.csv].[duration_min]' />
           <map key='[duration_sec]' value='[mart_job_runs.csv].[duration_sec]' />
@@ -513,6 +467,7 @@
           <map key='[node_name]' value='[dim_nodes.csv].[node_name]' />
           <map key='[on_call_rotation]' value='[dim_owners.csv].[on_call_rotation]' />
           <map key='[open_incident_id]' value='[dim_nodes.csv].[open_incident_id]' />
+          <map key='[open_incident_started_at]' value='[dim_nodes.csv].[open_incident_started_at]' />
           <map key='[owner_name (dim_owners.csv)]' value='[dim_owners.csv].[owner_name]' />
           <map key='[owner_name]' value='[dim_nodes.csv].[owner_name]' />
           <map key='[owner_team (dim_owners.csv)]' value='[dim_owners.csv].[owner_team]' />
@@ -2094,7 +2049,7 @@
             <local-name>[open_incident_started_at]</local-name>
             <parent-name>[dim_nodes.csv]</parent-name>
             <remote-alias>open_incident_started_at</remote-alias>
-            <ordinal>230</ordinal>
+            <ordinal>94</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -2106,7 +2061,7 @@
             <local-name>[downstream_keys]</local-name>
             <parent-name>[dim_nodes.csv]</parent-name>
             <remote-alias>downstream_keys</remote-alias>
-            <ordinal>231</ordinal>
+            <ordinal>95</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2121,7 +2076,7 @@
             <local-name>[downstream_consumers_7d]</local-name>
             <parent-name>[dim_nodes.csv]</parent-name>
             <remote-alias>downstream_consumers_7d</remote-alias>
-            <ordinal>232</ordinal>
+            <ordinal>96</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2133,7 +2088,7 @@
             <local-name>[downstream_consumers_30d]</local-name>
             <parent-name>[dim_nodes.csv]</parent-name>
             <remote-alias>downstream_consumers_30d</remote-alias>
-            <ordinal>233</ordinal>
+            <ordinal>97</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2145,7 +2100,7 @@
             <local-name>[downstream_consumers_90d]</local-name>
             <parent-name>[dim_nodes.csv]</parent-name>
             <remote-alias>downstream_consumers_90d</remote-alias>
-            <ordinal>234</ordinal>
+            <ordinal>98</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2157,7 +2112,7 @@
             <local-name>[owner_name (dim_owners.csv)]</local-name>
             <parent-name>[dim_owners.csv]</parent-name>
             <remote-alias>owner_name</remote-alias>
-            <ordinal>94</ordinal>
+            <ordinal>99</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2172,7 +2127,7 @@
             <local-name>[owner_team (dim_owners.csv)]</local-name>
             <parent-name>[dim_owners.csv]</parent-name>
             <remote-alias>owner_team</remote-alias>
-            <ordinal>95</ordinal>
+            <ordinal>100</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2187,7 +2142,7 @@
             <local-name>[email]</local-name>
             <parent-name>[dim_owners.csv]</parent-name>
             <remote-alias>email</remote-alias>
-            <ordinal>96</ordinal>
+            <ordinal>101</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2202,7 +2157,7 @@
             <local-name>[slack_channel]</local-name>
             <parent-name>[dim_owners.csv]</parent-name>
             <remote-alias>slack_channel</remote-alias>
-            <ordinal>97</ordinal>
+            <ordinal>102</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2217,7 +2172,7 @@
             <local-name>[on_call_rotation]</local-name>
             <parent-name>[dim_owners.csv]</parent-name>
             <remote-alias>on_call_rotation</remote-alias>
-            <ordinal>98</ordinal>
+            <ordinal>103</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2232,7 +2187,7 @@
             <local-name>[node_id (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>99</ordinal>
+            <ordinal>104</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2247,7 +2202,7 @@
             <local-name>[exposure_id (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_id</remote-alias>
-            <ordinal>100</ordinal>
+            <ordinal>105</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2262,7 +2217,7 @@
             <local-name>[hops]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>hops</remote-alias>
-            <ordinal>101</ordinal>
+            <ordinal>106</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2274,7 +2229,7 @@
             <local-name>[exposure_name]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_name</remote-alias>
-            <ordinal>102</ordinal>
+            <ordinal>107</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2289,7 +2244,7 @@
             <local-name>[exposure_type (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_type</remote-alias>
-            <ordinal>103</ordinal>
+            <ordinal>108</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2304,7 +2259,7 @@
             <local-name>[bi_tool (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>bi_tool</remote-alias>
-            <ordinal>104</ordinal>
+            <ordinal>109</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2319,7 +2274,7 @@
             <local-name>[exposure_owner]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_owner</remote-alias>
-            <ordinal>105</ordinal>
+            <ordinal>110</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2334,7 +2289,7 @@
             <local-name>[exposure_team]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_team</remote-alias>
-            <ordinal>106</ordinal>
+            <ordinal>111</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2349,7 +2304,7 @@
             <local-name>[slack_channel (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>slack_channel</remote-alias>
-            <ordinal>107</ordinal>
+            <ordinal>112</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2364,7 +2319,7 @@
             <local-name>[exposure_status]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_status</remote-alias>
-            <ordinal>108</ordinal>
+            <ordinal>113</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2379,7 +2334,7 @@
             <local-name>[exposure_trust]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>exposure_trust</remote-alias>
-            <ordinal>109</ordinal>
+            <ordinal>114</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2394,7 +2349,7 @@
             <local-name>[is_registered (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>is_registered</remote-alias>
-            <ordinal>110</ordinal>
+            <ordinal>115</ordinal>
             <local-type>boolean</local-type>
             <aggregation>Count</aggregation>
             <contains-null>true</contains-null>
@@ -2406,7 +2361,7 @@
             <local-name>[avg_daily_consumers_7d (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>avg_daily_consumers_7d</remote-alias>
-            <ordinal>111</ordinal>
+            <ordinal>116</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2418,7 +2373,7 @@
             <local-name>[avg_daily_consumers_30d (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>avg_daily_consumers_30d</remote-alias>
-            <ordinal>112</ordinal>
+            <ordinal>117</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2430,7 +2385,7 @@
             <local-name>[avg_daily_consumers_90d (mart_blast_radius.csv)]</local-name>
             <parent-name>[mart_blast_radius.csv]</parent-name>
             <remote-alias>avg_daily_consumers_90d</remote-alias>
-            <ordinal>113</ordinal>
+            <ordinal>118</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2442,7 +2397,7 @@
             <local-name>[exposure_id]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>exposure_id</remote-alias>
-            <ordinal>114</ordinal>
+            <ordinal>119</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2457,7 +2412,7 @@
             <local-name>[date (mart_exposure_daily.csv)]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>date</remote-alias>
-            <ordinal>115</ordinal>
+            <ordinal>120</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -2469,7 +2424,7 @@
             <local-name>[status_eod_code]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>status_eod_code</remote-alias>
-            <ordinal>116</ordinal>
+            <ordinal>121</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2481,7 +2436,7 @@
             <local-name>[status_eod]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>status_eod</remote-alias>
-            <ordinal>117</ordinal>
+            <ordinal>122</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2496,7 +2451,7 @@
             <local-name>[status_worst_code]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>status_worst_code</remote-alias>
-            <ordinal>118</ordinal>
+            <ordinal>123</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2508,7 +2463,7 @@
             <local-name>[health_score]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>health_score</remote-alias>
-            <ordinal>119</ordinal>
+            <ordinal>124</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2520,7 +2475,7 @@
             <local-name>[consumption_type (mart_exposure_daily.csv)]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>consumption_type</remote-alias>
-            <ordinal>120</ordinal>
+            <ordinal>125</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2535,7 +2490,7 @@
             <local-name>[events]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>events</remote-alias>
-            <ordinal>121</ordinal>
+            <ordinal>126</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2547,7 +2502,7 @@
             <local-name>[unique_consumers]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>unique_consumers</remote-alias>
-            <ordinal>122</ordinal>
+            <ordinal>127</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2559,7 +2514,7 @@
             <local-name>[avg_latency_sec]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>avg_latency_sec</remote-alias>
-            <ordinal>123</ordinal>
+            <ordinal>128</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2571,9 +2526,10 @@
             <local-name>[metrics_called]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>metrics_called</remote-alias>
-            <ordinal>124</ordinal>
+            <ordinal>129</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]</object-id>
           </metadata-record>
@@ -2583,9 +2539,10 @@
             <local-name>[failed_calls]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>failed_calls</remote-alias>
-            <ordinal>125</ordinal>
+            <ordinal>130</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]</object-id>
           </metadata-record>
@@ -2595,7 +2552,7 @@
             <local-name>[is_observed_only]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>is_observed_only</remote-alias>
-            <ordinal>126</ordinal>
+            <ordinal>131</ordinal>
             <local-type>boolean</local-type>
             <aggregation>Count</aggregation>
             <contains-null>true</contains-null>
@@ -2607,7 +2564,7 @@
             <local-name>[allocated_cost_usd]</local-name>
             <parent-name>[mart_exposure_daily.csv]</parent-name>
             <remote-alias>allocated_cost_usd</remote-alias>
-            <ordinal>127</ordinal>
+            <ordinal>132</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2619,7 +2576,7 @@
             <local-name>[job_run_id (mart_job_runs.csv)]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>job_run_id</remote-alias>
-            <ordinal>128</ordinal>
+            <ordinal>133</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2634,7 +2591,7 @@
             <local-name>[job_name]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>job_name</remote-alias>
-            <ordinal>129</ordinal>
+            <ordinal>134</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2649,7 +2606,7 @@
             <local-name>[dbt_project (mart_job_runs.csv)]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>dbt_project</remote-alias>
-            <ordinal>130</ordinal>
+            <ordinal>135</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2664,7 +2621,7 @@
             <local-name>[platform (mart_job_runs.csv)]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>platform</remote-alias>
-            <ordinal>131</ordinal>
+            <ordinal>136</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2679,7 +2636,7 @@
             <local-name>[schedule]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>schedule</remote-alias>
-            <ordinal>132</ordinal>
+            <ordinal>137</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2694,7 +2651,7 @@
             <local-name>[environment]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>environment</remote-alias>
-            <ordinal>133</ordinal>
+            <ordinal>138</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2709,7 +2666,7 @@
             <local-name>[run_started_at (mart_job_runs.csv)]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>run_started_at</remote-alias>
-            <ordinal>134</ordinal>
+            <ordinal>139</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -2721,7 +2678,7 @@
             <local-name>[run_completed_at]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>run_completed_at</remote-alias>
-            <ordinal>135</ordinal>
+            <ordinal>140</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -2733,7 +2690,7 @@
             <local-name>[duration_sec]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>duration_sec</remote-alias>
-            <ordinal>136</ordinal>
+            <ordinal>141</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2745,7 +2702,7 @@
             <local-name>[status]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>status</remote-alias>
-            <ordinal>137</ordinal>
+            <ordinal>142</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2760,7 +2717,7 @@
             <local-name>[models_run]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>models_run</remote-alias>
-            <ordinal>138</ordinal>
+            <ordinal>143</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2772,7 +2729,7 @@
             <local-name>[models_failed]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>models_failed</remote-alias>
-            <ordinal>139</ordinal>
+            <ordinal>144</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2784,7 +2741,7 @@
             <local-name>[models_skipped]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>models_skipped</remote-alias>
-            <ordinal>140</ordinal>
+            <ordinal>145</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2796,7 +2753,7 @@
             <local-name>[tests_failed]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>tests_failed</remote-alias>
-            <ordinal>141</ordinal>
+            <ordinal>146</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2808,7 +2765,7 @@
             <local-name>[triggered_by]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>triggered_by</remote-alias>
-            <ordinal>142</ordinal>
+            <ordinal>147</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2823,7 +2780,7 @@
             <local-name>[run_date]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>run_date</remote-alias>
-            <ordinal>143</ordinal>
+            <ordinal>148</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -2835,7 +2792,7 @@
             <local-name>[start_minute_of_day]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>start_minute_of_day</remote-alias>
-            <ordinal>144</ordinal>
+            <ordinal>149</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2847,7 +2804,7 @@
             <local-name>[duration_min]</local-name>
             <parent-name>[mart_job_runs.csv]</parent-name>
             <remote-alias>duration_min</remote-alias>
-            <ordinal>145</ordinal>
+            <ordinal>150</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2859,7 +2816,7 @@
             <local-name>[layout_scope]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>layout_scope</remote-alias>
-            <ordinal>146</ordinal>
+            <ordinal>151</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2874,7 +2831,7 @@
             <local-name>[row_type]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>row_type</remote-alias>
-            <ordinal>147</ordinal>
+            <ordinal>152</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2889,7 +2846,7 @@
             <local-name>[node_id (mart_lineage_layout.csv)]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>148</ordinal>
+            <ordinal>153</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2904,7 +2861,7 @@
             <local-name>[child_node_id]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>child_node_id</remote-alias>
-            <ordinal>149</ordinal>
+            <ordinal>154</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2919,7 +2876,7 @@
             <local-name>[edge_id]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>edge_id</remote-alias>
-            <ordinal>150</ordinal>
+            <ordinal>155</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2934,7 +2891,7 @@
             <local-name>[point_order]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>point_order</remote-alias>
-            <ordinal>151</ordinal>
+            <ordinal>156</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2946,7 +2903,7 @@
             <local-name>[x]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>x</remote-alias>
-            <ordinal>152</ordinal>
+            <ordinal>157</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2958,7 +2915,7 @@
             <local-name>[y]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>y</remote-alias>
-            <ordinal>153</ordinal>
+            <ordinal>158</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2970,7 +2927,7 @@
             <local-name>[x_label]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>x_label</remote-alias>
-            <ordinal>154</ordinal>
+            <ordinal>159</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -2982,7 +2939,7 @@
             <local-name>[reach_keys]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>reach_keys</remote-alias>
-            <ordinal>155</ordinal>
+            <ordinal>160</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -2997,7 +2954,7 @@
             <local-name>[node_key (mart_lineage_layout.csv)]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>node_key</remote-alias>
-            <ordinal>156</ordinal>
+            <ordinal>161</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3009,7 +2966,7 @@
             <local-name>[child_key]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>child_key</remote-alias>
-            <ordinal>157</ordinal>
+            <ordinal>162</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3021,7 +2978,7 @@
             <local-name>[edge_key]</local-name>
             <parent-name>[mart_lineage_layout.csv]</parent-name>
             <remote-alias>edge_key</remote-alias>
-            <ordinal>158</ordinal>
+            <ordinal>163</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3036,7 +2993,7 @@
             <local-name>[node_id]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>159</ordinal>
+            <ordinal>164</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3051,7 +3008,7 @@
             <local-name>[date]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>date</remote-alias>
-            <ordinal>160</ordinal>
+            <ordinal>165</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3063,7 +3020,7 @@
             <local-name>[runs]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runs</remote-alias>
-            <ordinal>161</ordinal>
+            <ordinal>166</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3075,7 +3032,7 @@
             <local-name>[runs_failed]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runs_failed</remote-alias>
-            <ordinal>162</ordinal>
+            <ordinal>167</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3087,7 +3044,7 @@
             <local-name>[runs_skipped]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runs_skipped</remote-alias>
-            <ordinal>163</ordinal>
+            <ordinal>168</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3099,9 +3056,10 @@
             <local-name>[avg_runtime_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>avg_runtime_sec</remote-alias>
-            <ordinal>164</ordinal>
+            <ordinal>169</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
@@ -3111,7 +3069,7 @@
             <local-name>[build_cost_usd]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>build_cost_usd</remote-alias>
-            <ordinal>165</ordinal>
+            <ordinal>170</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3123,7 +3081,7 @@
             <local-name>[consumer_query_cost_usd]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>consumer_query_cost_usd</remote-alias>
-            <ordinal>166</ordinal>
+            <ordinal>171</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3135,7 +3093,7 @@
             <local-name>[tests_pass]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>tests_pass</remote-alias>
-            <ordinal>167</ordinal>
+            <ordinal>172</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3147,7 +3105,7 @@
             <local-name>[tests_warn]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>tests_warn</remote-alias>
-            <ordinal>168</ordinal>
+            <ordinal>173</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3159,7 +3117,7 @@
             <local-name>[tests_fail]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>tests_fail</remote-alias>
-            <ordinal>169</ordinal>
+            <ordinal>174</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3171,7 +3129,7 @@
             <local-name>[fresh_checks_pass]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>fresh_checks_pass</remote-alias>
-            <ordinal>170</ordinal>
+            <ordinal>175</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3183,7 +3141,7 @@
             <local-name>[fresh_checks_warn]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>fresh_checks_warn</remote-alias>
-            <ordinal>171</ordinal>
+            <ordinal>176</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3195,7 +3153,7 @@
             <local-name>[fresh_checks_error]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>fresh_checks_error</remote-alias>
-            <ordinal>172</ordinal>
+            <ordinal>177</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3207,7 +3165,7 @@
             <local-name>[max_lag_min]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>max_lag_min</remote-alias>
-            <ordinal>173</ordinal>
+            <ordinal>178</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3219,7 +3177,7 @@
             <local-name>[refresh_ok]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>refresh_ok</remote-alias>
-            <ordinal>174</ordinal>
+            <ordinal>179</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3231,7 +3189,7 @@
             <local-name>[refresh_failed]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>refresh_failed</remote-alias>
-            <ordinal>175</ordinal>
+            <ordinal>180</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3243,7 +3201,7 @@
             <local-name>[refresh_skipped]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>refresh_skipped</remote-alias>
-            <ordinal>176</ordinal>
+            <ordinal>181</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3255,9 +3213,10 @@
             <local-name>[avg_refresh_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>avg_refresh_sec</remote-alias>
-            <ordinal>177</ordinal>
+            <ordinal>182</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
@@ -3267,7 +3226,7 @@
             <local-name>[platform_on_day]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>platform_on_day</remote-alias>
-            <ordinal>178</ordinal>
+            <ordinal>183</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3282,7 +3241,7 @@
             <local-name>[materialization_on_day]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>materialization_on_day</remote-alias>
-            <ordinal>179</ordinal>
+            <ordinal>184</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <approx-count>1</approx-count>
@@ -3298,7 +3257,7 @@
             <local-name>[worst_test_code]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>worst_test_code</remote-alias>
-            <ordinal>180</ordinal>
+            <ordinal>185</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3310,9 +3269,10 @@
             <local-name>[runtime_7d_avg_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_7d_avg_sec</remote-alias>
-            <ordinal>181</ordinal>
+            <ordinal>186</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
@@ -3322,9 +3282,10 @@
             <local-name>[runtime_prior28d_avg_sec]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_prior28d_avg_sec</remote-alias>
-            <ordinal>182</ordinal>
+            <ordinal>187</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
@@ -3334,9 +3295,10 @@
             <local-name>[runtime_trend_pct]</local-name>
             <parent-name>[mart_node_daily.csv]</parent-name>
             <remote-alias>runtime_trend_pct</remote-alias>
-            <ordinal>183</ordinal>
+            <ordinal>188</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
+            <approx-count>1</approx-count>
             <contains-null>true</contains-null>
             <object-id>[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]</object-id>
           </metadata-record>
@@ -3346,7 +3308,7 @@
             <local-name>[node_id (mart_node_reach.csv)]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>184</ordinal>
+            <ordinal>189</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3361,7 +3323,7 @@
             <local-name>[related_node_id]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_node_id</remote-alias>
-            <ordinal>185</ordinal>
+            <ordinal>190</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3376,7 +3338,7 @@
             <local-name>[direction]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>direction</remote-alias>
-            <ordinal>186</ordinal>
+            <ordinal>191</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3391,7 +3353,7 @@
             <local-name>[hops (mart_node_reach.csv)]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>hops</remote-alias>
-            <ordinal>187</ordinal>
+            <ordinal>192</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3403,7 +3365,7 @@
             <local-name>[related_name]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_name</remote-alias>
-            <ordinal>188</ordinal>
+            <ordinal>193</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3418,7 +3380,7 @@
             <local-name>[related_layer]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_layer</remote-alias>
-            <ordinal>189</ordinal>
+            <ordinal>194</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3433,7 +3395,7 @@
             <local-name>[related_layer_column]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_layer_column</remote-alias>
-            <ordinal>190</ordinal>
+            <ordinal>195</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3445,7 +3407,7 @@
             <local-name>[related_resource_type]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_resource_type</remote-alias>
-            <ordinal>191</ordinal>
+            <ordinal>196</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3460,7 +3422,7 @@
             <local-name>[related_status]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_status</remote-alias>
-            <ordinal>192</ordinal>
+            <ordinal>197</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3475,7 +3437,7 @@
             <local-name>[related_owner]</local-name>
             <parent-name>[mart_node_reach.csv]</parent-name>
             <remote-alias>related_owner</remote-alias>
-            <ordinal>193</ordinal>
+            <ordinal>198</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3490,7 +3452,7 @@
             <local-name>[date (mart_observed_access.csv)]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>date</remote-alias>
-            <ordinal>194</ordinal>
+            <ordinal>199</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3502,7 +3464,7 @@
             <local-name>[principal]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>principal</remote-alias>
-            <ordinal>195</ordinal>
+            <ordinal>200</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3517,7 +3479,7 @@
             <local-name>[principal_type]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>principal_type</remote-alias>
-            <ordinal>196</ordinal>
+            <ordinal>201</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3532,7 +3494,7 @@
             <local-name>[node_id (mart_observed_access.csv)]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>197</ordinal>
+            <ordinal>202</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3547,7 +3509,7 @@
             <local-name>[query_count]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>query_count</remote-alias>
-            <ordinal>198</ordinal>
+            <ordinal>203</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3559,7 +3521,7 @@
             <local-name>[bytes_scanned]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>bytes_scanned</remote-alias>
-            <ordinal>199</ordinal>
+            <ordinal>204</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3571,7 +3533,7 @@
             <local-name>[mapped_exposure_id]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>mapped_exposure_id</remote-alias>
-            <ordinal>200</ordinal>
+            <ordinal>205</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3586,7 +3548,7 @@
             <local-name>[inferred_exposure_id]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>inferred_exposure_id</remote-alias>
-            <ordinal>201</ordinal>
+            <ordinal>206</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3601,7 +3563,7 @@
             <local-name>[est_cost_usd]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>est_cost_usd</remote-alias>
-            <ordinal>202</ordinal>
+            <ordinal>207</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3613,7 +3575,7 @@
             <local-name>[is_registered]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>is_registered</remote-alias>
-            <ordinal>203</ordinal>
+            <ordinal>208</ordinal>
             <local-type>boolean</local-type>
             <aggregation>Count</aggregation>
             <contains-null>true</contains-null>
@@ -3625,7 +3587,7 @@
             <local-name>[inferred_exposure_name]</local-name>
             <parent-name>[mart_observed_access.csv]</parent-name>
             <remote-alias>inferred_exposure_name</remote-alias>
-            <ordinal>204</ordinal>
+            <ordinal>209</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3640,7 +3602,7 @@
             <local-name>[node_id (mart_recovery_episodes.csv)]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>205</ordinal>
+            <ordinal>210</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3655,7 +3617,7 @@
             <local-name>[kind]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>kind</remote-alias>
-            <ordinal>206</ordinal>
+            <ordinal>211</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3670,7 +3632,7 @@
             <local-name>[failed_at]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>failed_at</remote-alias>
-            <ordinal>207</ordinal>
+            <ordinal>212</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3682,7 +3644,7 @@
             <local-name>[recovered_at]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>recovered_at</remote-alias>
-            <ordinal>208</ordinal>
+            <ordinal>213</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3694,7 +3656,7 @@
             <local-name>[hours_to_recover]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>hours_to_recover</remote-alias>
-            <ordinal>209</ordinal>
+            <ordinal>214</ordinal>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3706,7 +3668,7 @@
             <local-name>[start_date]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>start_date</remote-alias>
-            <ordinal>210</ordinal>
+            <ordinal>215</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3718,7 +3680,7 @@
             <local-name>[platform_on_day (mart_recovery_episodes.csv)]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>platform_on_day</remote-alias>
-            <ordinal>211</ordinal>
+            <ordinal>216</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3733,7 +3695,7 @@
             <local-name>[is_open]</local-name>
             <parent-name>[mart_recovery_episodes.csv]</parent-name>
             <remote-alias>is_open</remote-alias>
-            <ordinal>212</ordinal>
+            <ordinal>217</ordinal>
             <local-type>boolean</local-type>
             <aggregation>Count</aggregation>
             <contains-null>true</contains-null>
@@ -3745,7 +3707,7 @@
             <local-name>[job_run_id]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>job_run_id</remote-alias>
-            <ordinal>213</ordinal>
+            <ordinal>218</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3760,7 +3722,7 @@
             <local-name>[node_id (mart_run_errors.csv)]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>214</ordinal>
+            <ordinal>219</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3775,7 +3737,7 @@
             <local-name>[platform (mart_run_errors.csv)]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>platform</remote-alias>
-            <ordinal>215</ordinal>
+            <ordinal>220</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3790,7 +3752,7 @@
             <local-name>[run_started_at]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>run_started_at</remote-alias>
-            <ordinal>216</ordinal>
+            <ordinal>221</ordinal>
             <local-type>datetime</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3802,7 +3764,7 @@
             <local-name>[error_category]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>error_category</remote-alias>
-            <ordinal>217</ordinal>
+            <ordinal>222</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3817,7 +3779,7 @@
             <local-name>[error_message]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>error_message</remote-alias>
-            <ordinal>218</ordinal>
+            <ordinal>223</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3832,7 +3794,7 @@
             <local-name>[date (mart_run_errors.csv)]</local-name>
             <parent-name>[mart_run_errors.csv]</parent-name>
             <remote-alias>date</remote-alias>
-            <ordinal>219</ordinal>
+            <ordinal>224</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3844,7 +3806,7 @@
             <local-name>[test_id]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>test_id</remote-alias>
-            <ordinal>220</ordinal>
+            <ordinal>225</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3859,7 +3821,7 @@
             <local-name>[test_name]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>test_name</remote-alias>
-            <ordinal>221</ordinal>
+            <ordinal>226</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3874,7 +3836,7 @@
             <local-name>[test_type]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>test_type</remote-alias>
-            <ordinal>222</ordinal>
+            <ordinal>227</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3889,7 +3851,7 @@
             <local-name>[node_id (mart_test_daily.csv)]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>node_id</remote-alias>
-            <ordinal>223</ordinal>
+            <ordinal>228</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3904,7 +3866,7 @@
             <local-name>[column_name]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>column_name</remote-alias>
-            <ordinal>224</ordinal>
+            <ordinal>229</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3919,7 +3881,7 @@
             <local-name>[severity]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>severity</remote-alias>
-            <ordinal>225</ordinal>
+            <ordinal>230</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -3934,7 +3896,7 @@
             <local-name>[date (mart_test_daily.csv)]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>date</remote-alias>
-            <ordinal>226</ordinal>
+            <ordinal>231</ordinal>
             <local-type>date</local-type>
             <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
@@ -3946,7 +3908,7 @@
             <local-name>[fails]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>fails</remote-alias>
-            <ordinal>227</ordinal>
+            <ordinal>232</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3958,7 +3920,7 @@
             <local-name>[warns]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>warns</remote-alias>
-            <ordinal>228</ordinal>
+            <ordinal>233</ordinal>
             <local-type>integer</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -3970,7 +3932,7 @@
             <local-name>[weekday]</local-name>
             <parent-name>[mart_test_daily.csv]</parent-name>
             <remote-alias>weekday</remote-alias>
-            <ordinal>229</ordinal>
+            <ordinal>234</ordinal>
             <local-type>string</local-type>
             <aggregation>Count</aggregation>
             <scale>1</scale>
@@ -4044,6 +4006,10 @@
       <column caption='Display Name' datatype='string' name='[display_name]' role='dimension' type='nominal' />
       <column caption='Display Short' datatype='string' name='[display_short]' role='dimension' type='nominal' />
       <column caption='Domain' datatype='string' name='[domain]' role='dimension' type='nominal' />
+      <column caption='Downstream Consumers 30D' datatype='real' name='[downstream_consumers_30d]' role='measure' type='quantitative' />
+      <column caption='Downstream Consumers 7D' datatype='real' name='[downstream_consumers_7d]' role='measure' type='quantitative' />
+      <column caption='Downstream Consumers 90D' datatype='real' name='[downstream_consumers_90d]' role='measure' type='quantitative' />
+      <column caption='Downstream Keys' datatype='string' name='[downstream_keys]' role='dimension' type='nominal' />
       <column caption='Downstream Models' datatype='integer' name='[downstream_models]' role='measure' type='quantitative' />
       <column caption='Duration Min' datatype='real' name='[duration_min]' role='measure' type='quantitative' />
       <column caption='Duration Sec' datatype='real' name='[duration_sec]' role='measure' type='quantitative' />
@@ -4140,6 +4106,7 @@
       <column caption='Node Name' datatype='string' name='[node_name]' role='dimension' type='nominal' />
       <column caption='On Call Rotation' datatype='string' name='[on_call_rotation]' role='dimension' type='nominal' />
       <column caption='Open Incident Id' datatype='string' name='[open_incident_id]' role='dimension' type='nominal' />
+      <column caption='Open Incident Started At' datatype='datetime' name='[open_incident_started_at]' role='dimension' type='ordinal' />
       <column caption='Owner Name (Owners)' datatype='string' name='[owner_name (dim_owners.csv)]' role='dimension' type='nominal' />
       <column caption='Owner Name' datatype='string' name='[owner_name]' role='dimension' type='nominal' />
       <column caption='Owner Team (Owners)' datatype='string' name='[owner_team (dim_owners.csv)]' role='dimension' type='nominal' />
@@ -4226,11 +4193,6 @@
       <column caption='X Label' datatype='real' hidden='true' name='[x_label]' role='measure' type='quantitative' />
       <column caption='Y' datatype='real' name='[y]' role='measure' type='quantitative' />
       <column caption='Year' datatype='integer' name='[year]' role='dimension' type='quantitative' />
-      <column caption='Open Incident Started At' datatype='datetime' name='[open_incident_started_at]' role='dimension' type='ordinal' />
-      <column caption='Downstream Keys' datatype='string' name='[downstream_keys]' role='dimension' type='nominal' />
-      <column caption='Downstream Consumers 7D' datatype='real' name='[downstream_consumers_7d]' role='measure' type='quantitative' />
-      <column caption='Downstream Consumers 30D' datatype='real' name='[downstream_consumers_30d]' role='measure' type='quantitative' />
-      <column caption='Downstream Consumers 90D' datatype='real' name='[downstream_consumers_90d]' role='measure' type='quantitative' />
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
@@ -4333,11 +4295,11 @@
                   <column datatype='real' name='avg_daily_consumers_7d' ordinal='66' />
                   <column datatype='real' name='avg_daily_consumers_30d' ordinal='67' />
                   <column datatype='real' name='avg_daily_consumers_90d' ordinal='68' />
-              <column datatype='datetime' name='open_incident_started_at' ordinal='69' />
-              <column datatype='string' name='downstream_keys' ordinal='70' />
-              <column datatype='real' name='downstream_consumers_7d' ordinal='71' />
-              <column datatype='real' name='downstream_consumers_30d' ordinal='72' />
-              <column datatype='real' name='downstream_consumers_90d' ordinal='73' />
+                  <column datatype='datetime' name='open_incident_started_at' ordinal='69' />
+                  <column datatype='string' name='downstream_keys' ordinal='70' />
+                  <column datatype='real' name='downstream_consumers_7d' ordinal='71' />
+                  <column datatype='real' name='downstream_consumers_30d' ordinal='72' />
+                  <column datatype='real' name='downstream_consumers_90d' ordinal='73' />
                 </columns>
               </relation>
             </properties>
