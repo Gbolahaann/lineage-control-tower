@@ -171,7 +171,7 @@ def tile_sheets() -> list[Sheet]:
         cols=[R('Tile Column', kind='ok')],
         filters=[R('Is Exposure'), R('Is Platform Match Node'), R('Show Exposure Tile')],
         hide=[R('Exposure Group Sort'), R('Tile Row', kind='ok'), R('Tile Column', kind='ok')],
-        header_font={'font-size': '7', 'color': INK3, 'font-family': SEMI},
+        header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
         header_width={R('Exposure Group Label'): 110}, divider=True,
         panes=Pane('Square', color=tint, text=texts, size=10, valign='center',
                    lod=[R('Tile Sort Key'), a('node_id (dim_nodes.csv)'), a('Clear Node Value'), a('Clear Node Key Value')],

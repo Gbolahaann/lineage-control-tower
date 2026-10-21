@@ -33,7 +33,11 @@ GOOD_INK, WARN_INK, CRIT_INK = '#1e7450', '#93600f', '#a92e29'
 GOOD_TINT, WARN_TINT, CRIT_TINT, NONE_TINT = '#eaf6ef', '#fdf3e1', '#fbeae9', '#f1f2f4'
 AI_INK = '#3d41a0'
 PLAT = {'snowflake': '#005fae', 'databricks': '#4baee3', 'redshift': '#5b5fc7'}
-BOOK, MEDIUM, SEMI, BOLD = 'Tableau Book', 'Tableau Medium', 'Tableau Semibold', 'Tableau Bold'
+# Arial family only (Gbolahan, 21 Oct): regular weight for text, bold for titles, BANs and emphasis.
+# SEMI and BOLD are markers that run() and the button writer turn into Arial + bold='true'.
+FONT = 'Arial'
+BOOK = MEDIUM = FONT
+SEMI = BOLD = 'Arial|bold'
 
 FMT_PCT2 = 'p0.00%'
 FMT_USD = 'c"$"#,##0;-"$"#,##0'
@@ -301,7 +305,10 @@ def run(t, size=9, color=INK2, font=BOOK, align=None, **kw) -> dict:
         ref, t = t, f'&lt;{t.ref}&gt;'
     elif not (t.startswith('&lt;[') or set(t.split(NL)) == {''}):
         t = esc(t)
-    r = {'fontcolor': color, 'fontname': font, 'fontsize': str(size), 't': t}
+    bold = font.endswith('|bold')
+    r = {'fontcolor': color, 'fontname': font.split('|')[0], 'fontsize': str(size), 't': t}
+    if bold:
+        r['bold'] = 'true'
     if align is not None:
         r['fontalignment'] = str(align)
     r.update(kw)
@@ -601,7 +608,7 @@ class Z:
             inner.append(
                 f"{ind}  <button action='tabdoc:goto-sheet window-id=&quot;{window_ids[b['target']]}&quot;' button-type='text'>\n"
                 f"{ind}    <button-visual-state>\n{ind}      <caption>{esc(b['caption'])}</caption>\n"
-                f"{ind}      <button-caption-font-style fontcolor='{b['color']}' fontname='{b['font']}' fontsize='{b['size']}' />\n"
+                f"{ind}      <button-caption-font-style {'bold=' + chr(39) + 'true' + chr(39) + ' ' if b['font'].endswith('|bold') else ''}fontcolor='{b['color']}' fontname='{b['font'].split('|')[0]}' fontsize='{b['size']}' />\n"
                 + fmts + f"{ind}    </button-visual-state>\n{ind}  </button>")
         elif self.kind == 'sheet':
             a['name'], a['show-title'] = self.name, 'false'

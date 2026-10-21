@@ -176,6 +176,8 @@ def build(master: Path, out: Path) -> Path:
     flags += '    <_.fcp.DashboardRoundedCorners.true...DashboardRoundedCorners />\n'
     t = t.replace('  </document-format-change-manifest>', flags + '  </document-format-change-manifest>', 1)
     t = t.replace('  <datasources>\n', '  <datasources>\n' + parameters_datasource(), 1)
+    # workbook font: Arial family (the master was saved with Tableau Book)
+    t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     sheet_objs = shell.gl_sheets() + health.sheets()
     names = [r.name for s in sheet_objs for r in s.all_refs() if r.is_calc] + ['Show Info Panel', 'Info Toggle Value']
