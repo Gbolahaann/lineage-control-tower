@@ -276,6 +276,11 @@ if __name__ == '__main__':
     twbx = build(args.master, args.out)
     if args.tag:
         VERSIONS.mkdir(parents=True, exist_ok=True)
+        # each version's workbook gets its own name inside the package, so Tableau never mistakes one
+        # version for another that is still open (they all used to be Lineage_Control_Tower.twb)
         dest = VERSIONS / f'{args.tag}.twbx'
-        shutil.copyfile(twbx, dest)
+        with zipfile.ZipFile(twbx) as src, zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED) as out:
+            for item in src.infolist():
+                name = f'LCT_{args.tag}.twb' if item.filename.endswith('.twb') else item.filename
+                out.writestr(name, src.read(item.filename))
         print(f'kept {dest.relative_to(ROOT)}')
