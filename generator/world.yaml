@@ -65,9 +65,9 @@ platforms:
 dbt_projects:
   acme_core:      {platform: snowflake,  warehouse: TRANSFORM_WH,          compute_per_hour: 4}   # Snowflake M = 4 credits/h
   acme_product:   {platform: databricks, warehouse: dbt-product-jobs,      compute_per_hour: 12}  # DBUs/h
-  acme_marketing: {platform: redshift,   warehouse: marketing-serverless,  compute_per_hour: 16}  # RPUs
+  acme_marketing: {platform: redshift,   warehouse: marketing-serverless,  compute_per_hour: 128} # RPUs (Redshift Serverless default base capacity)
   # after migration, acme_marketing models run on this Snowflake warehouse
-  acme_marketing_on_snowflake: {platform: snowflake, warehouse: MARKETING_WH, compute_per_hour: 2}  # Snowflake S
+  acme_marketing_on_snowflake: {platform: snowflake, warehouse: MARKETING_WH, compute_per_hour: 4}  # Snowflake M
 
 # ---------------------------------------------------------------------------
 # Raw sources (what Fivetran / Airbyte / custom loaders land in the warehouse)

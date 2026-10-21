@@ -1,0 +1,9 @@
+incident_id,title,root_node_id,started_at,resolved_at,severity,exposures_affected,category
+INC-001,unique_dim_customers_customer_id fails every Monday (dedupe bug in weekend backfill),model.acme_core.dim_customers,2026-08-10 00:09:40,,low,4,test
+INC-002,Redshift to Snowflake cutover errors (hubspot_sales),model.acme_marketing.stg_hubspot__deals,2026-09-03 00:41:00,2026-09-04 20:40:26,medium,4,migration
+INC-003,Column rename in raw_hubspot (hs_object_id -> record_id) breaks HubSpot models,source.acme_marketing.raw_hubspot.deals,2026-09-07 08:41:07,2026-09-07 15:42:17,high,4,schema_change
+INC-004,fct_sessions runtime and cost up 50%+ (full-refresh table that should be incremental),model.acme_product.fct_sessions,2026-09-09 02:25:50,2026-10-04 04:25:15,medium,2,performance
+INC-005,Redshift to Snowflake cutover errors (ads_marketing),model.acme_marketing.stg_google_ads__campaigns,2026-09-11 00:41:10,2026-09-12 20:40:29,medium,1,migration
+INC-006,raw_stripe.payments stopped loading overnight into month-end close,source.acme_core.raw_stripe.payments,2026-09-30 23:00:00,2026-10-01 10:00:00,critical,10,freshness
+INC-007,"pds_commerce_sales extract failing (expired Snowflake OAuth token); dbt green, dashboards stale",semantic.tableau.pds_commerce_sales,2026-10-12 01:56:37,2026-10-14 13:56:12,high,3,semantic_refresh
+INC-008,raw_wms.inventory loads delayed (freshness warn),source.acme_core.raw_wms.inventory,2026-10-19 20:00:00,,low,7,freshness

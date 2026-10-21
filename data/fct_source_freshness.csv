@@ -32237,8 +32237,8 @@ source.acme_product.raw_events.web_sessions,2026-10-13 02:00:00,2026-10-13 01:47
 source.acme_product.raw_events.web_sessions,2026-10-13 03:00:00,2026-10-13 02:47:00,13.0,60,180,pass
 source.acme_product.raw_events.web_sessions,2026-10-13 04:00:00,2026-10-13 03:47:00,13.0,60,180,pass
 source.acme_product.raw_events.web_sessions,2026-10-13 05:00:00,2026-10-13 04:47:00,13.0,60,180,pass
-source.acme_product.raw_events.web_sessions,2026-10-13 06:00:00,2026-10-13 05:17:00,43.0,60,180,pass
-source.acme_product.raw_events.web_sessions,2026-10-13 07:00:00,2026-10-13 05:17:00,103.0,60,180,warn
+source.acme_product.raw_events.web_sessions,2026-10-13 06:00:00,2026-10-13 05:47:00,13.0,60,180,pass
+source.acme_product.raw_events.web_sessions,2026-10-13 07:00:00,2026-10-13 06:47:00,13.0,60,180,pass
 source.acme_product.raw_events.web_sessions,2026-10-13 08:00:00,2026-10-13 07:47:00,13.0,60,180,pass
 source.acme_product.raw_events.web_sessions,2026-10-13 09:00:00,2026-10-13 08:47:00,13.0,60,180,pass
 source.acme_product.raw_events.web_sessions,2026-10-13 10:00:00,2026-10-13 09:47:00,13.0,60,180,pass
