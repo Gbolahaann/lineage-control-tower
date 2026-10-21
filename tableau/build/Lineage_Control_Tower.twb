@@ -13,6 +13,7 @@
     <WindowsPersistSimpleIdentifiers />
     <_.fcp.WorkbookFingerprinting.true...WorkbookFingerprinting />
     <AccessibleZoneTabOrder />
+    <Layers />
     <BasicButtonObject />
     <BasicButtonObjectTextSupport />
     <DatagraphCoreV1 />

@@ -159,7 +159,7 @@ def datagraph(dzv_by_dash) -> str:
             "      <edges>\n" + '\n'.join(edges) + "\n      </edges>\n      <pin-values />\n    </graph>\n  </datagraph>\n")
 
 
-MANIFEST_FLAGS = ['AccessibleZoneTabOrder', 'BasicButtonObject', 'BasicButtonObjectTextSupport', 'DatagraphCoreV1',
+MANIFEST_FLAGS = ['AccessibleZoneTabOrder', 'Layers', 'BasicButtonObject', 'BasicButtonObjectTextSupport', 'DatagraphCoreV1',
                   'DatagraphNodeDashboardZoneVisibilityV1', 'DatagraphNodeSingleValueFieldV1', 'ParameterAction',
                   'ParameterActionClearSelection', 'WorksheetBackgroundTransparency', 'ZoneBackgroundTransparency',
                   'ZoneFriendlyName', 'ZoneVisibilityControl']
