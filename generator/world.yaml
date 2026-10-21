@@ -299,7 +299,7 @@ exposures:
   # ---- Direct warehouse consumers
   churn_prediction_model:      {label: Churn Prediction Model, type: ml, access_path: direct_warehouse, domain: Customer, owner: Mei Tanaka,
                                 maturity: medium, build: hand_built, events: 6, consumers: 1, principal: svc_churn_model, parents: [fct_churn_features]}
-  pricing_experiment_analysis: {label: Pricing Experiment Analysis, type: notebook, access_path: direct_warehouse, domain: Product, owner: null,
+  pricing_experiment_analysis: {label: Pricing Experiment Analysis, type: notebook, access_path: direct_warehouse, domain: Product, owner: null, platform: databricks,
                                 maturity: low, build: hand_built, events: 12, consumers: 3, principal: svc_databricks_notebooks, parents: [fct_experiment_results, fct_orders]}
   partner_revenue_share:       {label: Partner Revenue Share, type: data_app, access_path: direct_warehouse, domain: Finance, owner: Tomas Ortega,
                                 maturity: high, build: hand_built, events: 120, consumers: 35, principal: svc_partner_portal, parents: [fct_partner_payouts]}

@@ -167,8 +167,8 @@ E0165,semantic.power_bi.pbi_marketing,exposure.acme_marketing.marketing_campaign
 E0166,semantic.power_bi.pbi_inventory,exposure.acme_core.inventory_health,bi_metadata,false
 E0167,semantic.power_bi.pbi_support,exposure.acme_product.support_sla_tracker,bi_metadata,false
 E0168,model.acme_product.fct_churn_features,exposure.acme_product.churn_prediction_model,manifest,false
-E0169,model.acme_product.fct_experiment_results,exposure.acme_core.pricing_experiment_analysis,manifest,true
-E0170,model.acme_core.fct_orders,exposure.acme_core.pricing_experiment_analysis,manifest,false
+E0169,model.acme_product.fct_experiment_results,exposure.acme_product.pricing_experiment_analysis,manifest,false
+E0170,model.acme_core.fct_orders,exposure.acme_product.pricing_experiment_analysis,manifest,true
 E0171,model.acme_core.fct_partner_payouts,exposure.acme_core.partner_revenue_share,manifest,false
 E0172,model.acme_product.fct_demand_signals,exposure.acme_product.demand_forecast_app,manifest,false
 E0173,model.acme_core.fct_orders,exposure.acme_core.merchandising_copilot,manifest,false

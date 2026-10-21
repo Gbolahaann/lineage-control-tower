@@ -231,8 +231,9 @@ def build_world(cfg: dict, spec: dict) -> World:
         # under its semantic objects. Their majority platform becomes the exposure's.
         model_ids = [p for p in parent_ids if p.startswith("model.")]
         model_ids += [x for (x, c, _) in edge_rows if c in parent_ids and x.startswith("model.")]
-        platform = Counter(platform_of[m] for m in model_ids).most_common(1)[0][0]
-        project = Counter(project_of[m] for m in model_ids).most_common(1)[0][0]
+        # An exposure can name its platform outright (useful when its parents are split evenly)
+        platform = e.get("platform") or Counter(platform_of[m] for m in model_ids).most_common(1)[0][0]
+        project = Counter(project_of[m] for m in model_ids if platform_of[m] == platform).most_common(1)[0][0]
         node_id = f"exposure.{project if declared else 'observed'}.{name}"
         w.id_of[name] = node_id
 
