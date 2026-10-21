@@ -364,13 +364,16 @@ def runs_xml(runs, ind) -> str:
 class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
-                 geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True):
+                 geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
+                 transparency=None, pane_size=None):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
         self.mark_color, self.geometry = mark_color, geometry  # geometry: name of a spatial base field
         self.stroke = stroke  # mark border colour (has-stroke + stroke-color, as Tableau writes it)
         self.title, self.inert, self.path = title, inert, path  # map layer name, no interaction, polygon path
+        self.transparency = transparency  # mark-transparency 0 (clear) to 255 (solid)
+        self.pane_size = pane_size        # (w, h) px: a fixed map pane size, as a Tableau-saved reference writes it
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else [])
@@ -401,6 +404,8 @@ class Pane:
             mark_fmt.append(f"                <format attr='size' value='{self.size}' />")
         if self.mark_color:
             mark_fmt.append(f"                <format attr='mark-color' value='{self.mark_color}' />")
+        if self.transparency is not None:
+            mark_fmt.append(f"                <format attr='mark-transparency' value='{self.transparency}' />")
         if self.stroke:
             mark_fmt.append("                <format attr='has-stroke' value='true' />")
             mark_fmt.append(f"                <format attr='stroke-color' value='{self.stroke}' />")
@@ -418,23 +423,50 @@ class Pane:
                 f"                <format attr='text-align' value='{self.align}' />\n"
                 f"                <format attr='vertical-align' value='{self.valign}' />\n              </style-rule>\n"
                 "              <style-rule element='mark'>\n" + '\n'.join(mark_fmt) + '\n              </style-rule>\n'
-                "            </style>\n          </pane>\n")
+                + self._pane_rule() + "            </style>\n          </pane>\n")
+
+    def _pane_rule(self) -> str:
+        if not self.pane_size:
+            return ''
+        w, h = self.pane_size
+        return ("              <style-rule element='pane'>\n"
+                f"                <format attr='minwidth' value='{w}' />\n                <format attr='maxwidth' value='{w}' />\n"
+                f"                <format attr='minheight' value='{h}' />\n                <format attr='maxheight' value='{h}' />\n"
+                "                <format attr='aspect' value='0' />\n              </style-rule>\n")
 
 
 class Cross(list):
     """Fields crossed on one shelf, written (a * b * c): a grid of map panes is (row index * Latitude)."""
 
 
+class Nest(list):
+    """Fields nested on one shelf, written (a / b), the way Tableau re-saves a nested group inside a Cross."""
+
+
+def shelf_item(it) -> str:
+    """One shelf entry; a tuple is a dual axis (a + b). Entries can sit inside each other."""
+    if isinstance(it, Cross):
+        return '(' + ' * '.join(shelf_item(x) for x in it) + ')'
+    if isinstance(it, Nest):
+        return '(' + ' / '.join(shelf_item(x) for x in it) + ')'
+    if isinstance(it, tuple):
+        return '(' + ' + '.join(shelf_item(x) for x in it) + ')'
+    return it.ref
+
+
 def shelf(items) -> str:
-    parts = []
+    return ' / '.join(shelf_item(it) for it in items)
+
+
+def shelf_flat(items) -> list:
+    out = []
     for it in items:
-        if isinstance(it, Cross):
-            parts.append('(' + ' * '.join(r.ref for r in it) + ')')
-        elif isinstance(it, tuple):
-            parts.append('(' + ' + '.join(r.ref for r in it) + ')')
-        else:
-            parts.append(it.ref)
-    return ' / '.join(parts)
+        out += shelf_flat(it) if isinstance(it, (tuple, Cross, Nest)) else [it]
+    return out
+
+
+def has_dual(items) -> bool:
+    return any(isinstance(it, tuple) or (isinstance(it, (Cross, Nest)) and has_dual(it)) for it in items)
 
 
 class Sheet:
@@ -460,12 +492,10 @@ class Sheet:
         self.layers = layers            # marks layers: panes[0] is the base pane, the rest are layers, bottom to top
         self.no_basemap = no_basemap    # <mapsource name='' />: a map with no background map at all
         self.fixed_axes = []            # (Raw generated field, min, max, scope): fixed and hidden map axes
+        self.axis_heights = {}          # {Ref: px} height of a (hidden) continuous axis band
 
     def _shelf_refs(self, items):
-        out = []
-        for it in items:
-            out += list(it) if isinstance(it, (tuple, Cross)) else [it]
-        return [r for r in out if not isinstance(r, Raw)]
+        return [r for r in shelf_flat(items) if not isinstance(r, Raw)]
 
     def all_refs(self):
         # a field used in a label or tooltip must be in the view: add it to that pane's tooltip encodings
@@ -539,6 +569,7 @@ class Sheet:
         if self.row_height:
             r, px = self.row_height
             cell.append(f"            <format attr='height' field='{r.ref}' value='{px}' />")
+        axis_h = [f"            <format attr='height' field='{r.ref}' value='{px}' />" for r, px in self.axis_heights.items()]
         label = [f"            <format attr='text-format' field='{r.ref}' value='{esc(f)}' />" for r, f in self.formats.items()]
         label += hidden_headers
         rules = []
@@ -546,14 +577,16 @@ class Sheet:
         def rule(el, lines):
             if lines:
                 rules.append(f"          <style-rule element='{el}'>\n" + '\n'.join(lines) + '\n          </style-rule>\n')
-        rule('axis', axis + ["            <format attr='tick-color' value='#00000000' />"])
+        rule('axis', axis + ["            <format attr='tick-color' value='#00000000' />"] + axis_h)
         rule('cell', cell)
         rule('gridline', ["            <format attr='line-visibility' value='off' />"])
         rule('header', head)
         rule('label', label)
         if self.map_washout is not None or self.no_basemap:
             rule('map', [f"            <format attr='washout' value='{self.map_washout or 0}' />"])
-        rule('table', ["            <format attr='background-color' value='#00000000' />"])
+        # no "N nulls" badge: the In / Out window halves of a trend are null by design
+        rule('table', ["            <format attr='show-null-value-warning' value='false' />",
+                       "            <format attr='background-color' value='#00000000' />"])
         div = ['on', LINE] if self.divider else ['off', '#00000000']
         rule('table-div', [f"            <format attr='line-visibility' scope='{s}' value='{div[0]}' />" for s in ('rows', 'cols')]
              + [f"            <format attr='stroke-color' scope='{s}' value='{div[1]}' />" for s in ('rows', 'cols')]
@@ -563,13 +596,13 @@ class Sheet:
         rule('zeroline', ["            <format attr='line-visibility' value='off' />"])
 
         # ---- panes: dual axis gets one pane per measure after the first
-        dual = [it for it in self.rows + self.cols if isinstance(it, tuple)]
+        dual = has_dual(self.rows + self.cols)
         panes_open = "        <panes>\n"
         if self.layers:
             panes_open = "        <panes customization-axis='layer'>\n"
             panes = self.panes[0].xml(1) + ''.join(p.xml(i) for i, p in enumerate(self.panes[1:], 2))
         elif dual and len(self.panes) > 1:
-            axis_attr = 'y-axis-name' if any(isinstance(i, tuple) for i in self.rows) else 'x-axis-name'
+            axis_attr = 'y-axis-name' if has_dual(self.rows) else 'x-axis-name'
             panes = self.panes[0].xml() + ''.join(p.xml(i, axis_attr) for i, p in enumerate(self.panes[1:], 1))
         else:
             panes = self.panes[0].xml()

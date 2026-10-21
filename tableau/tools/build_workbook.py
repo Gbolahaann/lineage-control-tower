@@ -123,8 +123,10 @@ def windows(dash_sheets, window_ids, sheet_objs) -> str:
     zoom = {s.name: s.zoom for s in sheet_objs}
     out = ["  <windows source-height='30'>\n"]
     for i, (dname, sheets) in enumerate(dash_sheets.items()):
-        vps = ''.join(f"        <viewpoint name='{esc(s)}'>\n          <zoom type='{zoom.get(s, 'entire-view')}' />\n"
-                      "        </viewpoint>\n" for s in sheets)
+        # zoom None is Standard: no <zoom>, so fixed pane sizes (map tiles) hold instead of stretching to the zone
+        vps = ''.join(f"        <viewpoint name='{esc(s)}'>\n"
+                      + (f"          <zoom type='{zoom.get(s, 'entire-view')}' />\n" if zoom.get(s, 'entire-view') else '')
+                      + "        </viewpoint>\n" for s in sheets)
         out.append(f"    <window class='dashboard'{' maximized=' + chr(39) + 'true' + chr(39) if i == 0 else ''} name='{esc(dname)}'>\n"
                    f"      <viewpoints>\n{vps}      </viewpoints>\n      <active id='-1' />\n"
                    f"      <simple-id uuid='{window_ids[dname]}' />\n    </window>\n")

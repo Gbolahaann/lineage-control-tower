@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .core import (R_MEA, ACCENT, BOLD, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, INK1, INK2, INK3, INK4, LIME, LINE,
-                   LINE_SOFT, MEDIUM, NAVY, NL, PLAT, SEMI, B_DIM, I_DIM, S_DIM, Pane, R, Sheet, Z, blank,
+                   LINE_SOFT, MEDIUM, NAVY, NL, PLAT, SEMI, B_DIM, I_DIM, S_DIM, Cross, Pane, R, Sheet, Z, blank,
                    color_map, run, sheet, text)
 
 TABS = [  # prefix, dashboard name, nav group, question, nav icon (None = not in the nav)
@@ -65,11 +65,14 @@ def segmented(name, order_field, option_field, active_field, act_label, inact_la
                                                                       run(R(inact_label), 9, INK2, BOOK)]
     lod = [R(option_field)] if option_field != order_field else []
     bar, anchor = R('Full Bar'), R('Text Anchor Centre')
-    return Sheet(name, cols=[R(order_field), (bar, anchor)], hide=[R(order_field), bar, anchor], filters=[R(row_filter)],
-                 fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
+    # As adjusted in Tableau on v08: the bar at full size fills the button, and the label rides on a clear,
+    # hairline Gantt mark (a Text mark's own box would sit on top of the bar and shrink the white area)
+    return Sheet(name, cols=[Cross([R(order_field), (bar, anchor)])], hide=[R(order_field), bar, anchor],
+                 filters=[R(row_filter)], fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
                  panes=[Pane(),
-                        Pane('Bar', axis=bar, color=R(active_field), lod=lod, size=0.8, label_show=False),
-                        Pane('Text', axis=anchor, text=texts, lod=lod, label=label, align='center')])
+                        Pane('Bar', axis=bar, color=R(active_field), lod=lod, size=1.9890055656433105, label_show=False),
+                        Pane('GanttBar', axis=anchor, text=texts, lod=lod, label=label, align='center',
+                             size=0.0099999997764825821, mark_color='#ffffff', transparency=0)])
 
 
 def gl_sheets() -> list[Sheet]:

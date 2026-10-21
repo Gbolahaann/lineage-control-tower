@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import (LAT, LON, SP_MEA, Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
+from .core import (LAT, LON, SP_MEA, Cross, Nest, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
                    GOOD, GOOD_INK, I_DIM, I_MEA, INK1, INK2, INK3, LINE, MEDIUM, NAVY, NL, NONE, NONE_TINT,
                    OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, WARN, WARN_INK, WARN_TINT, Pane, R, Sheet, Z, blank,
                    card, card_header, color_map, legend, run, sheet, text)
@@ -178,6 +178,10 @@ def kpi_sheets() -> list[Sheet]:
     return out
 
 
+TREND_BAR = 0.0099999997764825821  # the thinnest bar, as set in Tableau on v08
+TILE_PANE = (151, 84)  # one tile cell in px: 5 across the card, a 143 x 76 tile plus an 8px gap (prototype .xgrid)
+
+
 def trend_sheet(name, key, plat, in_colour, caption, fmt) -> Sheet:
     """90 daily bars, the selected window in the accent and the rest in grey: two measures on a synchronised
     dual axis, each pane with a fixed colour, so no palette is involved."""
@@ -187,9 +191,9 @@ def trend_sheet(name, key, plat, in_colour, caption, fmt) -> Sheet:
                      run(caption.upper() + '   ', 7, INK3, SEMI), run(m, 9, NAVY, SEMI)]
     return Sheet(name, cols=[date], rows=[(tin, tout)], filters=[plat], hide=[date, tin, tout], sync=[tout],
                  formats={date: '*d mmm yyyy', tin: fmt, tout: fmt},
-                 panes=[Pane('Bar', size=0.45, label_show=False),
-                        Pane('Bar', axis=tin, size=0.45, label_show=False, mark_color=in_colour, tooltip=tip(tin)),
-                        Pane('Bar', axis=tout, size=0.45, label_show=False, mark_color=OUT_OF_WINDOW, tooltip=tip(tout))])
+                 panes=[Pane('Bar', size=TREND_BAR, label_show=False),
+                        Pane('Bar', axis=tin, size=TREND_BAR, label_show=False, mark_color=in_colour, tooltip=tip(tin)),
+                        Pane('Bar', axis=tout, size=TREND_BAR, label_show=False, mark_color=OUT_OF_WINDOW, tooltip=tip(tout))])
 
 
 def tile_sheets() -> list[Sheet]:
@@ -210,7 +214,7 @@ def tile_sheets() -> list[Sheet]:
         r.tc_order = [key, tint, status, date]   # addressing; the group fields partition, so the index restarts per group
     gsort, glabel = R('Exposure Group Sort'), R('Exposure Group Label')
     node = a('node_id (dim_nodes.csv)')
-    tile = Pane('Polygon', title='Tile', color=tint, stroke=LINE, path=date,
+    tile = Pane('Polygon', title='Tile', color=tint, stroke=LINE, path=date, pane_size=TILE_PANE,
                 lod=[R('Tile Shape Point', 'clct'), key, node, a('Clear Node Value'), a('Clear Node Key Value')],
                 tooltip=[run(a('display_name'), 9, INK1, SEMI), run(NL, 7, INK3),
                          run('STATUS   ', 7, INK3, SEMI), run(a('trust_badge'), 9, NAVY, SEMI), run(NL, 7, INK3),
@@ -218,11 +222,12 @@ def tile_sheets() -> list[Sheet]:
                          run('OWNER   ', 7, INK3, SEMI), run(a('owner_name'), 9, NAVY, SEMI), run(NL, 7, INK3),
                          run('WHY   ', 7, INK3, SEMI), run(a('Tile Tooltip Why'), 9, INK1), run(NL, 7, INK3),
                          run('CLICK TO OPEN LINEAGE', 7, INK3, SEMI)])
-    dot = Pane('Circle', title='Dot', inert=True, color=status, size=0.35, label_show=False,
+    dot = Pane('Circle', title='Dot', inert=True, color=status, size=0.35, label_show=False, pane_size=TILE_PANE,
                lod=[R('Tile Dot Point', 'clct'), key])
     texts = [a('Tile Name Short'), a('Consumer Type Label'), a('Tile Owner Text'), a('Tile Owner Missing Text'),
              a('Tile Trust Critical'), a('Tile Trust Warning'), a('Tile Trust Healthy'), a('Tile AI Tag')]
     words = Pane('Circle', title='Text', inert=True, size=0.01, mark_color='#ffffff00', text=texts, align='left',
+                 pane_size=TILE_PANE,
                  lod=[R('Tile Text Point', 'clct'), key],
                  label=[run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
                         run(a('Consumer Type Label'), 8, INK3), run(' · ', 8, INK3), run(a('Tile Owner Text'), 8, INK3),
@@ -230,42 +235,45 @@ def tile_sheets() -> list[Sheet]:
                         run(a('Tile Trust Critical'), 7, CRIT_INK, SEMI), run(a('Tile Trust Warning'), 7, WARN_INK, SEMI),
                         run(a('Tile Trust Healthy'), 7, GOOD_INK, SEMI), run('   ', 7, INK3), run(a('Tile AI Tag'), 7, AI_INK, SEMI)])
     score = Pane('Circle', title='Score', inert=True, size=0.01, mark_color='#ffffff00', text=[a('Tile Score Text')],
-                 align='right', lod=[R('Tile Score Point', 'clct'), key],
+                 align='right', lod=[R('Tile Score Point', 'clct'), key], pane_size=TILE_PANE,
                  label=[run(a('Tile Score Text'), 8, INK2, SEMI)])
     tiles = Sheet(
-        'HO Exposure Status Tiles', rows=[Cross([gsort, glabel, trow, LAT])], cols=[Cross([tcol, LON])],
+        'HO Exposure Status Tiles', rows=[Cross([Nest([gsort, Nest([glabel, trow])]), LAT])], cols=[Cross([tcol, LON])],
         filters=[R('Is Exposure'), R('Is Platform Match Node'), R('Show Exposure Tile')],
         hide=[gsort, trow, tcol], header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
-        header_width={glabel: 110}, layers=True, no_basemap=True,
-        panes=[Pane('Automatic', lod=[key]), tile, dot, words, score])
-    tiles.fixed_axes = [(LAT, -0.5, 0.5, 'rows'), (LON, -1.05, 1.05, 'cols')]
+        header_width={glabel: 110}, layers=True, no_basemap=True, zoom=None,
+        panes=[Pane('Automatic', lod=[key], pane_size=TILE_PANE), tile, dot, words, score])
+    # the outline reaches 0.44 / 0.97 from the centre: 76 of 84 px high, 143 of 151 px wide
+    tiles.fixed_axes = [(LAT, -0.485, 0.485, 'rows'), (LON, -1.02, 1.02, 'cols')]
     buttons = segmented('HO Tile View Buttons', 'Tile View Option', 'Tile View Option', 'Is Active Tile View',
                         'Tile View Label Active', 'Tile View Label Inactive', 'Is Tile View Button Row')
     return [tiles, buttons]
 
 
 def attention_sheet() -> Sheet:
-    """Needs attention now: one tinted full-width row per node (bar on a fixed 0 to 1 axis), the text on a second
-    axis, fitted to the whole card."""
+    """Needs attention now: one tinted full-width row per node, the text as the bar's own label, left-aligned
+    inside the bar. A Text mark centres its box on its anchor, so text placed near 0 was cut off on the left."""
     color_map(R('Status Tint Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
-    name, bar, anchor = R('display_name'), R('Full Bar'), R('Text Anchor Left')
+    name, bar, order = R('display_name'), R('Full Bar'), R('Attention Order')
     texts = [R('Attention Icon Critical'), R('Attention Icon Warning'), name, R('Attention Incident Tag'),
              R('Attention Reason'), R('Attention Meta'), R('Attention Open Since')]
     ids = [R('node_id (dim_nodes.csv)'), R('node_key')]
-    return Sheet(
-        'HO Needs Attention List', rows=[R('Attention Order'), name], cols=[(bar, anchor)],
-        hide=[R('Attention Order'), name, bar, anchor], fixed={bar: (0, 1), anchor: (0, 1)},
+    sh = Sheet(
+        'HO Needs Attention List', rows=[Nest([order, name])], cols=[bar],
+        hide=[order, name, bar], fixed={bar: (0, 1)}, row_height=(name, ATTENTION_ROW),
         filters=[R('Is Attention Node'), R('Is Platform Match Node')],
-        panes=[Pane(),
-               Pane('Bar', axis=bar, color=R('Status Tint Key'), lod=ids, size=0.9, label_show=False,
-                    tooltip=[run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]),
-               Pane('Text', axis=anchor, text=texts, lod=ids, align='left',
-                    label=[run(R('Attention Icon Critical'), 10, CRIT, SEMI), run(R('Attention Icon Warning'), 10, WARN, SEMI),
-                           run('  ', 9, INK1), run(name, 9, INK1, SEMI), run('   ', 9, INK1),
-                           run(R('Attention Incident Tag'), 7, INK2, SEMI), run(NL, 8, INK3),
-                           run(R('Attention Reason'), 8, INK2), run(NL, 8, INK3),
-                           run(R('Attention Meta'), 8, INK3), run(R('Attention Open Since'), 8, INK3)],
-                    tooltip=[run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)])])
+        panes=Pane('Bar', color=R('Status Tint Key'), lod=ids, text=texts, size=1.65, align='left', valign='center',
+                   label=[run(R('Attention Icon Critical'), 10, CRIT, SEMI), run(R('Attention Icon Warning'), 10, WARN, SEMI),
+                          run('  ', 9, INK1), run(name, 9, INK1, SEMI), run('   ', 9, INK1),
+                          run(R('Attention Incident Tag'), 7, INK2, SEMI), run(NL, 8, INK3),
+                          run(R('Attention Reason'), 8, INK2), run(NL, 8, INK3),
+                          run(R('Attention Meta'), 8, INK3), run(R('Attention Open Since'), 8, INK3)],
+                   tooltip=[run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]))
+    sh.axis_heights = {bar: 25}
+    return sh
+
+
+ATTENTION_ROW = 50  # 3 lines of text (about 38px) plus the 8px gap between alerts in the prototype; v08 had 40
 
 
 def layer_sheet() -> Sheet:

@@ -4967,9 +4967,6 @@
       <column caption='Attention Order' datatype='integer' name='[Calculation_2821357717055420234]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Attention Order&#13;&#10;// Attention Sort turned around, so the natural ascending order of the rows is worst first.&#13;&#10;-[Calculation_1867437212419901178]' />
       </column>
-      <column caption='Text Anchor Left' datatype='real' name='[Calculation_1417199013816888206]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='// Text Anchor Left&#13;&#10;// Where left-aligned text starts on a full-width background bar.&#13;&#10;MIN(0.03)' />
-      </column>
       <column caption='Is Attention Node' datatype='boolean' name='[Calculation_3175454921771165665]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Attention Node&#13;&#10;// Upstream nodes (not exposures) that are Warning or Critical right now. Today: 3 nodes.&#13;&#10;[resource_type] &lt;&gt; &quot;exposure&quot;&#13;&#10;AND [Calculation_2875175252813195699]' />
       </column>
@@ -6149,6 +6146,7 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6209,7 +6207,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.8' />
+                <format attr='size' value='1.9890055656433105' />
               </style-rule>
             </style>
           </pane>
@@ -6217,7 +6215,8 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Text' />
+            <mark class='GanttBar' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2018629980644388562:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3943248154185459554:nk]' />
@@ -6240,12 +6239,15 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.009999999776482582' />
+                <format attr='mark-color' value='#ffffff' />
+                <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok] * ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]))</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{91E41478-7A3D-5803-D6F4-8D29EE2375A1}' />
@@ -6347,6 +6349,7 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6408,7 +6411,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.8' />
+                <format attr='size' value='1.9890055656433105' />
               </style-rule>
             </style>
           </pane>
@@ -6416,7 +6419,8 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Text' />
+            <mark class='GanttBar' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1708304674625620149:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1113706873550636432:nk]' />
@@ -6446,12 +6450,15 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.009999999776482582' />
+                <format attr='mark-color' value='#ffffff' />
+                <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok] * ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]))</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{6381F6CE-1315-0D22-7425-BD38A3D704E4}' />
@@ -6498,6 +6505,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6579,6 +6587,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6660,6 +6669,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6766,6 +6776,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -6928,6 +6939,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1734332201503898389:qk]' value='p0.00%' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7090,6 +7102,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2561166764669332405:qk]' value='n#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7127,7 +7140,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -7157,7 +7170,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7188,7 +7201,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -7307,6 +7320,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1484671631694661168:qk]' value='p0.00%' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7470,6 +7484,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_4452841432140642752:qk]' value='n#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7507,7 +7522,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -7537,7 +7552,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7568,7 +7583,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -7687,6 +7702,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1872933243208732540:qk]' value='p0.00%' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7850,6 +7866,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2103565215221969907:qk]' value='n#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -7887,7 +7904,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -7917,7 +7934,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7948,7 +7965,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8030,6 +8047,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8195,6 +8213,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3360750808181857461:qk]' value='n#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8232,7 +8251,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -8262,7 +8281,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#e8a33d' />
               </style-rule>
             </style>
@@ -8293,7 +8312,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8408,6 +8427,7 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8571,6 +8591,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2828040696381880192:qk]' value='n#,##0.0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8608,7 +8629,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -8638,7 +8659,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -8669,7 +8690,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8787,6 +8808,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2007928041536179389:qk]' value='c&quot;$&quot;#,##0;-&quot;$&quot;#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8950,6 +8972,7 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_4504844918117665692:qk]' value='c&quot;$&quot;#,##0;-&quot;$&quot;#,##0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -8987,7 +9010,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
               </style-rule>
             </style>
           </pane>
@@ -9017,7 +9040,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -9048,7 +9071,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
+                <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -9263,9 +9286,9 @@
         <style>
           <style-rule element='axis'>
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' scope='rows' value='false' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' field-type='quantitative' max='0.5' min='-0.5' range-type='fixed' scope='rows' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' field-type='quantitative' max='0.485' min='-0.485' range-type='fixed' scope='rows' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='1.05' min='-1.05' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='1.02' min='-1.02' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
           <style-rule element='gridline'>
@@ -9287,6 +9310,7 @@
             <format attr='washout' value='0' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -9326,6 +9350,13 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='151' />
+                <format attr='maxwidth' value='151' />
+                <format attr='minheight' value='84' />
+                <format attr='maxheight' value='84' />
+                <format attr='aspect' value='0' />
               </style-rule>
             </style>
           </pane>
@@ -9382,6 +9413,13 @@
                 <format attr='has-stroke' value='true' />
                 <format attr='stroke-color' value='#e6e7e2' />
               </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='151' />
+                <format attr='maxwidth' value='151' />
+                <format attr='minheight' value='84' />
+                <format attr='maxheight' value='84' />
+                <format attr='aspect' value='0' />
+              </style-rule>
             </style>
           </pane>
           <pane generated-title='Dot' id='3' inert='true' selection-relaxation-option='selection-relaxation-allow'>
@@ -9408,6 +9446,13 @@
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.35' />
+              </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='151' />
+                <format attr='maxwidth' value='151' />
+                <format attr='minheight' value='84' />
+                <format attr='maxheight' value='84' />
+                <format attr='aspect' value='0' />
               </style-rule>
             </style>
           </pane>
@@ -9460,6 +9505,13 @@
                 <format attr='size' value='0.01' />
                 <format attr='mark-color' value='#ffffff00' />
               </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='151' />
+                <format attr='maxwidth' value='151' />
+                <format attr='minheight' value='84' />
+                <format attr='maxheight' value='84' />
+                <format attr='aspect' value='0' />
+              </style-rule>
             </style>
           </pane>
           <pane generated-title='Score' id='5' inert='true' selection-relaxation-option='selection-relaxation-allow'>
@@ -9493,10 +9545,17 @@
                 <format attr='size' value='0.01' />
                 <format attr='mark-color' value='#ffffff00' />
               </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='151' />
+                <format attr='maxwidth' value='151' />
+                <format attr='minheight' value='84' />
+                <format attr='maxheight' value='84' />
+                <format attr='aspect' value='0' />
+              </style-rule>
             </style>
           </pane>
         </panes>
-        <rows>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)])</rows>
+        <rows>(([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok])) * [federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)])</rows>
         <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)])</cols>
       </table>
       <simple-id uuid='{2EA5DEC8-7691-770B-7ACB-4A1DAAB78096}' />
@@ -9575,6 +9634,7 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk]' value='false' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -9635,7 +9695,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.8' />
+                <format attr='size' value='1.9890055656433105' />
               </style-rule>
             </style>
           </pane>
@@ -9643,7 +9703,8 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Text' />
+            <mark class='GanttBar' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1838581371832391049:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3133453958818750804:nk]' />
@@ -9666,12 +9727,15 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.009999999776482582' />
+                <format attr='mark-color' value='#ffffff' />
+                <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk] * ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]))</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{4893CD93-66CB-F78B-32AF-0AD18E99992E}' />
@@ -9709,9 +9773,6 @@
             </column>
             <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
-            </column>
-            <column caption='Text Anchor Left' datatype='real' name='[Calculation_1417199013816888206]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='// Text Anchor Left&#13;&#10;// Where left-aligned text starts on a full-width background bar.&#13;&#10;MIN(0.03)' />
             </column>
             <column caption='Is At Risk Now' datatype='boolean' name='[Calculation_2875175252813195699]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is At Risk Now&#13;&#10;// Warning or Critical in the current snapshot. Shared by Health, Blast radius and Governance.&#13;&#10;[current_status_code] &gt;= 2' />
@@ -9772,18 +9833,17 @@
             <column-instance column='[Calculation_2821357717055420234]' derivation='None' name='[none:Calculation_2821357717055420234:ok]' pivot='key' type='ordinal' />
             <column-instance column='[display_name]' derivation='None' name='[none:display_name:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[Calculation_1417199013816888206]' derivation='User' name='[usr:Calculation_1417199013816888206:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_3175454921771165665]' derivation='None' name='[none:Calculation_3175454921771165665:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2214252331607255986]' derivation='None' name='[none:Calculation_2214252331607255986:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1400495547723235965]' derivation='None' name='[none:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_id (dim_nodes.csv)]' derivation='None' name='[none:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_key]' derivation='None' name='[none:node_key:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_3020345249174904341]' derivation='None' name='[none:Calculation_3020345249174904341:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1079190453669342032]' derivation='None' name='[none:Calculation_1079190453669342032:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_5034449253068379788]' derivation='None' name='[none:Calculation_5034449253068379788:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2745413474489980072]' derivation='None' name='[none:Calculation_2745413474489980072:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_6126214509312991080]' derivation='None' name='[none:Calculation_6126214509312991080:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1700778924915878744]' derivation='None' name='[none:Calculation_1700778924915878744:nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_id (dim_nodes.csv)]' derivation='None' name='[none:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_key]' derivation='None' name='[none:node_key:ok]' pivot='key' type='ordinal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3175454921771165665:nk]'>
             <groupfilter function='member' level='[none:Calculation_3175454921771165665:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
@@ -9800,10 +9860,12 @@
         <style>
           <style-rule element='axis'>
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='height' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' value='25' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='height' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='50' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9813,6 +9875,7 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='false' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -9836,62 +9899,10 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Automatic' />
-            <style>
-              <style-rule element='cell'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='label'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='mark'>
-                <format attr='mark-labels-show' value='false' />
-                <format attr='mark-labels-cull' value='false' />
-              </style-rule>
-            </style>
-          </pane>
-          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]'>
-            <view>
-              <breakdown value='auto' />
-            </view>
             <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1400495547723235965:nk]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (dim_nodes.csv):nk]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_key:ok]' />
-            </encodings>
-            <customized-tooltip>
-              <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>CLICK TO SEE WHO IS AFFECTED</run>
-              </formatted-text>
-            </customized-tooltip>
-            <style>
-              <style-rule element='cell'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='label'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='mark'>
-                <format attr='mark-labels-show' value='false' />
-                <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.9' />
-              </style-rule>
-            </style>
-          </pane>
-          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]'>
-            <view>
-              <breakdown value='auto' />
-            </view>
-            <mark class='Text' />
-            <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (dim_nodes.csv):nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_key:ok]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3020345249174904341:nk]' />
@@ -9936,12 +9947,13 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='1.65' />
               </style-rule>
             </style>
           </pane>
         </panes>
-        <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2821357717055420234:ok] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]</rows>
-        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk])</cols>
+        <rows>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2821357717055420234:ok] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk])</rows>
+        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]</cols>
       </table>
       <simple-id uuid='{36A1E160-524D-1B3C-4E0F-4BCE86C3352A}' />
     </worksheet>
@@ -10065,6 +10077,7 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:layer_column:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
+            <format attr='show-null-value-warning' value='false' />
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
@@ -19417,7 +19430,6 @@
           <zoom type='entire-view' />
         </viewpoint>
         <viewpoint name='HO Exposure Status Tiles'>
-          <zoom type='entire-view' />
         </viewpoint>
         <viewpoint name='HO Exposures At Risk KPI'>
           <zoom type='entire-view' />
