@@ -42,6 +42,7 @@ Parameters can't hold comments, so this table is their documentation (copy it to
 | `p_gantt_date` | Date | Range 22 Jul to 19 Oct 2026 | 19 Oct 2026 | Runs daily failures chart | Runs Gantt |
 | `p_show_info` | Boolean | True / False, aliases "Show" / "Hide" | False | GL Info Button | DZV on the info panel |
 | `p_tile_view` | String | List: All "All", Needs attention "Needs attention" | All | HO Tile View buttons | Health tile filter. **New, not in the data model doc** |
+| `p_lineage_view` | String | List: Graph "Graph", Table "Table" | Graph | LIN View Buttons | Lineage graph / table DZV |
 
 ---
 
@@ -364,7 +365,7 @@ NOT [p_show_info]
 
 | Sheet | Base table | Marks | Notes |
 |---|---|---|---|
-| GL Period Buttons | dim_date | Text on a Square, Columns: Period Option Label | Filter Period Option non-null. Colour: Is Active Period Option (True `#002C55`, False `#FFFFFF`). Tooltip off |
+| GL Period Buttons | dim_date | Text on a Square, Columns: Period Option Label | Filter Period Option non-null. Colour: Is Active Period Option (True `#FFFFFF`, False `#F5F5F3`, on a `#F5F5F3` track; text from Period Label Active / Inactive, see 2.9 and build plan 2.4). Tooltip off |
 | GL Platform Buttons | dim_date | Same pattern, Platform Option Label | Platform dot: a second Circle mark coloured by platform |
 | GL Period Hint | dim_date | Text: Period Hint Label | `#7A838E`, 10pt |
 | GL Data Updated | dim_date | Text: Data Updated Label, History Label | Right-aligned in the header |
@@ -499,6 +500,99 @@ WHEN "snowflake"  THEN "Snowflake"
 WHEN "databricks" THEN "Databricks"
 WHEN "redshift"   THEN "Redshift"
 END
+```
+
+---
+
+### 2.9 Shell calcs added in the build (21 Oct)
+
+Added by `tableau/tools/build_workbook.py` for the shared shell (build plan 2.4 and 2.5). The two label fields per button give the active and inactive text their own colours, because a label can't change colour per mark.
+
+```
+// Is Period Button Row
+// Keeps the 3 scaffold rows that carry a period button. Put on Filters (True).
+NOT ISNULL([Period Option])
+```
+
+```
+// Period Label Active
+// Button text when this button is the selected period (Semibold Navy run).
+IF [Is Active Period Option] THEN [Period Option Label] ELSE "" END
+```
+
+```
+// Period Label Inactive
+// Button text when this button is not selected (Book grey run).
+IF NOT [Is Active Period Option] THEN [Period Option Label] ELSE "" END
+```
+
+```
+// Is Platform Button Row
+// Keeps the 4 scaffold rows that carry a platform button. Put on Filters (True).
+NOT ISNULL([Platform Option])
+```
+
+```
+// Platform Label Active
+// Button text when this button is the selected platform (Semibold Navy run).
+IF [Is Active Platform Option] THEN [Platform Option Label] ELSE "" END
+```
+
+```
+// Platform Label Inactive
+// Button text when this button is not selected (Book grey run).
+IF NOT [Is Active Platform Option] THEN [Platform Option Label] ELSE "" END
+```
+
+```
+// Platform Dot Snowflake
+// Coloured square before "Snowflake" on its button. Each platform has its own field so each gets its own run colour.
+IF [Platform Option] = "snowflake" THEN "■  " ELSE "" END
+```
+
+```
+// Platform Dot Databricks
+// Coloured square before "Databricks" on its button.
+IF [Platform Option] = "databricks" THEN "■  " ELSE "" END
+```
+
+```
+// Platform Dot Redshift
+// Coloured square before "Redshift" on its button.
+IF [Platform Option] = "redshift" THEN "■  " ELSE "" END
+```
+
+```
+// Platform Option Order
+// Keeps the platform buttons in prototype order (All, Snowflake, Databricks, Redshift) instead of A to Z.
+[day_index]
+```
+
+```
+// Is Info Button Row
+// One scaffold row for the single-mark info button. Put on Filters (True).
+[day_index] = 0
+```
+
+```
+// Info Button Glyph
+// The header icon: "ⓘ" opens the info panel, "✕" closes it.
+IF [p_show_info] THEN "✕" ELSE "ⓘ" END
+```
+
+```
+// Show Info Panel
+// DZV for GL Info Panel: shown while p_show_info is True.
+[p_show_info]
+```
+
+```
+// Data Updated Date Text
+// The date part of the header stamp, shown bold after "Data updated on ".
+STR(DAY({ MAX([date (dim_date.csv)]) })) + " "
++ LEFT(DATENAME('month', { MAX([date (dim_date.csv)]) }), 3) + " "
++ STR(YEAR({ MAX([date (dim_date.csv)]) }))
++ ", 23:59"
 ```
 
 ---

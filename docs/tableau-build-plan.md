@@ -9,7 +9,7 @@ Pre-build items 6 to 9, written before any dashboard goes into the workbook.
 | 7. Container trees for every dashboard | 3 |
 | 9. Formatting spec | 4 |
 | How I build it in the `.twb` | 5 |
-| Decisions I need from you | 6 |
+| Decisions | 6 |
 
 **Sources:** the prototype (`mockup/lineage-control-tower.html`), measured in headless Chromium at 1600 × 1000; `docs/tableau-calc-pack.md` for sheet names and calcs; the tableau-style skill (product mode) for padding, borders, tooltips and number formats.
 
@@ -127,7 +127,7 @@ The review follows the order of importance we agreed: information, chart choice,
 3. **Dynamic zone visibility instead of hidden sheets.** Tableau skips sheets in hidden zones, so the Lineage panel only computes the section for the node type on show.
 4. **FIXED calcs with no dimension** are evaluated once per data source, not per mark. The DZV calcs in the pack all use this pattern.
 5. **Table calcs only where needed:** the tile grid (INDEX) and the layer share. Both run over fewer than 150 rows.
-6. **No custom shapes and no images** in the first build. That avoids file paths that would break on your Mac (decision D7).
+6. **Images travel inside the .twbx** (`Image/`), so nothing points at a folder on one machine (decision D7).
 
 ---
 
@@ -910,17 +910,17 @@ These are small and follow from the review. I'll add them to the pack when I sta
 
 ---
 
-## 6. Decisions I need from you
+## 6. Decisions (all agreed 21 Oct)
 
 My recommendation is listed first in each row.
 
 | # | Decision | Options | My recommendation |
 |---|---|---|---|
-| D1 | Health tile group labels ("BI DASHBOARDS 17") | (a) one tile sheet, group label as a narrow row header on the left (about 110px), tiles about 146px wide; (b) four tile sheets, one per group, with the label as each sheet's title, exactly like the prototype | **(a)**. It survives the Needs attention switch and platform changes without gaps. With (b), the fixed group heights leave holes when the tile count drops |
+| D1 | Health tile group labels ("BI DASHBOARDS 17") | (a) one tile sheet, group label as a narrow row header on the left (about 110px), tiles about 146px wide; (b) four tile sheets, one per group, with the label as each sheet's title, exactly like the prototype | **Agreed (21 Oct): (a)**. It survives the Needs attention switch and platform changes without gaps. With (b), the fixed group heights leave holes when the tile count drops |
 | D2 | Font for node names, schemas and Slack channels | **Decided (21 Oct): Tableau family** (Book, Medium, Semibold) for identifiers too, no monospace | Done |
-| D3 | Semantic refresh table's sparkline column | (a) Fail days + Last failure text columns; (b) a second sheet aligned beside the table | **(a)**. (b) drifts out of line whenever the row count changes |
-| D4 | AI-built dot on the Usage scatter | (a) `#3D41A0` (matches the AI-built tag, leaves purple `#5B5FC7` to Redshift); (b) keep `#5B5FC7` as in the prototype | **(a)** |
-| D5 | Developer documentation | (a) an 11th dashboard, Documentation, linked from About; (b) put it at the bottom of About | **(a)**, as the skill's documentation template suggests |
-| D6 | Gaps to close lists | (a) top 5 per list + "and N more"; (b) full lists that scroll | **(a)** |
-| D7 | Icons and the brand mark | (a) text-only nav and a text brand mark for now; PNG icons later, once you save as .twbx so the images travel with the file; (b) icons now, which means image paths that point at this repo and break on your Mac until you re-link them | **(a)** |
-| D8 | Decimals on the rate BANs (run success, tests, freshness) | (a) 2 decimals as in the prototype (99.85%); (b) 1 decimal as in the skill (99.9%) | **(a)**. At 1 decimal, two of the three show 99.9% and the changes vanish |
+| D3 | Semantic refresh table's sparkline column | (a) Fail days + Last failure text columns; (b) a second sheet aligned beside the table | **Agreed (21 Oct): (a)**. (b) drifts out of line whenever the row count changes |
+| D4 | AI-built dot on the Usage scatter | (a) `#3D41A0` (matches the AI-built tag, leaves purple `#5B5FC7` to Redshift); (b) keep `#5B5FC7` as in the prototype | **Agreed (21 Oct): (a)** |
+| D5 | Developer documentation | (a) an 11th dashboard, Documentation, linked from About; (b) put it at the bottom of About | **Agreed (21 Oct): (a)**, as the skill's documentation template suggests |
+| D6 | Gaps to close lists | (a) top 5 per list + "and N more"; (b) full lists that scroll | **Agreed (21 Oct): (a)** |
+| D7 | Icons and the brand mark | **Decided (21 Oct): icons now.** The build ships as a .twbx with the PNGs inside (`tableau/Image/`, rendered from the prototype's own SVGs) | Done |
+| D8 | Decimals on the rate BANs (run success, tests, freshness) | (a) 2 decimals as in the prototype (99.85%); (b) 1 decimal as in the skill (99.9%) | **Agreed (21 Oct): (a)**. At 1 decimal, two of the three show 99.9% and the changes vanish |
