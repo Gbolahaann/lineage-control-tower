@@ -4596,6 +4596,12 @@
       <column caption='Period Option' datatype='integer' name='[Calculation_1395152531449864650]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Period Option&#13;&#10;// Scaffold: turns the first 3 days of dim_date into the 3 period buttons. Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN 7&#13;&#10;WHEN 1 THEN 30&#13;&#10;WHEN 2 THEN 90&#13;&#10;END' />
       </column>
+      <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
+      </column>
+      <column caption='Text Anchor Centre' datatype='real' name='[Calculation_2496391787737110048]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Text Anchor Centre&#13;&#10;// Where centred text sits on a full-width background bar.&#13;&#10;MIN(0.5)' />
+      </column>
       <column caption='Is Period Button Row' datatype='boolean' name='[Calculation_1896708728705539988]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Period Button Row&#13;&#10;// Keeps the 3 scaffold rows that carry a period button. Put on Filters (True).&#13;&#10;NOT ISNULL([Calculation_1395152531449864650])' />
       </column>
@@ -4624,13 +4630,13 @@
         <calculation class='tableau' formula='// Is Active Platform Option&#13;&#10;// Colours the selected platform button.&#13;&#10;[Calculation_1708304674625620149] = [Parameters].[Parameter 2]' />
       </column>
       <column caption='Platform Dot Snowflake' datatype='string' name='[Calculation_1113706873550636432]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Platform Dot Snowflake&#13;&#10;// Coloured square before &quot;Snowflake&quot; on its button. Each platform has its own field so each gets its own run colour.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;snowflake&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+        <calculation class='tableau' formula='// Platform Dot Snowflake&#13;&#10;// Coloured square before &quot;Snowflake&quot; on its button. Each platform has its own field so each gets its own run colour.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;snowflake&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
       </column>
       <column caption='Platform Dot Databricks' datatype='string' name='[Calculation_2812498324364876413]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Platform Dot Databricks&#13;&#10;// Coloured square before &quot;Databricks&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;databricks&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+        <calculation class='tableau' formula='// Platform Dot Databricks&#13;&#10;// Coloured square before &quot;Databricks&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;databricks&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
       </column>
       <column caption='Platform Dot Redshift' datatype='string' name='[Calculation_2114073437937435113]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Platform Dot Redshift&#13;&#10;// Coloured square before &quot;Redshift&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;redshift&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+        <calculation class='tableau' formula='// Platform Dot Redshift&#13;&#10;// Coloured square before &quot;Redshift&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;redshift&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
       </column>
       <column caption='Platform Option Label' datatype='string' name='[Calculation_1669066058101174507]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Platform Option Label&#13;&#10;// Button text, as in the prototype.&#13;&#10;CASE [Calculation_1708304674625620149]&#13;&#10;WHEN &quot;All&quot;        THEN &quot;All&quot;&#13;&#10;WHEN &quot;snowflake&quot;  THEN &quot;Snowflake&quot;&#13;&#10;WHEN &quot;databricks&quot; THEN &quot;Databricks&quot;&#13;&#10;WHEN &quot;redshift&quot;   THEN &quot;Redshift&quot;&#13;&#10;END' />
@@ -4882,11 +4888,32 @@
           <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
         </calculation>
       </column>
+      <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
+      </column>
       <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
       </column>
       <column caption='Status Tint Key' datatype='string' name='[Calculation_1400495547723235965]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Status Tint Key&#13;&#10;// Same values as Status Label, kept as a separate field so it can carry the light tint palette&#13;&#10;// for tile and alert backgrounds: Healthy #FFFFFF, Warning #FDF3E1, Critical #FBEAE9, No data #F1F2F4.&#13;&#10;[Calculation_3105941082857465865]' />
+      </column>
+      <column caption='Tile Shape Point' datatype='spatial' name='[Calculation_1764875978013056325]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Tile Shape Point&#13;&#10;// Outline of one rounded tile, drawn as a polygon on its own little map pane (the tile grid is&#13;&#10;// row index x Latitude by column index x Longitude, as in a Tableau-saved reference workbook).&#13;&#10;// Each of the 90 Exposure Daily rows of an exposure is one point of the outline: a superellipse&#13;&#10;// (exponent 8), which reads as a rectangle with rounded corners. Path: the Exposure Daily date.&#13;&#10;MAKEPOINT(&#13;&#10;    0.44 * SIGN(SIN(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))&#13;&#10;         * POWER(ABS(SIN(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25),&#13;&#10;    0.97 * SIGN(COS(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))&#13;&#10;         * POWER(ABS(COS(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25)&#13;&#10;)' />
+      </column>
+      <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+      </column>
+      <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
+        <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+      </column>
+      <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
+      </column>
+      <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
+      </column>
+      <column caption='Tile Dot Point' datatype='spatial' name='[Calculation_1781533279255170688]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Tile Dot Point&#13;&#10;// Anchor of the status dot, top right of the tile.&#13;&#10;MAKEPOINT(0.27, 0.86)' />
       </column>
       <column caption='Tile Name Short' datatype='string' name='[Calculation_8990803335852813669]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile Name Short&#13;&#10;// Tile title cut to fit a 163px tile: 22 characters, then &quot;…&quot;. The tooltip has the full name.&#13;&#10;IF LEN([display_name]) &gt; 23 THEN LEFT([display_name], 22) + &quot;…&quot; ELSE [display_name] END' />
@@ -4912,20 +4939,11 @@
       <column caption='Tile AI Tag' datatype='string' name='[Calculation_4692392410293798022]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile AI Tag&#13;&#10;// &quot;AI-built&quot; chip text for ai_assisted exposures (story 10 and the agents).&#13;&#10;IF [build_method] = &quot;ai_assisted&quot; THEN &quot;AI-built&quot; ELSE &quot;&quot; END' />
       </column>
-      <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
+      <column caption='Tile Text Point' datatype='spatial' name='[Calculation_1555363273581306898]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Tile Text Point&#13;&#10;// Anchor of the tile text (name, tool and owner, trust badge), left side of the tile.&#13;&#10;MAKEPOINT(0.0, -0.86)' />
       </column>
-      <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
-      </column>
-      <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
-      </column>
-      <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
-        <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
-      </column>
-      <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
+      <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Anchor of the 7-day score, bottom right of the tile.&#13;&#10;MAKEPOINT(-0.26, 0.86)' />
       </column>
       <column caption='Tile View Option' datatype='string' name='[Calculation_2894482038928477351]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile View Option&#13;&#10;// Scaffold for the All / Needs attention buttons (first 2 days of dim_date). Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN &quot;All&quot;&#13;&#10;WHEN 1 THEN &quot;Needs attention&quot;&#13;&#10;END' />
@@ -4947,6 +4965,9 @@
       </column>
       <column caption='Attention Order' datatype='integer' name='[Calculation_2821357717055420234]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Attention Order&#13;&#10;// Attention Sort turned around, so the natural ascending order of the rows is worst first.&#13;&#10;-[Calculation_1867437212419901178]' />
+      </column>
+      <column caption='Text Anchor Left' datatype='real' name='[Calculation_1417199013816888206]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Text Anchor Left&#13;&#10;// Where left-aligned text starts on a full-width background bar.&#13;&#10;MIN(0.03)' />
       </column>
       <column caption='Is Attention Node' datatype='boolean' name='[Calculation_3175454921771165665]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Attention Node&#13;&#10;// Upstream nodes (not exposures) that are Warning or Critical right now. Today: 3 nodes.&#13;&#10;[resource_type] &lt;&gt; &quot;exposure&quot;&#13;&#10;AND [Calculation_2875175252813195699]' />
@@ -4983,14 +5004,17 @@
       </column>
       <column caption='Layer Share' datatype='real' name='[Calculation_9282765132542256788]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Layer Share&#13;&#10;// Each status&apos;s share of the layer, so every bar spans the full width.&#13;&#10;// Table calc: compute using Status Label (along the bar).&#13;&#10;[Calculation_2446133016301952044] / TOTAL([Calculation_2446133016301952044])'>
-          <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2946817898410042583]' ordering-type='Field' />
+          <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2496845894520933783]' ordering-type='Field' />
         </calculation>
       </column>
       <column caption='Layer Label Position' datatype='real' name='[Calculation_2008892738692294245]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='// Layer Label Position&#13;&#10;// Where the &quot;1 / 27&quot; count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).&#13;&#10;MIN(1.06)' />
+        <calculation class='tableau' formula='// Layer Label Position&#13;&#10;// Where the &quot;1 / 27&quot; count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).&#13;&#10;MIN(1.08)' />
       </column>
       <column caption='Status Stack Order' datatype='integer' name='[Calculation_2946817898410042583]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Status Stack Order&#13;&#10;// Healthy first, for stacked bars, as in the prototype&apos;s layer health strip: Healthy, Warning, Critical, No data.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 1 THEN 1&#13;&#10;WHEN 2 THEN 2&#13;&#10;WHEN 3 THEN 3&#13;&#10;ELSE 4&#13;&#10;END' />
+      </column>
+      <column caption='Layer Stack Key' datatype='integer' name='[Calculation_2496845894520933783]' role='dimension' type='ordinal'>
+        <calculation class='tableau' formula='// Layer Stack Key&#13;&#10;// Stack order for the layer bar, left to right: Healthy, Warning, Critical, No data.&#13;&#10;// Tableau stacks the highest value first, so Healthy gets the highest key.&#13;&#10;5 - [Calculation_2946817898410042583]' />
       </column>
       <column caption='Layer Total' datatype='integer' name='[Calculation_3311281824631653486]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Layer Total&#13;&#10;// Nodes in the layer for the selected platform. FIXED with the platform rule inside, so no context filter is needed.&#13;&#10;{ FIXED [layer] : SUM(IF [Calculation_2214252331607255986] THEN 1 END) }' />
@@ -5015,10 +5039,10 @@
       </column>
       <column-instance column='[Calculation_1290101426377148290]' derivation='None' name='[none:Calculation_1290101426377148290:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_1733161848805935888]' derivation='None' name='[none:Calculation_1733161848805935888:nk]' pivot='key' type='nominal' />
-      <column-instance column='[Calculation_1400495547723235965]' derivation='Attribute' name='[attr:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
-      <column-instance column='[Calculation_1284089094536110577]' derivation='None' name='[none:Calculation_1284089094536110577:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_1400495547723235965]' derivation='None' name='[none:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
-      <column-instance column='[Calculation_2946817898410042583]' derivation='None' name='[none:Calculation_2946817898410042583:ok]' pivot='key' type='ordinal' />
+      <column-instance column='[Calculation_3105941082857465865]' derivation='None' name='[none:Calculation_3105941082857465865:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_1284089094536110577]' derivation='None' name='[none:Calculation_1284089094536110577:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_2496845894520933783]' derivation='None' name='[none:Calculation_2496845894520933783:ok]' pivot='key' type='ordinal' />
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <style>
         <style-rule element='mark'>
@@ -5031,28 +5055,6 @@
             </map>
           </encoding>
           <encoding attr='color' field='[none:Calculation_1733161848805935888:nk]' type='palette'>
-            <map to='#ffffff'>
-              <bucket>true</bucket>
-            </map>
-            <map to='#f5f5f3'>
-              <bucket>false</bucket>
-            </map>
-          </encoding>
-          <encoding attr='color' field='[attr:Calculation_1400495547723235965:nk]' type='palette'>
-            <map to='#ffffff'>
-              <bucket>&quot;Healthy&quot;</bucket>
-            </map>
-            <map to='#fdf3e1'>
-              <bucket>&quot;Warning&quot;</bucket>
-            </map>
-            <map to='#fbeae9'>
-              <bucket>&quot;Critical&quot;</bucket>
-            </map>
-            <map to='#f1f2f4'>
-              <bucket>&quot;No data&quot;</bucket>
-            </map>
-          </encoding>
-          <encoding attr='color' field='[none:Calculation_1284089094536110577:nk]' type='palette'>
             <map to='#ffffff'>
               <bucket>true</bucket>
             </map>
@@ -5074,18 +5076,40 @@
               <bucket>&quot;No data&quot;</bucket>
             </map>
           </encoding>
-          <encoding attr='color' field='[none:Calculation_2946817898410042583:ok]' type='palette'>
+          <encoding attr='color' field='[none:Calculation_3105941082857465865:nk]' type='palette'>
             <map to='#2f9e6b'>
-              <bucket>1</bucket>
+              <bucket>&quot;Healthy&quot;</bucket>
             </map>
             <map to='#e8a33d'>
-              <bucket>2</bucket>
+              <bucket>&quot;Warning&quot;</bucket>
             </map>
             <map to='#d2453f'>
-              <bucket>3</bucket>
+              <bucket>&quot;Critical&quot;</bucket>
             </map>
             <map to='#a3adb8'>
+              <bucket>&quot;No data&quot;</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[none:Calculation_1284089094536110577:nk]' type='palette'>
+            <map to='#ffffff'>
+              <bucket>true</bucket>
+            </map>
+            <map to='#f5f5f3'>
+              <bucket>false</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[none:Calculation_2496845894520933783:ok]' type='palette'>
+            <map to='#2f9e6b'>
               <bucket>4</bucket>
+            </map>
+            <map to='#e8a33d'>
+              <bucket>3</bucket>
+            </map>
+            <map to='#d2453f'>
+              <bucket>2</bucket>
+            </map>
+            <map to='#a3adb8'>
+              <bucket>1</bucket>
             </map>
           </encoding>
         </style-rule>
@@ -6071,6 +6095,12 @@
             <column caption='Period Option' datatype='integer' name='[Calculation_1395152531449864650]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Period Option&#13;&#10;// Scaffold: turns the first 3 days of dim_date into the 3 period buttons. Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN 7&#13;&#10;WHEN 1 THEN 30&#13;&#10;WHEN 2 THEN 90&#13;&#10;END' />
             </column>
+            <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
+            </column>
+            <column caption='Text Anchor Centre' datatype='real' name='[Calculation_2496391787737110048]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Text Anchor Centre&#13;&#10;// Where centred text sits on a full-width background bar.&#13;&#10;MIN(0.5)' />
+            </column>
             <column caption='Is Period Button Row' datatype='boolean' name='[Calculation_1896708728705539988]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Period Button Row&#13;&#10;// Keeps the 3 scaffold rows that carry a period button. Put on Filters (True).&#13;&#10;NOT ISNULL([Calculation_1395152531449864650])' />
             </column>
@@ -6088,6 +6118,8 @@
             </column>
             <column caption='Day Index' datatype='integer' name='[day_index]' role='dimension' type='ordinal' />
             <column-instance column='[Calculation_1395152531449864650]' derivation='None' name='[none:Calculation_1395152531449864650:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1896708728705539988]' derivation='None' name='[none:Calculation_1896708728705539988:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1290101426377148290]' derivation='None' name='[none:Calculation_1290101426377148290:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2018629980644388562]' derivation='None' name='[none:Calculation_2018629980644388562:nk]' pivot='key' type='nominal' />
@@ -6103,6 +6135,10 @@
         </view>
         <style>
           <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
           <style-rule element='gridline'>
@@ -6135,10 +6171,53 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Square' />
+            <mark class='Automatic' />
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1290101426377148290:nk]' />
+            </encodings>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.8' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Text' />
+            <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2018629980644388562:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3943248154185459554:nk]' />
             </encodings>
@@ -6160,13 +6239,12 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='1' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok]</cols>
+        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{91E41478-7A3D-5803-D6F4-8D29EE2375A1}' />
@@ -6199,6 +6277,12 @@
             <column caption='Platform Option Order' datatype='integer' name='[Calculation_1997623788981524034]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Platform Option Order&#13;&#10;// Keeps the platform buttons in prototype order (All, Snowflake, Databricks, Redshift) instead of A to Z.&#13;&#10;[day_index]' />
             </column>
+            <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
+            </column>
+            <column caption='Text Anchor Centre' datatype='real' name='[Calculation_2496391787737110048]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Text Anchor Centre&#13;&#10;// Where centred text sits on a full-width background bar.&#13;&#10;MIN(0.5)' />
+            </column>
             <column caption='Platform Option' datatype='string' name='[Calculation_1708304674625620149]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Platform Option&#13;&#10;// Scaffold: turns the first 4 days of dim_date into the 4 platform buttons. Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN &quot;All&quot;&#13;&#10;WHEN 1 THEN &quot;snowflake&quot;&#13;&#10;WHEN 2 THEN &quot;databricks&quot;&#13;&#10;WHEN 3 THEN &quot;redshift&quot;&#13;&#10;END' />
             </column>
@@ -6209,13 +6293,13 @@
               <calculation class='tableau' formula='// Is Active Platform Option&#13;&#10;// Colours the selected platform button.&#13;&#10;[Calculation_1708304674625620149] = [Parameters].[Parameter 2]' />
             </column>
             <column caption='Platform Dot Snowflake' datatype='string' name='[Calculation_1113706873550636432]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Platform Dot Snowflake&#13;&#10;// Coloured square before &quot;Snowflake&quot; on its button. Each platform has its own field so each gets its own run colour.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;snowflake&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+              <calculation class='tableau' formula='// Platform Dot Snowflake&#13;&#10;// Coloured square before &quot;Snowflake&quot; on its button. Each platform has its own field so each gets its own run colour.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;snowflake&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
             </column>
             <column caption='Platform Dot Databricks' datatype='string' name='[Calculation_2812498324364876413]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Platform Dot Databricks&#13;&#10;// Coloured square before &quot;Databricks&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;databricks&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+              <calculation class='tableau' formula='// Platform Dot Databricks&#13;&#10;// Coloured square before &quot;Databricks&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;databricks&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
             </column>
             <column caption='Platform Dot Redshift' datatype='string' name='[Calculation_2114073437937435113]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Platform Dot Redshift&#13;&#10;// Coloured square before &quot;Redshift&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;redshift&quot; THEN &quot;■  &quot; ELSE &quot;&quot; END' />
+              <calculation class='tableau' formula='// Platform Dot Redshift&#13;&#10;// Coloured square before &quot;Redshift&quot; on its button.&#13;&#10;IF [Calculation_1708304674625620149] = &quot;redshift&quot; THEN &quot;■ &quot; ELSE &quot;&quot; END' />
             </column>
             <column caption='Platform Option Label' datatype='string' name='[Calculation_1669066058101174507]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Platform Option Label&#13;&#10;// Button text, as in the prototype.&#13;&#10;CASE [Calculation_1708304674625620149]&#13;&#10;WHEN &quot;All&quot;        THEN &quot;All&quot;&#13;&#10;WHEN &quot;snowflake&quot;  THEN &quot;Snowflake&quot;&#13;&#10;WHEN &quot;databricks&quot; THEN &quot;Databricks&quot;&#13;&#10;WHEN &quot;redshift&quot;   THEN &quot;Redshift&quot;&#13;&#10;END' />
@@ -6228,14 +6312,16 @@
             </column>
             <column caption='Day Index' datatype='integer' name='[day_index]' role='dimension' type='ordinal' />
             <column-instance column='[Calculation_1997623788981524034]' derivation='None' name='[none:Calculation_1997623788981524034:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1766699502863314635]' derivation='None' name='[none:Calculation_1766699502863314635:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1733161848805935888]' derivation='None' name='[none:Calculation_1733161848805935888:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1708304674625620149]' derivation='None' name='[none:Calculation_1708304674625620149:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1113706873550636432]' derivation='None' name='[none:Calculation_1113706873550636432:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2812498324364876413]' derivation='None' name='[none:Calculation_2812498324364876413:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2114073437937435113]' derivation='None' name='[none:Calculation_2114073437937435113:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1615833699327644939]' derivation='None' name='[none:Calculation_1615833699327644939:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_3045694386135075059]' derivation='None' name='[none:Calculation_3045694386135075059:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1708304674625620149]' derivation='None' name='[none:Calculation_1708304674625620149:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1766699502863314635:nk]'>
             <groupfilter function='member' level='[none:Calculation_1766699502863314635:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
@@ -6247,6 +6333,10 @@
         </view>
         <style>
           <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
           <style-rule element='gridline'>
@@ -6279,10 +6369,54 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Square' />
+            <mark class='Automatic' />
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733161848805935888:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1708304674625620149:nk]' />
+            </encodings>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.8' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Text' />
+            <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1708304674625620149:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1113706873550636432:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2812498324364876413:nk]' />
@@ -6311,13 +6445,12 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='1' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok]</cols>
+        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{6381F6CE-1315-0D22-7425-BD38A3D704E4}' />
@@ -6993,7 +7126,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -7023,7 +7156,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7054,7 +7187,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -7373,7 +7506,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -7403,7 +7536,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7434,7 +7567,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -7753,7 +7886,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -7783,7 +7916,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -7814,7 +7947,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8098,7 +8231,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -8128,7 +8261,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#e8a33d' />
               </style-rule>
             </style>
@@ -8159,7 +8292,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8474,7 +8607,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -8504,7 +8637,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -8535,7 +8668,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8853,7 +8986,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
               </style-rule>
             </style>
           </pane>
@@ -8883,7 +9016,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#005fae' />
               </style-rule>
             </style>
@@ -8914,7 +9047,7 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.75' />
+                <format attr='size' value='0.45' />
                 <format attr='mark-color' value='#d9dcd7' />
               </style-rule>
             </style>
@@ -8932,6 +9065,9 @@
             <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
             <datasource name='Parameters' />
           </datasources>
+          <mapsources>
+            <mapsource name='' />
+          </mapsources>
           <datasource-dependencies datasource='Parameters'>
             <column alias='All' caption='p_platform' datatype='string' datatype-customized='true' name='[Parameter 2]' param-domain-type='list' role='measure' type='nominal' value='&quot;All&quot;'>
               <calculation class='tableau' formula='&quot;All&quot;' />
@@ -8989,11 +9125,32 @@
                 <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
               </calculation>
             </column>
+            <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
+            </column>
             <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
             </column>
             <column caption='Status Tint Key' datatype='string' name='[Calculation_1400495547723235965]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Status Tint Key&#13;&#10;// Same values as Status Label, kept as a separate field so it can carry the light tint palette&#13;&#10;// for tile and alert backgrounds: Healthy #FFFFFF, Warning #FDF3E1, Critical #FBEAE9, No data #F1F2F4.&#13;&#10;[Calculation_3105941082857465865]' />
+            </column>
+            <column caption='Tile Shape Point' datatype='spatial' name='[Calculation_1764875978013056325]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Tile Shape Point&#13;&#10;// Outline of one rounded tile, drawn as a polygon on its own little map pane (the tile grid is&#13;&#10;// row index x Latitude by column index x Longitude, as in a Tableau-saved reference workbook).&#13;&#10;// Each of the 90 Exposure Daily rows of an exposure is one point of the outline: a superellipse&#13;&#10;// (exponent 8), which reads as a rectangle with rounded corners. Path: the Exposure Daily date.&#13;&#10;MAKEPOINT(&#13;&#10;    0.44 * SIGN(SIN(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))&#13;&#10;         * POWER(ABS(SIN(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25),&#13;&#10;    0.97 * SIGN(COS(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))&#13;&#10;         * POWER(ABS(COS(2 * PI() * DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25)&#13;&#10;)' />
+            </column>
+            <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+            </column>
+            <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
+              <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+            </column>
+            <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
+            </column>
+            <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
+            </column>
+            <column caption='Tile Dot Point' datatype='spatial' name='[Calculation_1781533279255170688]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Tile Dot Point&#13;&#10;// Anchor of the status dot, top right of the tile.&#13;&#10;MAKEPOINT(0.27, 0.86)' />
             </column>
             <column caption='Tile Name Short' datatype='string' name='[Calculation_8990803335852813669]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile Name Short&#13;&#10;// Tile title cut to fit a 163px tile: 22 characters, then &quot;…&quot;. The tooltip has the full name.&#13;&#10;IF LEN([display_name]) &gt; 23 THEN LEFT([display_name], 22) + &quot;…&quot; ELSE [display_name] END' />
@@ -9019,26 +9176,18 @@
             <column caption='Tile AI Tag' datatype='string' name='[Calculation_4692392410293798022]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile AI Tag&#13;&#10;// &quot;AI-built&quot; chip text for ai_assisted exposures (story 10 and the agents).&#13;&#10;IF [build_method] = &quot;ai_assisted&quot; THEN &quot;AI-built&quot; ELSE &quot;&quot; END' />
             </column>
-            <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
+            <column caption='Tile Text Point' datatype='spatial' name='[Calculation_1555363273581306898]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Tile Text Point&#13;&#10;// Anchor of the tile text (name, tool and owner, trust badge), left side of the tile.&#13;&#10;MAKEPOINT(0.0, -0.86)' />
             </column>
-            <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
-            </column>
-            <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
-            </column>
-            <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
-              <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
-            </column>
-            <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
+            <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Anchor of the 7-day score, bottom right of the tile.&#13;&#10;MAKEPOINT(-0.26, 0.86)' />
             </column>
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
             <column caption='Culprit Count' datatype='real' name='[culprit_count]' role='measure' type='quantitative' />
             <column caption='Culprit Nodes' datatype='string' name='[culprit_nodes]' role='dimension' type='nominal' />
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
+            <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
             <column caption='Display Name' datatype='string' name='[display_name]' role='dimension' type='nominal' />
             <column caption='Exposure Group' datatype='string' name='[exposure_group]' role='dimension' type='nominal' />
             <column caption='Exposure Type' datatype='string' name='[exposure_type]' role='dimension' type='nominal' />
@@ -9051,15 +9200,38 @@
             <column-instance column='[Calculation_1368642606501877949]' derivation='None' name='[none:Calculation_1368642606501877949:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_2442059920660643562]' derivation='None' name='[none:Calculation_2442059920660643562:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1091687039505899741]' derivation='User' name='[usr:Calculation_1091687039505899741:ok]' pivot='key' type='ordinal'>
-              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+              <table-calc level-address='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field'>
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1400495547723235965]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_3105941082857465865]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[date (mart_exposure_daily.csv)]' />
+              </table-calc>
             </column-instance>
             <column-instance column='[Calculation_7154026945591774946]' derivation='User' name='[usr:Calculation_7154026945591774946:ok]' pivot='key' type='ordinal'>
-              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+              <table-calc level-address='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field'>
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1400495547723235965]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_3105941082857465865]' />
+                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[date (mart_exposure_daily.csv)]' />
+              </table-calc>
             </column-instance>
             <column-instance column='[Calculation_8377152860883702219]' derivation='None' name='[none:Calculation_8377152860883702219:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2214252331607255986]' derivation='None' name='[none:Calculation_2214252331607255986:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1065115793061580082]' derivation='None' name='[none:Calculation_1065115793061580082:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1400495547723235965]' derivation='Attribute' name='[attr:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_4441281616373123992]' derivation='None' name='[none:Calculation_4441281616373123992:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1400495547723235965]' derivation='None' name='[none:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1764875978013056325]' derivation='Collect' name='[clct:Calculation_1764875978013056325:nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_id (dim_nodes.csv)]' derivation='Attribute' name='[attr:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1962397006096080865]' derivation='Attribute' name='[attr:Calculation_1962397006096080865:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_7177065549275409274]' derivation='Attribute' name='[attr:Calculation_7177065549275409274:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[display_name]' derivation='Attribute' name='[attr:display_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[trust_badge]' derivation='Attribute' name='[attr:trust_badge:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1659843968626155727]' derivation='Attribute' name='[attr:Calculation_1659843968626155727:nk]' pivot='key' type='nominal' />
+            <column-instance column='[owner_name]' derivation='Attribute' name='[attr:owner_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1883889205833775337]' derivation='Attribute' name='[attr:Calculation_1883889205833775337:nk]' pivot='key' type='nominal' />
+            <column-instance column='[date (mart_exposure_daily.csv)]' derivation='None' name='[none:date (mart_exposure_daily.csv):ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_3105941082857465865]' derivation='None' name='[none:Calculation_3105941082857465865:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1781533279255170688]' derivation='Collect' name='[clct:Calculation_1781533279255170688:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_8990803335852813669]' derivation='Attribute' name='[attr:Calculation_8990803335852813669:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2336170961516567926]' derivation='Attribute' name='[attr:Calculation_2336170961516567926:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_3035768374696072600]' derivation='Attribute' name='[attr:Calculation_3035768374696072600:nk]' pivot='key' type='nominal' />
@@ -9068,15 +9240,8 @@
             <column-instance column='[Calculation_1833995497923574551]' derivation='Attribute' name='[attr:Calculation_1833995497923574551:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1522121282636949905]' derivation='Attribute' name='[attr:Calculation_1522121282636949905:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_4692392410293798022]' derivation='Attribute' name='[attr:Calculation_4692392410293798022:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1659843968626155727]' derivation='Attribute' name='[attr:Calculation_1659843968626155727:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_4441281616373123992]' derivation='None' name='[none:Calculation_4441281616373123992:nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_id (dim_nodes.csv)]' derivation='Attribute' name='[attr:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1962397006096080865]' derivation='Attribute' name='[attr:Calculation_1962397006096080865:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_7177065549275409274]' derivation='Attribute' name='[attr:Calculation_7177065549275409274:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[display_name]' derivation='Attribute' name='[attr:display_name:nk]' pivot='key' type='nominal' />
-            <column-instance column='[trust_badge]' derivation='Attribute' name='[attr:trust_badge:nk]' pivot='key' type='nominal' />
-            <column-instance column='[owner_name]' derivation='Attribute' name='[attr:owner_name:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1883889205833775337]' derivation='Attribute' name='[attr:Calculation_1883889205833775337:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1555363273581306898]' derivation='Collect' name='[clct:Calculation_1555363273581306898:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_3365331846570732051]' derivation='Collect' name='[clct:Calculation_3365331846570732051:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_8377152860883702219:nk]'>
             <groupfilter function='member' level='[none:Calculation_8377152860883702219:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
@@ -9096,6 +9261,10 @@
         </view>
         <style>
           <style-rule element='axis'>
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' scope='rows' value='false' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' field-type='quantitative' max='0.5' min='-0.5' range-type='fixed' scope='rows' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='1.05' min='-1.05' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
           <style-rule element='gridline'>
@@ -9113,14 +9282,17 @@
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok]' value='false' />
             <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok]' value='false' />
           </style-rule>
+          <style-rule element='map'>
+            <format attr='washout' value='0' />
+          </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
-            <format attr='line-visibility' scope='rows' value='on' />
-            <format attr='line-visibility' scope='cols' value='on' />
-            <format attr='stroke-color' scope='rows' value='#e6e7e2' />
-            <format attr='stroke-color' scope='cols' value='#e6e7e2' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='line-visibility' scope='cols' value='off' />
+            <format attr='stroke-color' scope='rows' value='#00000000' />
+            <format attr='stroke-color' scope='cols' value='#00000000' />
             <format attr='stroke-size' scope='rows' value='1' />
             <format attr='stroke-size' scope='cols' value='1' />
           </style-rule>
@@ -9132,33 +9304,48 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
         </style>
-        <panes>
-          <pane selection-relaxation-option='selection-relaxation-allow'>
+        <panes customization-axis='layer'>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow'>
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Square' />
-            <mark-sizing mark-sizing-setting='marks-scaling-off' />
+            <mark class='Automatic' />
             <encodings>
-              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1400495547723235965:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
+            </encodings>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane generated-title='Tile' id='2' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Polygon' />
+            <encodings>
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1400495547723235965:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[clct:Calculation_1764875978013056325:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:node_id (dim_nodes.csv):nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1962397006096080865:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_7177065549275409274:qk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2336170961516567926:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3035768374696072600:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]' />
-              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:display_name:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:trust_badge:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:owner_name:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1883889205833775337:nk]' />
+              <path column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (mart_exposure_daily.csv):ok]' />
             </encodings>
             <customized-tooltip>
               <formatted-text>
@@ -9179,6 +9366,68 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>CLICK TO OPEN LINEAGE</run>
               </formatted-text>
             </customized-tooltip>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='has-stroke' value='true' />
+                <format attr='stroke-color' value='#e6e7e2' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane generated-title='Dot' id='3' inert='true' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Circle' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
+            <encodings>
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3105941082857465865:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[clct:Calculation_1781533279255170688:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
+            </encodings>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.35' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane generated-title='Text' id='4' inert='true' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Circle' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
+            <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[clct:Calculation_1555363273581306898:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2336170961516567926:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3035768374696072600:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]' />
+            </encodings>
             <customized-label>
               <formatted-text>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
@@ -9191,10 +9440,8 @@
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ    </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ   </run>
                 <run fontcolor='#3d41a0' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ    </run>
-                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -9209,15 +9456,47 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.9' />
-                <format attr='has-stroke' value='true' />
-                <format attr='stroke-color' value='#e6e7e2' />
+                <format attr='size' value='0.01' />
+                <format attr='mark-color' value='#ffffff00' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane generated-title='Score' id='5' inert='true' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Circle' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
+            <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[clct:Calculation_3365331846570732051:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='right' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='right' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='true' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.01' />
+                <format attr='mark-color' value='#ffffff00' />
               </style-rule>
             </style>
           </pane>
         </panes>
-        <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok]</rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok]</cols>
+        <rows>([federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)])</rows>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok] * [federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)])</cols>
       </table>
       <simple-id uuid='{2EA5DEC8-7691-770B-7ACB-4A1DAAB78096}' />
     </worksheet>
@@ -9245,6 +9524,12 @@
             <column caption='Tile View Option' datatype='string' name='[Calculation_2894482038928477351]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile View Option&#13;&#10;// Scaffold for the All / Needs attention buttons (first 2 days of dim_date). Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN &quot;All&quot;&#13;&#10;WHEN 1 THEN &quot;Needs attention&quot;&#13;&#10;END' />
             </column>
+            <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
+            </column>
+            <column caption='Text Anchor Centre' datatype='real' name='[Calculation_2496391787737110048]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Text Anchor Centre&#13;&#10;// Where centred text sits on a full-width background bar.&#13;&#10;MIN(0.5)' />
+            </column>
             <column caption='Is Tile View Button Row' datatype='boolean' name='[Calculation_2058479208791343830]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Tile View Button Row&#13;&#10;// Keeps the 2 scaffold rows that carry the All / Needs attention buttons. Put on Filters (True).&#13;&#10;NOT ISNULL([Calculation_2894482038928477351])' />
             </column>
@@ -9259,6 +9544,8 @@
             </column>
             <column caption='Day Index' datatype='integer' name='[day_index]' role='dimension' type='ordinal' />
             <column-instance column='[Calculation_2894482038928477351]' derivation='None' name='[none:Calculation_2894482038928477351:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2058479208791343830]' derivation='None' name='[none:Calculation_2058479208791343830:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1284089094536110577]' derivation='None' name='[none:Calculation_1284089094536110577:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1838581371832391049]' derivation='None' name='[none:Calculation_1838581371832391049:nk]' pivot='key' type='nominal' />
@@ -9274,6 +9561,10 @@
         </view>
         <style>
           <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
           <style-rule element='gridline'>
@@ -9306,10 +9597,53 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Square' />
+            <mark class='Automatic' />
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1284089094536110577:nk]' />
+            </encodings>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.8' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Text' />
+            <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1838581371832391049:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3133453958818750804:nk]' />
             </encodings>
@@ -9331,13 +9665,12 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='1' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows></rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk]</cols>
+        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk] / ([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk])</cols>
         <tooltip-style tooltip-mode='none' />
       </table>
       <simple-id uuid='{4893CD93-66CB-F78B-32AF-0AD18E99992E}' />
@@ -9372,6 +9705,12 @@
             </column>
             <column caption='Attention Order' datatype='integer' name='[Calculation_2821357717055420234]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Attention Order&#13;&#10;// Attention Sort turned around, so the natural ascending order of the rows is worst first.&#13;&#10;-[Calculation_1867437212419901178]' />
+            </column>
+            <column caption='Full Bar' datatype='real' name='[Calculation_2313436587575898004]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Full Bar&#13;&#10;// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.&#13;&#10;MIN(1.0)' />
+            </column>
+            <column caption='Text Anchor Left' datatype='real' name='[Calculation_1417199013816888206]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Text Anchor Left&#13;&#10;// Where left-aligned text starts on a full-width background bar.&#13;&#10;MIN(0.03)' />
             </column>
             <column caption='Is At Risk Now' datatype='boolean' name='[Calculation_2875175252813195699]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is At Risk Now&#13;&#10;// Warning or Critical in the current snapshot. Shared by Health, Blast radius and Governance.&#13;&#10;[current_status_code] &gt;= 2' />
@@ -9431,17 +9770,19 @@
             <column caption='Status Reason' datatype='string' name='[status_reason]' role='dimension' type='nominal' />
             <column-instance column='[Calculation_2821357717055420234]' derivation='None' name='[none:Calculation_2821357717055420234:ok]' pivot='key' type='ordinal' />
             <column-instance column='[display_name]' derivation='None' name='[none:display_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_1417199013816888206]' derivation='User' name='[usr:Calculation_1417199013816888206:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_3175454921771165665]' derivation='None' name='[none:Calculation_3175454921771165665:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2214252331607255986]' derivation='None' name='[none:Calculation_2214252331607255986:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1400495547723235965]' derivation='None' name='[none:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_id (dim_nodes.csv)]' derivation='None' name='[none:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_key]' derivation='None' name='[none:node_key:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_3020345249174904341]' derivation='None' name='[none:Calculation_3020345249174904341:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1079190453669342032]' derivation='None' name='[none:Calculation_1079190453669342032:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_5034449253068379788]' derivation='None' name='[none:Calculation_5034449253068379788:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2745413474489980072]' derivation='None' name='[none:Calculation_2745413474489980072:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_6126214509312991080]' derivation='None' name='[none:Calculation_6126214509312991080:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1700778924915878744]' derivation='None' name='[none:Calculation_1700778924915878744:nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_id (dim_nodes.csv)]' derivation='None' name='[none:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_key]' derivation='None' name='[none:node_key:ok]' pivot='key' type='ordinal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3175454921771165665:nk]'>
             <groupfilter function='member' level='[none:Calculation_3175454921771165665:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
@@ -9457,10 +9798,11 @@
         </view>
         <style>
           <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]' field-type='quantitative' fold='true' max='1' min='0' range-type='fixed' scope='cols' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
-          </style-rule>
-          <style-rule element='cell'>
-            <format attr='height' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='74' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9493,14 +9835,67 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Square' />
+            <mark class='Automatic' />
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1400495547723235965:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (dim_nodes.csv):nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_key:ok]' />
+            </encodings>
+            <customized-tooltip>
+              <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]&gt;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>CLICK TO SEE WHO IS AFFECTED</run>
+              </formatted-text>
+            </customized-tooltip>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.9' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Text' />
+            <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (dim_nodes.csv):nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_key:ok]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3020345249174904341:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1079190453669342032:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_5034449253068379788:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2745413474489980072:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_6126214509312991080:nk]' />
@@ -9515,8 +9910,8 @@
             </customized-tooltip>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#d2453f' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3020345249174904341:nk]&gt;</run>
-                <run fontcolor='#93600f' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1079190453669342032:nk]&gt;</run>
+                <run fontcolor='#d2453f' fontname='Arial' fontsize='10' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3020345249174904341:nk]&gt;</run>
+                <run fontcolor='#e8a33d' fontname='Arial' fontsize='10' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1079190453669342032:nk]&gt;</run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9'>Æ  </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]&gt;</run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9'>Æ   </run>
@@ -9540,13 +9935,12 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.95' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2821357717055420234:ok] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]</rows>
-        <cols></cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1417199013816888206:qk])</cols>
       </table>
       <simple-id uuid='{36A1E160-524D-1B3C-4E0F-4BCE86C3352A}' />
     </worksheet>
@@ -9583,17 +9977,20 @@
             </column>
             <column caption='Layer Share' datatype='real' name='[Calculation_9282765132542256788]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Layer Share&#13;&#10;// Each status&apos;s share of the layer, so every bar spans the full width.&#13;&#10;// Table calc: compute using Status Label (along the bar).&#13;&#10;[Calculation_2446133016301952044] / TOTAL([Calculation_2446133016301952044])'>
-                <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2946817898410042583]' ordering-type='Field' />
+                <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2496845894520933783]' ordering-type='Field' />
               </calculation>
             </column>
             <column caption='Layer Label Position' datatype='real' name='[Calculation_2008892738692294245]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='// Layer Label Position&#13;&#10;// Where the &quot;1 / 27&quot; count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).&#13;&#10;MIN(1.06)' />
+              <calculation class='tableau' formula='// Layer Label Position&#13;&#10;// Where the &quot;1 / 27&quot; count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).&#13;&#10;MIN(1.08)' />
             </column>
             <column caption='Is Platform Match Node' datatype='boolean' name='[Calculation_2214252331607255986]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Platform Match Node&#13;&#10;// Node-level platform filter (dim_nodes). A migrated node matches both Redshift and Snowflake,&#13;&#10;// so it still shows when someone looks at Redshift history.&#13;&#10;[Parameters].[Parameter 2] = &quot;All&quot;&#13;&#10;OR CONTAINS([platform_filter_values], &quot;|&quot; + [Parameters].[Parameter 2] + &quot;|&quot;)' />
             </column>
             <column caption='Status Stack Order' datatype='integer' name='[Calculation_2946817898410042583]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Status Stack Order&#13;&#10;// Healthy first, for stacked bars, as in the prototype&apos;s layer health strip: Healthy, Warning, Critical, No data.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 1 THEN 1&#13;&#10;WHEN 2 THEN 2&#13;&#10;WHEN 3 THEN 3&#13;&#10;ELSE 4&#13;&#10;END' />
+            </column>
+            <column caption='Layer Stack Key' datatype='integer' name='[Calculation_2496845894520933783]' role='dimension' type='ordinal'>
+              <calculation class='tableau' formula='// Layer Stack Key&#13;&#10;// Stack order for the layer bar, left to right: Healthy, Warning, Critical, No data.&#13;&#10;// Tableau stacks the highest value first, so Healthy gets the highest key.&#13;&#10;5 - [Calculation_2946817898410042583]' />
             </column>
             <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
@@ -9627,11 +10024,11 @@
             <column-instance column='[layer_column]' derivation='None' name='[none:layer_column:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_7823664326256286450]' derivation='None' name='[none:Calculation_7823664326256286450:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_9282765132542256788]' derivation='User' name='[usr:Calculation_9282765132542256788:qk]' pivot='key' type='quantitative'>
-              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2946817898410042583]' ordering-type='Field' />
+              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2496845894520933783]' ordering-type='Field' />
             </column-instance>
             <column-instance column='[Calculation_2008892738692294245]' derivation='User' name='[usr:Calculation_2008892738692294245:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2214252331607255986]' derivation='None' name='[none:Calculation_2214252331607255986:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_2946817898410042583]' derivation='None' name='[none:Calculation_2946817898410042583:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_2496845894520933783]' derivation='None' name='[none:Calculation_2496845894520933783:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_3105941082857465865]' derivation='Attribute' name='[attr:Calculation_3105941082857465865:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2446133016301952044]' derivation='User' name='[usr:Calculation_2446133016301952044:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1760329556827391948]' derivation='Attribute' name='[attr:Calculation_1760329556827391948:nk]' pivot='key' type='nominal' />
@@ -9649,8 +10046,8 @@
         </view>
         <style>
           <style-rule element='axis'>
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9282765132542256788:qk]' field-type='quantitative' fold='true' max='1.15' min='0' range-type='fixed' scope='cols' type='space' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2008892738692294245:qk]' field-type='quantitative' fold='true' max='1.15' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9282765132542256788:qk]' field-type='quantitative' fold='true' max='1.3' min='0' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2008892738692294245:qk]' field-type='quantitative' fold='true' max='1.3' min='0' range-type='fixed' scope='cols' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9282765132542256788:qk]' scope='cols' value='false' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2008892738692294245:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
@@ -9713,7 +10110,7 @@
             <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
-              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2946817898410042583:ok]' />
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2496845894520933783:ok]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3105941082857465865:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2446133016301952044:qk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1760329556827391948:nk]' />
@@ -10264,8 +10661,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='HO Platform Track' h='5100' id='52' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='51' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='HO Platform Track' h='5100' id='52' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='51' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -10285,7 +10682,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='53' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='53' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -10293,7 +10690,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='54' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='54' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -11443,8 +11840,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='RUN Platform Track' h='5100' id='126' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='125' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='RUN Platform Track' h='5100' id='126' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='125' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -11464,7 +11861,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='127' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='127' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -11472,7 +11869,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='128' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='128' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -12246,8 +12643,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='FR Platform Track' h='5100' id='200' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='199' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='FR Platform Track' h='5100' id='200' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='199' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -12267,7 +12664,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='201' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='201' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -12275,7 +12672,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='202' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='202' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -13049,8 +13446,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='LIN Platform Track' h='5100' id='274' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='273' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='LIN Platform Track' h='5100' id='274' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='273' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -13070,7 +13467,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='275' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='275' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -13078,7 +13475,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='276' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='276' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -13852,8 +14249,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='BR Platform Track' h='5100' id='348' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='347' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='BR Platform Track' h='5100' id='348' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='347' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -13873,7 +14270,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='349' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='349' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -13881,7 +14278,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='350' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='350' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -14655,8 +15052,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='QA Platform Track' h='5100' id='422' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='421' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='QA Platform Track' h='5100' id='422' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='421' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -14676,7 +15073,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='423' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='423' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -14684,7 +15081,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='424' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='424' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -15458,8 +15855,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='PF Platform Track' h='5100' id='496' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='495' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='PF Platform Track' h='5100' id='496' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='495' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -15479,7 +15876,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='497' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='497' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -15487,7 +15884,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='498' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='498' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -16261,8 +16658,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='US Platform Track' h='5100' id='570' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='569' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='US Platform Track' h='5100' id='570' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='569' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -16282,7 +16679,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='571' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='571' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -16290,7 +16687,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='572' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='572' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -17064,8 +17461,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='GOV Platform Track' h='5100' id='644' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='643' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='GOV Platform Track' h='5100' id='644' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='643' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -17085,7 +17482,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='645' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='645' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -17093,7 +17490,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='646' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='646' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -17867,8 +18264,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='AB Platform Track' h='5100' id='718' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='717' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='AB Platform Track' h='5100' id='718' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='717' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -17888,7 +18285,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='719' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='719' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -17896,7 +18293,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='720' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='720' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -18669,8 +19066,8 @@
                     <format attr='padding-top' value='19' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='302' friendly-name='DOC Platform Track' h='5100' id='792' is-fixed='true' param='horz' type-v2='layout-flow' w='18875' x='41438' y='7000'>
-                  <zone h='2200' id='791' name='GL Platform Buttons' show-title='false' w='18500' x='41625' y='8400'>
+                <zone fixed-size='380' friendly-name='DOC Platform Track' h='5100' id='792' is-fixed='true' param='horz' type-v2='layout-flow' w='23750' x='41438' y='7000'>
+                  <zone h='2200' id='791' name='GL Platform Buttons' show-title='false' w='23375' x='41625' y='8400'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -18690,7 +19087,7 @@
                     <format attr='margin-bottom' value='12' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='18' h='5100' id='793' is-fixed='true' type-v2='empty' w='1125' x='60312' y='7000'>
+                <zone fixed-size='18' h='5100' id='793' is-fixed='true' type-v2='empty' w='1125' x='65188' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -18698,7 +19095,7 @@
                     <format attr='margin' value='0' />
                   </zone-style>
                 </zone>
-                <zone h='5100' id='794' name='GL Period Hint' show-title='false' w='36812' x='61438' y='7000'>
+                <zone h='5100' id='794' name='GL Period Hint' show-title='false' w='31938' x='66312' y='7000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -19043,7 +19440,7 @@
           <zoom type='entire-view' />
         </viewpoint>
         <viewpoint name='HO Needs Attention List'>
-          <zoom type='fit-width' />
+          <zoom type='entire-view' />
         </viewpoint>
         <viewpoint name='HO Run Success KPI'>
           <zoom type='entire-view' />

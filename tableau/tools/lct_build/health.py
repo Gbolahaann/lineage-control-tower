@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import (ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
+from .core import (LAT, LON, SP_MEA, Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
                    GOOD, GOOD_INK, I_DIM, I_MEA, INK1, INK2, INK3, LINE, MEDIUM, NAVY, NL, NONE, NONE_TINT,
                    OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, WARN, WARN_INK, WARN_TINT, Pane, R, Sheet, Z, blank,
                    card, card_header, color_map, legend, run, sheet, text)
@@ -67,7 +67,22 @@ NEW = {
     'Attention Order': '// Attention Order\n// Attention Sort turned around, so the natural ascending order of the rows is worst first.\n-[Attention Sort]',
     'Attention Icon Critical': '// Attention Icon Critical\n// "✕" in red before a Critical node. Split by status so each icon gets its own colour.\nIF [current_status_code] = 3 THEN "✕" ELSE "" END',
     'Attention Icon Warning': '// Attention Icon Warning\n// "▲" in the warning text colour before a Warning node.\nIF [current_status_code] = 2 THEN "▲" ELSE "" END',
-    'Layer Label Position': '// Layer Label Position\n// Where the "1 / 27" count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).\nMIN(1.06)',
+    'Tile Shape Point': ('// Tile Shape Point\n'
+        '// Outline of one rounded tile, drawn as a polygon on its own little map pane (the tile grid is\n'
+        '// row index x Latitude by column index x Longitude, as in a Tableau-saved reference workbook).\n'
+        '// Each of the 90 Exposure Daily rows of an exposure is one point of the outline: a superellipse\n'
+        '// (exponent 8), which reads as a rectangle with rounded corners. Path: the Exposure Daily date.\n'
+        'MAKEPOINT(\n'
+        '    0.44 * SIGN(SIN(2 * PI() * DATEDIFF(\'day\', { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))\n'
+        '         * POWER(ABS(SIN(2 * PI() * DATEDIFF(\'day\', { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25),\n'
+        '    0.97 * SIGN(COS(2 * PI() * DATEDIFF(\'day\', { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90))\n'
+        '         * POWER(ABS(COS(2 * PI() * DATEDIFF(\'day\', { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]) / 90)), 0.25)\n'
+        ')'),
+    'Tile Text Point': '// Tile Text Point\n// Anchor of the tile text (name, tool and owner, trust badge), left side of the tile.\nMAKEPOINT(0.0, -0.86)',
+    'Tile Score Point': '// Tile Score Point\n// Anchor of the 7-day score, bottom right of the tile.\nMAKEPOINT(-0.26, 0.86)',
+    'Tile Dot Point': '// Tile Dot Point\n// Anchor of the status dot, top right of the tile.\nMAKEPOINT(0.27, 0.86)',
+    'Layer Stack Key': '// Layer Stack Key\n// Stack order for the layer bar, left to right: Healthy, Warning, Critical, No data.\n// Tableau stacks the highest value first, so Healthy gets the highest key.\n5 - [Status Stack Order]',
+    'Layer Label Position': '// Layer Label Position\n// Where the "1 / 27" count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).\nMIN(1.08)',
 }
 
 TYPES = {
@@ -96,6 +111,8 @@ TYPES = {
     'Layer Share': R_MEA, 'Layer Total': I_MEA, 'Layer Issues': I_MEA, 'Layer Has Critical': B_DIM,
     'Layer Issues Critical Text': S_DIM, 'Layer Issues Warning Text': S_DIM, 'Layer Total Text': S_DIM,
     'Layer Label Position': R_MEA,
+    'Tile Shape Point': SP_MEA, 'Tile Text Point': SP_MEA, 'Tile Score Point': SP_MEA, 'Tile Dot Point': SP_MEA,
+    'Layer Stack Key': I_DIM,
 }
 for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost'):
     for s in ('Focus', 'Prior', 'Change', 'Change Good', 'Change Bad', 'Trend'):
@@ -107,7 +124,7 @@ for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost',
     TYPES[f'{k} - Change Bad Text'] = S_MEA
 
 CALCS.add(formulas=NEW, types=TYPES, table_calc={
-    'Tile Column': 'Tile Sort Key', 'Tile Row': 'Tile Sort Key', 'Layer Share': 'Status Stack Order'})
+    'Tile Column': 'Tile Sort Key', 'Tile Row': 'Tile Sort Key', 'Layer Share': 'Layer Stack Key'})
 
 
 # ================================================================ sheets
@@ -170,76 +187,98 @@ def trend_sheet(name, key, plat, in_colour, caption, fmt) -> Sheet:
                      run(caption.upper() + '   ', 7, INK3, SEMI), run(m, 9, NAVY, SEMI)]
     return Sheet(name, cols=[date], rows=[(tin, tout)], filters=[plat], hide=[date, tin, tout], sync=[tout],
                  formats={date: '*d mmm yyyy', tin: fmt, tout: fmt},
-                 panes=[Pane('Bar', size=0.75, label_show=False),
-                        Pane('Bar', axis=tin, size=0.75, label_show=False, mark_color=in_colour, tooltip=tip(tin)),
-                        Pane('Bar', axis=tout, size=0.75, label_show=False, mark_color=OUT_OF_WINDOW, tooltip=tip(tout))])
+                 panes=[Pane('Bar', size=0.45, label_show=False),
+                        Pane('Bar', axis=tin, size=0.45, label_show=False, mark_color=in_colour, tooltip=tip(tin)),
+                        Pane('Bar', axis=tout, size=0.45, label_show=False, mark_color=OUT_OF_WINDOW, tooltip=tip(tout))])
 
 
 def tile_sheets() -> list[Sheet]:
-    tint = R('Status Tint Key', 'attr')
-    color_map(tint, {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
+    """Exposure tiles as rounded cards (calc pack 3.9, rebuilt the way a Tableau-saved reference builds cards).
+
+    A grid of small map panes: rows = group sort * group label * tile row * Latitude, columns = tile column *
+    Longitude. Tile row and column are INDEX table calcs addressed along every dimension on the sheet except the
+    group, so they restart per group. Four marks layers, bottom to top: the rounded outline (polygon from
+    Exposure Daily, status tint, #E6E7E2 border, the tooltip), the status dot, the text, the score.
+    """
     a = lambda n: R(n, 'attr')
+    color_map(R('Status Tint Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
+    color_map(R('Status Label'), {'"Healthy"': GOOD, '"Warning"': WARN, '"Critical"': CRIT, '"No data"': NONE})
+    key, date = R('Tile Sort Key'), R('date (mart_exposure_daily.csv)', kind='ok')
+    tint, status = R('Status Tint Key'), R('Status Label')
+    trow, tcol = R('Tile Row', kind='ok'), R('Tile Column', kind='ok')
+    for r in (trow, tcol):
+        r.tc_order = [key, tint, status, date]   # addressing; the group fields partition, so the index restarts per group
+    gsort, glabel = R('Exposure Group Sort'), R('Exposure Group Label')
+    node = a('node_id (dim_nodes.csv)')
+    tile = Pane('Polygon', title='Tile', color=tint, stroke=LINE, path=date,
+                lod=[R('Tile Shape Point', 'clct'), key, node, a('Clear Node Value'), a('Clear Node Key Value')],
+                tooltip=[run(a('display_name'), 9, INK1, SEMI), run(NL, 7, INK3),
+                         run('STATUS   ', 7, INK3, SEMI), run(a('trust_badge'), 9, NAVY, SEMI), run(NL, 7, INK3),
+                         run('HEALTH SCORE (7D)   ', 7, INK3, SEMI), run(a('Tile Score Text'), 9, NAVY, SEMI), run(NL, 7, INK3),
+                         run('OWNER   ', 7, INK3, SEMI), run(a('owner_name'), 9, NAVY, SEMI), run(NL, 7, INK3),
+                         run('WHY   ', 7, INK3, SEMI), run(a('Tile Tooltip Why'), 9, INK1), run(NL, 7, INK3),
+                         run('CLICK TO OPEN LINEAGE', 7, INK3, SEMI)])
+    dot = Pane('Circle', title='Dot', inert=True, color=status, size=0.35, label_show=False,
+               lod=[R('Tile Dot Point', 'clct'), key])
     texts = [a('Tile Name Short'), a('Consumer Type Label'), a('Tile Owner Text'), a('Tile Owner Missing Text'),
-             a('Tile Trust Critical'), a('Tile Trust Warning'), a('Tile Trust Healthy'), a('Tile AI Tag'), a('Tile Score Text')]
-    tips = [a('display_name'), a('trust_badge'), a('Tile Score Text'), a('owner_name'), a('Tile Tooltip Why')]
+             a('Tile Trust Critical'), a('Tile Trust Warning'), a('Tile Trust Healthy'), a('Tile AI Tag')]
+    words = Pane('Circle', title='Text', inert=True, size=0.01, mark_color='#ffffff00', text=texts, align='left',
+                 lod=[R('Tile Text Point', 'clct'), key],
+                 label=[run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
+                        run(a('Consumer Type Label'), 8, INK3), run(' · ', 8, INK3), run(a('Tile Owner Text'), 8, INK3),
+                        run(a('Tile Owner Missing Text'), 8, CRIT_INK, SEMI), run(NL, 8, INK3),
+                        run(a('Tile Trust Critical'), 7, CRIT_INK, SEMI), run(a('Tile Trust Warning'), 7, WARN_INK, SEMI),
+                        run(a('Tile Trust Healthy'), 7, GOOD_INK, SEMI), run('   ', 7, INK3), run(a('Tile AI Tag'), 7, AI_INK, SEMI)])
+    score = Pane('Circle', title='Score', inert=True, size=0.01, mark_color='#ffffff00', text=[a('Tile Score Text')],
+                 align='right', lod=[R('Tile Score Point', 'clct'), key],
+                 label=[run(a('Tile Score Text'), 8, INK2, SEMI)])
     tiles = Sheet(
-        'HO Exposure Status Tiles',
-        rows=[R('Exposure Group Sort'), R('Exposure Group Label'), R('Tile Row', kind='ok')],
-        cols=[R('Tile Column', kind='ok')],
+        'HO Exposure Status Tiles', rows=[Cross([gsort, glabel, trow, LAT])], cols=[Cross([tcol, LON])],
         filters=[R('Is Exposure'), R('Is Platform Match Node'), R('Show Exposure Tile')],
-        hide=[R('Exposure Group Sort'), R('Tile Row', kind='ok'), R('Tile Column', kind='ok')],
-        header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
-        header_width={R('Exposure Group Label'): 110}, divider=True,
-        panes=Pane('Square', color=tint, text=texts, size=0.9, valign='center', stroke=LINE,
-                   lod=[R('Tile Sort Key'), a('node_id (dim_nodes.csv)'), a('Clear Node Value'), a('Clear Node Key Value')],
-                   tooltip_fields=tips,
-                   label=[run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
-                          run(a('Consumer Type Label'), 8, INK3), run(' · ', 8, INK3), run(a('Tile Owner Text'), 8, INK3),
-                          run(a('Tile Owner Missing Text'), 8, CRIT_INK, SEMI), run(NL, 8, INK3),
-                          run(a('Tile Trust Critical'), 7, CRIT_INK, SEMI), run(a('Tile Trust Warning'), 7, WARN_INK, SEMI),
-                          run(a('Tile Trust Healthy'), 7, GOOD_INK, SEMI), run('    ', 7, INK3),
-                          run(a('Tile AI Tag'), 7, AI_INK, SEMI), run('    ', 7, INK3), run(a('Tile Score Text'), 8, INK2, SEMI)],
-                   tooltip=[run(a('display_name'), 9, INK1, SEMI), run(NL, 7, INK3),
-                            run('STATUS   ', 7, INK3, SEMI), run(a('trust_badge'), 9, NAVY, SEMI), run(NL, 7, INK3),
-                            run('HEALTH SCORE (7D)   ', 7, INK3, SEMI), run(a('Tile Score Text'), 9, NAVY, SEMI), run(NL, 7, INK3),
-                            run('OWNER   ', 7, INK3, SEMI), run(a('owner_name'), 9, NAVY, SEMI), run(NL, 7, INK3),
-                            run('WHY   ', 7, INK3, SEMI), run(a('Tile Tooltip Why'), 9, INK1), run(NL, 7, INK3),
-                            run('CLICK TO OPEN LINEAGE', 7, INK3, SEMI)]))
+        hide=[gsort, trow, tcol], header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
+        header_width={glabel: 110}, layers=True, no_basemap=True,
+        panes=[Pane('Automatic', lod=[key]), tile, dot, words, score])
+    tiles.fixed_axes = [(LAT, -0.5, 0.5, 'rows'), (LON, -1.05, 1.05, 'cols')]
     buttons = segmented('HO Tile View Buttons', 'Tile View Option', 'Tile View Option', 'Is Active Tile View',
                         'Tile View Label Active', 'Tile View Label Inactive', 'Is Tile View Button Row')
     return [tiles, buttons]
 
 
 def attention_sheet() -> Sheet:
+    """Needs attention now: one tinted full-width row per node (bar on a fixed 0 to 1 axis), the text on a second
+    axis, fitted to the whole card."""
     color_map(R('Status Tint Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
-    name = R('display_name')
-    texts = [R('Attention Icon Critical'), R('Attention Icon Warning'), R('Attention Incident Tag'),
+    name, bar, anchor = R('display_name'), R('Full Bar'), R('Text Anchor Left')
+    texts = [R('Attention Icon Critical'), R('Attention Icon Warning'), name, R('Attention Incident Tag'),
              R('Attention Reason'), R('Attention Meta'), R('Attention Open Since')]
+    ids = [R('node_id (dim_nodes.csv)'), R('node_key')]
     return Sheet(
-        'HO Needs Attention List', rows=[R('Attention Order'), name], hide=[R('Attention Order'), name],
-        filters=[R('Is Attention Node'), R('Is Platform Match Node')], row_height=(name, 74), zoom='fit-width',
-        divider=False,
-        panes=Pane('Square', color=R('Status Tint Key'), text=texts, lod=[R('node_id (dim_nodes.csv)'), R('node_key')], size=0.95,
-                   label=[run(R('Attention Icon Critical'), 9, CRIT, SEMI), run(R('Attention Icon Warning'), 9, WARN_INK, SEMI),
-                          run('  ', 9, INK1), run(R('display_name'), 9, INK1, SEMI), run('   ', 9, INK1),
-                          run(R('Attention Incident Tag'), 7, INK2, SEMI), run(NL, 8, INK3),
-                          run(R('Attention Reason'), 8, INK2), run(NL, 8, INK3),
-                          run(R('Attention Meta'), 8, INK3), run(R('Attention Open Since'), 8, INK3)],
-                   tooltip=[run(R('display_name'), 9, INK1, SEMI), run(NL, 7, INK3),
-                            run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]))
+        'HO Needs Attention List', rows=[R('Attention Order'), name], cols=[(bar, anchor)],
+        hide=[R('Attention Order'), name, bar, anchor], fixed={bar: (0, 1), anchor: (0, 1)},
+        filters=[R('Is Attention Node'), R('Is Platform Match Node')],
+        panes=[Pane(),
+               Pane('Bar', axis=bar, color=R('Status Tint Key'), lod=ids, size=0.9, label_show=False,
+                    tooltip=[run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]),
+               Pane('Text', axis=anchor, text=texts, lod=ids, align='left',
+                    label=[run(R('Attention Icon Critical'), 10, CRIT, SEMI), run(R('Attention Icon Warning'), 10, WARN, SEMI),
+                           run('  ', 9, INK1), run(name, 9, INK1, SEMI), run('   ', 9, INK1),
+                           run(R('Attention Incident Tag'), 7, INK2, SEMI), run(NL, 8, INK3),
+                           run(R('Attention Reason'), 8, INK2), run(NL, 8, INK3),
+                           run(R('Attention Meta'), 8, INK3), run(R('Attention Open Since'), 8, INK3)],
+                    tooltip=[run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)])])
 
 
 def layer_sheet() -> Sheet:
-    color_map(R('Status Stack Order'), {'1': GOOD, '2': WARN, '3': CRIT, '4': NONE})
+    color_map(R('Layer Stack Key'), {'4': GOOD, '3': WARN, '2': CRIT, '1': NONE})
     share, pos = R('Layer Share'), R('Layer Label Position')
     a = lambda n: R(n, 'attr')
     return Sheet(
         'HO Layer Health Bar', rows=[R('layer_column'), R('Layer Name')], cols=[(share, pos)],
         filters=[R('Is Platform Match Node')], hide=[R('layer_column'), share, pos],
-        fixed={share: (0, 1.15), pos: (0, 1.15)},
+        fixed={share: (0, 1.3), pos: (0, 1.3)},
         header_font={'font-size': '8', 'color': INK2}, header_width={R('Layer Name'): 112},
         panes=[Pane(),
-               Pane('Bar', axis=share, color=R('Status Stack Order'), size=0.75, label_show=False, stroke=CARD,
+               Pane('Bar', axis=share, color=R('Layer Stack Key'), size=0.75, label_show=False, stroke=CARD,
                     tooltip_fields=[a('Status Label'), R('Node Count'), a('Layer Total Text')],
                     tooltip=[run(a('Layer Name'), 9, INK1, SEMI), run(NL, 7, INK3),
                              run(a('Status Label'), 7, INK3, SEMI), run('   ', 7, INK3), run(R('Node Count'), 9, NAVY, SEMI),

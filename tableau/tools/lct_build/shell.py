@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import (ACCENT, BOLD, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, INK1, INK2, INK3, INK4, LIME, LINE,
+from .core import (R_MEA, ACCENT, BOLD, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, INK1, INK2, INK3, INK4, LIME, LINE,
                    LINE_SOFT, MEDIUM, NAVY, NL, PLAT, SEMI, B_DIM, I_DIM, S_DIM, Pane, R, Sheet, Z, blank,
                    color_map, run, sheet, text)
 
@@ -28,9 +28,9 @@ CALCS.add(formulas={
     'Is Platform Button Row': '// Is Platform Button Row\n// Keeps the 4 scaffold rows that carry a platform button. Put on Filters (True).\nNOT ISNULL([Platform Option])',
     'Platform Label Active': '// Platform Label Active\n// Button text when this button is the selected platform (Semibold Navy run).\nIF [Is Active Platform Option] THEN [Platform Option Label] ELSE "" END',
     'Platform Label Inactive': '// Platform Label Inactive\n// Button text when this button is not selected (Book grey run).\nIF NOT [Is Active Platform Option] THEN [Platform Option Label] ELSE "" END',
-    'Platform Dot Snowflake': '// Platform Dot Snowflake\n// Coloured square before "Snowflake" on its button. Each platform has its own field so each gets its own run colour.\nIF [Platform Option] = "snowflake" THEN "■  " ELSE "" END',
-    'Platform Dot Databricks': '// Platform Dot Databricks\n// Coloured square before "Databricks" on its button.\nIF [Platform Option] = "databricks" THEN "■  " ELSE "" END',
-    'Platform Dot Redshift': '// Platform Dot Redshift\n// Coloured square before "Redshift" on its button.\nIF [Platform Option] = "redshift" THEN "■  " ELSE "" END',
+    'Platform Dot Snowflake': '// Platform Dot Snowflake\n// Coloured square before "Snowflake" on its button. Each platform has its own field so each gets its own run colour.\nIF [Platform Option] = "snowflake" THEN "■ " ELSE "" END',
+    'Platform Dot Databricks': '// Platform Dot Databricks\n// Coloured square before "Databricks" on its button.\nIF [Platform Option] = "databricks" THEN "■ " ELSE "" END',
+    'Platform Dot Redshift': '// Platform Dot Redshift\n// Coloured square before "Redshift" on its button.\nIF [Platform Option] = "redshift" THEN "■ " ELSE "" END',
     'Platform Option Order': '// Platform Option Order\n// Keeps the platform buttons in prototype order (All, Snowflake, Databricks, Redshift) instead of A to Z.\n[day_index]',
     'Is Info Button Row': '// Is Info Button Row\n// One scaffold row for the single-mark info button. Put on Filters (True).\n[day_index] = 0',
     'Info Button Glyph': '// Info Button Glyph\n// The header icon: "ⓘ" opens the info panel, "✕" closes it.\nIF [p_show_info] THEN "✕" ELSE "ⓘ" END',
@@ -47,16 +47,29 @@ CALCS.add(formulas={
     'Show Info Panel': B_DIM, 'Data Updated Date Text': S_DIM,
 })
 
+# Full-width backgrounds: a bar from 0 to 1 on a fixed, hidden axis, with the text on a second axis.
+# Square marks stay square, so they can't fill a rectangular button, row or tile.
+CALCS.add(formulas={
+    'Full Bar': '// Full Bar\n// Bar length for a full-width background (axis fixed 0 to 1 and hidden): buttons, alert rows.\nMIN(1.0)',
+    'Text Anchor Centre': '// Text Anchor Centre\n// Where centred text sits on a full-width background bar.\nMIN(0.5)',
+    'Text Anchor Left': '// Text Anchor Left\n// Where left-aligned text starts on a full-width background bar.\nMIN(0.03)',
+}, types={'Full Bar': R_MEA, 'Text Anchor Centre': R_MEA, 'Text Anchor Left': R_MEA})
+
 
 def segmented(name, order_field, option_field, active_field, act_label, inact_label, row_filter, extra_runs=()):
-    """A segmented button sheet (build plan 2.4): white active square on a grey track."""
+    """A segmented button sheet (build plan 2.4): the selected option is a white bar on the grey track,
+    with the label as text on a second axis so it is never clipped by a mark."""
     color_map(R(active_field), {'true': CARD, 'false': CANVAS})
     texts = [R(n) for n, *_ in extra_runs] + [R(act_label), R(inact_label)]
     label = [run(R(n), size, col) for n, size, col in extra_runs] + [run(R(act_label), 9, NAVY, SEMI),
                                                                       run(R(inact_label), 9, INK2, BOOK)]
     lod = [R(option_field)] if option_field != order_field else []
-    return Sheet(name, cols=[R(order_field)], hide=[R(order_field)], filters=[R(row_filter)], tooltip=False,
-                 panes=Pane('Square', color=R(active_field), text=texts, lod=lod, label=label, size=1, align='center'))
+    bar, anchor = R('Full Bar'), R('Text Anchor Centre')
+    return Sheet(name, cols=[R(order_field), (bar, anchor)], hide=[R(order_field), bar, anchor], filters=[R(row_filter)],
+                 fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
+                 panes=[Pane(),
+                        Pane('Bar', axis=bar, color=R(active_field), lod=lod, size=0.8, label_show=False),
+                        Pane('Text', axis=anchor, text=texts, lod=lod, label=label, align='center')])
 
 
 def gl_sheets() -> list[Sheet]:
@@ -193,7 +206,7 @@ def filter_band(tab) -> Z:
     return Z('horz', friendly=f'{p} Filter Band', fixed=51,
              style={'background-color': CARD, 'padding-left': '28', 'padding-right': '28'}, kids=[
         label('PERIOD', 51), track(f'{p} Period Track', 'GL Period Buttons', 265), blank(18),
-        label('PLATFORM', 69), track(f'{p} Platform Track', 'GL Platform Buttons', 302), blank(18),
+        label('PLATFORM', 69), track(f'{p} Platform Track', 'GL Platform Buttons', 380), blank(18),
         sheet('GL Period Hint', None, **{'padding-top': '4'})])
 
 

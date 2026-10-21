@@ -220,6 +220,7 @@ I_DIM = ('integer', 'dimension', 'ordinal')
 R_MEA = ('real', 'measure', 'quantitative')
 I_MEA = ('integer', 'measure', 'quantitative')
 S_MEA = ('string', 'measure', 'nominal')
+SP_MEA = ('spatial', 'measure', 'nominal')  # MAKEPOINT calcs, used as COLLECT on a map layer
 
 
 # ================================================================ field references
@@ -247,7 +248,7 @@ def load_bases(twb: str) -> None:
 
 
 SUFFIX_TYPE = {'ok': 'ordinal', 'nk': 'nominal', 'qk': 'quantitative'}
-DERIV = {'none': 'None', 'usr': 'User', 'attr': 'Attribute', 'sum': 'Sum', 'min': 'Min', 'max': 'Max', 'avg': 'Avg'}
+DERIV = {'clct': 'Collect', 'none': 'None', 'usr': 'User', 'attr': 'Attribute', 'sum': 'Sum', 'min': 'Min', 'max': 'Max', 'avg': 'Avg'}
 
 
 class Ref:
@@ -259,6 +260,7 @@ class Ref:
 
     def __init__(self, name: str, agg: str | None = None, kind: str | None = None):
         self.name, self.agg, self.kind = name, agg, kind
+        self.tc_order: list | None = None  # set by a sheet: addressing fields (first one is the level)
         self.is_calc = name in CALCS.src
         if self.is_calc:
             self.dt, self.role, self.typ = CALCS.types[name]
@@ -280,6 +282,8 @@ class Ref:
             return self.kind
         if self.prefix in ('sum', 'min', 'max', 'avg'):
             return 'qk'
+        if self.prefix == 'clct':
+            return 'nk'
         if self.prefix == 'attr':
             return 'nk' if self.dt in ('string', 'boolean') else 'qk'
         if self.prefix == 'usr':
@@ -296,6 +300,10 @@ class Ref:
 
     def instance_xml(self, ind: str) -> str:
         tc = CALCS.tc_xml(self.name) if self.is_calc else ''
+        if self.tc_order:
+            cols = [f'[{DS}].[{r.col}]' for r in self.tc_order]
+            tc = (f"<table-calc level-address='{cols[0]}' ordering-type='Field'>\n"
+                  + ''.join(f"{ind}    <order field='{c}' />\n" for c in dict.fromkeys(cols)) + f"{ind}  </table-calc>")
         head = (f"{ind}<column-instance column='[{self.col}]' derivation='{DERIV[self.prefix]}' "
                 f"name='{self.inst}' pivot='key' type='{SUFFIX_TYPE[self.suffix]}'")
         return head + (f">\n{ind}  {tc}\n{ind}</column-instance>" if tc else ' />')
@@ -356,15 +364,16 @@ def runs_xml(runs, ind) -> str:
 class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
-                 geometry=None, stroke=None):
+                 geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
         self.mark_color, self.geometry = mark_color, geometry  # geometry: name of a spatial base field
         self.stroke = stroke  # mark border colour (has-stroke + stroke-color, as Tableau writes it)
+        self.title, self.inert, self.path = title, inert, path  # map layer name, no interaction, polygon path
 
     def refs(self):
-        return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields
+        return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else [])
 
     def run_refs(self):
         return [r['_ref'] for r in (self.label or []) + (self.tooltip or []) if '_ref' in r]
@@ -380,6 +389,8 @@ class Pane:
         enc += [f"              <tooltip column='{r.ref}' />" for r in self.tooltip_fields]
         if self.geometry:
             enc.append(f"              <geometry column='[{DS}].[{self.geometry}]' />")
+        if self.path:
+            enc.append(f"              <path column='{self.path.ref}' />")
         tip = ('            <customized-tooltip>\n              <formatted-text>\n' + runs_xml(self.tooltip, '                ')
                + '\n              </formatted-text>\n            </customized-tooltip>\n') if self.tooltip else ''
         lab = ('            <customized-label>\n              <formatted-text>\n' + runs_xml(self.label, '                ')
@@ -393,7 +404,8 @@ class Pane:
         if self.stroke:
             mark_fmt.append("                <format attr='has-stroke' value='true' />")
             mark_fmt.append(f"                <format attr='stroke-color' value='{self.stroke}' />")
-        return (f"          <pane {ident}selection-relaxation-option='selection-relaxation-allow'{ax}>\n"
+        lay = (f"generated-title='{esc(self.title)}' " if self.title else '') + ident + ("inert='true' " if self.inert else '')
+        return (f"          <pane {lay}selection-relaxation-option='selection-relaxation-allow'{ax}>\n"
                 "            <view>\n              <breakdown value='auto' />\n            </view>\n"
                 f"            <mark class='{self.mark}' />\n"
                 + ("            <mark-sizing mark-sizing-setting='marks-scaling-off' />\n" if self.size is not None else '')
@@ -409,10 +421,16 @@ class Pane:
                 "            </style>\n          </pane>\n")
 
 
+class Cross(list):
+    """Fields crossed on one shelf, written (a * b * c): a grid of map panes is (row index * Latitude)."""
+
+
 def shelf(items) -> str:
     parts = []
     for it in items:
-        if isinstance(it, tuple):
+        if isinstance(it, Cross):
+            parts.append('(' + ' * '.join(r.ref for r in it) + ')')
+        elif isinstance(it, tuple):
             parts.append('(' + ' + '.join(r.ref for r in it) + ')')
         else:
             parts.append(it.ref)
@@ -431,7 +449,7 @@ class Sheet:
 
     def __init__(self, name, *, rows=(), cols=(), panes=None, filters=(), formats=None, hide=(), fixed=None,
                  header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view',
-                 sync=(), map_washout=None):
+                 sync=(), map_washout=None, layers=False, no_basemap=False):
         self.name, self.rows, self.cols = name, list(rows), list(cols)
         self.panes = panes if isinstance(panes, list) else [panes or Pane()]
         self.filters, self.formats, self.hide = list(filters), formats or {}, list(hide)
@@ -439,11 +457,14 @@ class Sheet:
         self.row_height, self.divider, self.tooltip, self.zoom = row_height, divider, tooltip, zoom
         self.sync = list(sync)  # second measure of a dual axis whose axis is synchronised with the first
         self.map_washout = map_washout  # set on map sheets: 1.0 fades the base map out completely
+        self.layers = layers            # marks layers: panes[0] is the base pane, the rest are layers, bottom to top
+        self.no_basemap = no_basemap    # <mapsource name='' />: a map with no background map at all
+        self.fixed_axes = []            # (Raw generated field, min, max, scope): fixed and hidden map axes
 
     def _shelf_refs(self, items):
         out = []
         for it in items:
-            out += list(it) if isinstance(it, tuple) else [it]
+            out += list(it) if isinstance(it, (tuple, Cross)) else [it]
         return [r for r in out if not isinstance(r, Raw)]
 
     def all_refs(self):
@@ -499,6 +520,10 @@ class Sheet:
         axis = [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
                 f"max='{mx}' min='{mn}' range-type='fixed' scope='{self.scope(r)}' type='space' />"
                 for r, (mn, mx) in self.fixed.items()]
+        for raw, mn, mx, sc in self.fixed_axes:
+            axis.append(f"            <format attr='display' class='0' field='{raw.ref}' scope='{sc}' value='false' />")
+            axis.append(f"            <encoding attr='space' class='0' field='{raw.ref}' field-type='quantitative' max='{mx}' "
+                        f"min='{mn}' range-type='fixed' scope='{sc}' type='space' />")
         axis += [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
                  f"scope='{self.scope(r)}' synchronized='true' type='space' />" for r in self.sync]
         axis += [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
@@ -526,8 +551,8 @@ class Sheet:
         rule('gridline', ["            <format attr='line-visibility' value='off' />"])
         rule('header', head)
         rule('label', label)
-        if self.map_washout is not None:
-            rule('map', [f"            <format attr='washout' value='{self.map_washout}' />"])
+        if self.map_washout is not None or self.no_basemap:
+            rule('map', [f"            <format attr='washout' value='{self.map_washout or 0}' />"])
         rule('table', ["            <format attr='background-color' value='#00000000' />"])
         div = ['on', LINE] if self.divider else ['off', '#00000000']
         rule('table-div', [f"            <format attr='line-visibility' scope='{s}' value='{div[0]}' />" for s in ('rows', 'cols')]
@@ -539,7 +564,11 @@ class Sheet:
 
         # ---- panes: dual axis gets one pane per measure after the first
         dual = [it for it in self.rows + self.cols if isinstance(it, tuple)]
-        if dual and len(self.panes) > 1:
+        panes_open = "        <panes>\n"
+        if self.layers:
+            panes_open = "        <panes customization-axis='layer'>\n"
+            panes = self.panes[0].xml(1) + ''.join(p.xml(i) for i, p in enumerate(self.panes[1:], 2))
+        elif dual and len(self.panes) > 1:
             axis_attr = 'y-axis-name' if any(isinstance(i, tuple) for i in self.rows) else 'x-axis-name'
             panes = self.panes[0].xml() + ''.join(p.xml(i, axis_attr) for i, p in enumerate(self.panes[1:], 1))
         else:
@@ -547,12 +576,12 @@ class Sheet:
 
         return (f"    <worksheet name='{esc(self.name)}'>\n"
                 "      <table>\n        <view>\n          <datasources>\n" + ds_list + '          </datasources>\n'
-                + ("          <mapsources>\n            <mapsource name='Tableau' />\n          </mapsources>\n"
-                   if self.map_washout is not None else '')
+                + ((f"          <mapsources>\n            <mapsource name='{'' if self.no_basemap else 'Tableau'}' />\n          </mapsources>\n")
+                   if (self.map_washout is not None or self.no_basemap) else '')
                 + '\n'.join(dep) + '\n' + filt + slices
                 + "          <aggregation value='true' />\n        </view>\n"
                 "        <style>\n" + ''.join(rules) + "        </style>\n"
-                "        <panes>\n" + panes + "        </panes>\n"
+                + panes_open + panes + "        </panes>\n"
                 f"        <rows>{shelf(self.rows)}</rows>\n"
                 f"        <cols>{shelf(self.cols)}</cols>\n"
                 + ("" if self.tooltip else "        <tooltip-style tooltip-mode='none' />\n")
