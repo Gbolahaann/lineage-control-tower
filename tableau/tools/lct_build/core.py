@@ -228,9 +228,22 @@ BASES: dict[str, dict] = {}  # internal name -> {datatype, role, type, xml}
 
 
 def load_bases(twb: str) -> None:
+    """Field definitions by internal name. Top-level <column> elements first; fields Tableau only lists in
+    metadata-records (the spatial Exposure Tiles table) get a definition built from their local type."""
+    for m in re.finditer(r"<metadata-record class='column'>(.*?)</metadata-record>", twb, re.S):
+        body = m.group(1)
+        name = re.search(r'<local-name>\[(.*?)\]</local-name>', body)
+        lt = re.search(r'<local-type>(\w+)</local-type>', body)
+        if not (name and lt):
+            continue
+        dt = lt.group(1)
+        role, typ = (('dimension', 'nominal') if dt in ('string', 'boolean') else ('dimension', 'ordinal') if dt in ('date', 'datetime')
+                     else ('measure', 'quantitative'))
+        BASES.setdefault(name.group(1), dict(datatype=dt, role=role, type=typ,
+                                             xml=f"<column datatype='{dt}' name='[{esc(name.group(1))}]' role='{role}' type='{typ}' />"))
     for m in re.finditer(r"<column caption='[^']*' datatype='([a-z]+)' (?:hidden='true' )?name='\[([^']+)\]' "
                          r"role='([a-z]+)' type='([a-z]+)'[^>]*/>", twb):
-        BASES[m.group(2)] = dict(datatype=m.group(1), role=m.group(3), type=m.group(4), xml=m.group(0))
+        BASES[m.group(2)] = dict(datatype=m.group(1), role=m.group(3), type=m.group(4), xml=m.group(0))  # top-level wins
 
 
 SUFFIX_TYPE = {'ok': 'ordinal', 'nk': 'nominal', 'qk': 'quantitative'}
@@ -291,6 +304,15 @@ class Ref:
         return self.inst
 
 
+class Raw:
+    """A shelf entry Tableau generates itself (map Latitude / Longitude). Not declared in dependencies."""
+    def __init__(self, name):
+        self.name, self.ref, self.inst = name, f'[{DS}].[{name}]', f'[{name}]'
+
+
+LAT, LON = Raw('Latitude (generated)'), Raw('Longitude (generated)')
+
+
 def R(name, agg=None, kind=None) -> Ref:
     return Ref(name, agg, kind)
 
@@ -331,11 +353,12 @@ def runs_xml(runs, ind) -> str:
 
 class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
-                 tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None):
+                 tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
+                 geometry=None):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
-        self.mark_color = mark_color
+        self.mark_color, self.geometry = mark_color, geometry  # geometry: name of a spatial base field
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields
@@ -352,6 +375,8 @@ class Pane:
         enc += [f"              <lod column='{r.ref}' />" for r in self.lod]
         enc += [f"              <text column='{r.ref}' />" for r in self.text]
         enc += [f"              <tooltip column='{r.ref}' />" for r in self.tooltip_fields]
+        if self.geometry:
+            enc.append(f"              <geometry column='[{DS}].[{self.geometry}]' />")
         tip = ('            <customized-tooltip>\n              <formatted-text>\n' + runs_xml(self.tooltip, '                ')
                + '\n              </formatted-text>\n            </customized-tooltip>\n') if self.tooltip else ''
         lab = ('            <customized-label>\n              <formatted-text>\n' + runs_xml(self.label, '                ')
@@ -400,19 +425,20 @@ class Sheet:
 
     def __init__(self, name, *, rows=(), cols=(), panes=None, filters=(), formats=None, hide=(), fixed=None,
                  header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view',
-                 sync=()):
+                 sync=(), map_washout=None):
         self.name, self.rows, self.cols = name, list(rows), list(cols)
         self.panes = panes if isinstance(panes, list) else [panes or Pane()]
         self.filters, self.formats, self.hide = list(filters), formats or {}, list(hide)
         self.fixed, self.header_font, self.header_width = fixed or {}, header_font, header_width or {}
         self.row_height, self.divider, self.tooltip, self.zoom = row_height, divider, tooltip, zoom
         self.sync = list(sync)  # second measure of a dual axis whose axis is synchronised with the first
+        self.map_washout = map_washout  # set on map sheets: 1.0 fades the base map out completely
 
     def _shelf_refs(self, items):
         out = []
         for it in items:
             out += list(it) if isinstance(it, tuple) else [it]
-        return out
+        return [r for r in out if not isinstance(r, Raw)]
 
     def all_refs(self):
         # a field used in a label or tooltip must be in the view: add it to that pane's tooltip encodings
@@ -440,6 +466,7 @@ class Sheet:
         calc_names = [r.name for r in refs if r.is_calc]
         order, params, fields = CALCS.closure(calc_names)
         fields |= {r.name for r in refs if not r.is_calc}
+        fields |= {p.geometry for p in self.panes if p.geometry}
         dep = []
         if params:
             dep.append("          <datasource-dependencies datasource='Parameters'>")
@@ -490,6 +517,8 @@ class Sheet:
         rule('gridline', ["            <format attr='line-visibility' value='off' />"])
         rule('header', head)
         rule('label', label)
+        if self.map_washout is not None:
+            rule('map', [f"            <format attr='washout' value='{self.map_washout}' />"])
         rule('table', ["            <format attr='background-color' value='#00000000' />"])
         div = ['on', LINE] if self.divider else ['off', '#00000000']
         rule('table-div', [f"            <format attr='line-visibility' scope='{s}' value='{div[0]}' />" for s in ('rows', 'cols')]
@@ -509,6 +538,8 @@ class Sheet:
 
         return (f"    <worksheet name='{esc(self.name)}'>\n"
                 "      <table>\n        <view>\n          <datasources>\n" + ds_list + '          </datasources>\n'
+                + ("          <mapsources>\n            <mapsource name='Tableau' />\n          </mapsources>\n"
+                   if self.map_washout is not None else '')
                 + '\n'.join(dep) + '\n' + filt + slices
                 + "          <aggregation value='true' />\n        </view>\n"
                 "        <style>\n" + ''.join(rules) + "        </style>\n"

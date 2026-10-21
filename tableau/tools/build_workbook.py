@@ -208,6 +208,10 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace('</workbook>', datagraph(dzv) + '</workbook>')
 
     check(t)
+    # the spatial connection (Exposure Tiles) must reach the build unchanged
+    for conn in re.findall(r"<named-connection [^>]*>\s*<connection class='ogrdirect'[^>]*/>", raw.replace('\r\n', '\n')):
+        assert conn in t, 'spatial connection lost or changed: ' + conn[:120]
+    assert t.count("<object caption='Exposure Tiles'") == raw.count("<object caption='Exposure Tiles'"), 'Exposure Tiles table renamed or dropped'
     if crlf:
         t = t.replace('\n', '\r\n')
     out.parent.mkdir(parents=True, exist_ok=True)
