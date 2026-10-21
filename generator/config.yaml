@@ -70,7 +70,7 @@ ci:
 # Baseline reliability (the background noise)
 # ---------------------------------------------------------------------------
 baseline:
-  job_failure_rate: 0.025        # target ~97.5% job success before stories
+  job_failure_rate: 0.018        # with persistence this lands at ~97.5% job success before stories
   extra_failed_models_max: 1     # a failing job usually has 1, sometimes 2 bad models
   persist_next_run_prob: 0.25    # chance a random failure is still there next run
   error_mix:                     # error_category weights for random failures
@@ -85,12 +85,18 @@ baseline:
   # Keep the last few hours before data_as_of free of random noise, so the
   # "live issues today" view only shows what story 9 plants.
   quiet_hours_before_as_of: 8
+  # No random failures or outages on the headline story days, so each story can be
+  # read on its own in a time series (the spec's "stories are spaced" requirement)
+  no_random_noise_on: [2026-09-07, 2026-09-30, 2026-10-01, 2026-10-12, 2026-10-13]
 
 freshness:
   check_every_minutes: 60
   check_minute: 0
-  random_delay_rate: 0.01        # chance a scheduled load arrives late
-  random_delay_minutes: [30, 240]
+  # Connector outages: on any day a source has a small chance of missing a few loads
+  # in a row (an API rate limit, an expired token, a stuck sync). Short outages on
+  # fast sources trip "warn", longer ones on slow-threshold sources rarely reach "error".
+  random_outage_per_day: 0.02
+  random_outage_minutes: [60, 300]
 
 semantic_refresh:
   random_failure_rate: 0.01
