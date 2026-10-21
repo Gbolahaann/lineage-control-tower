@@ -1,0 +1,59 @@
+<p class="narrow-note">This is a fixed 1600 × 1000 Tableau canvas, scaled down to fit your screen. Open it on a laptop or desktop to use it at full size.</p>
+<div id="stage-wrap"><div id="stage">
+<nav aria-label="Dashboard pages">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="4" cy="4" r="2.2" fill="#83C7EB"/><circle cx="4" cy="16" r="2.2" fill="#83C7EB"/><circle cx="10" cy="10" r="2.2" fill="#FFFFFF"/><circle cx="16.5" cy="10" r="2.6" fill="#C7FFA4"/><path d="M5.8 4.8 8.4 8.8M5.8 15.2 8.4 11.2M12.2 10h2" stroke="#FFFFFF" stroke-width="1.3" fill="none"/></svg>
+    </div>
+    <div><div class="brand-name">Lineage Control Tower</div><div class="brand-sub">Acme Retail Co. · Data Platform</div></div>
+  </div>
+  <div class="nav-group">Monitor</div>
+  <button class="nav-item" data-view="health"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>Health overview<span class="count" id="nc-health"></span></button>
+  <button class="nav-item" data-view="runs"><svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h7"/><circle cx="18" cy="6" r="2"/><circle cx="14" cy="18" r="2"/></svg>Run &amp; failures</button>
+  <button class="nav-item" data-view="fresh"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg>Freshness &amp; SLAs<span class="count" id="nc-fresh"></span></button>
+  <div class="nav-group">Investigate</div>
+  <button class="nav-item" data-view="lineage"><svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2.4"/><path d="M6.6 7.2 10.4 10.8M6.6 16.8l3.8-3.6M14 12h2.6"/></svg>Lineage explorer</button>
+  <button class="nav-item" data-view="blast"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3"/></svg>Blast radius</button>
+  <button class="nav-item" data-view="quality"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>Data quality<span class="count" id="nc-quality"></span></button>
+  <div class="nav-group">Optimise</div>
+  <button class="nav-item" data-view="perf"><svg viewBox="0 0 24 24"><path d="M4 19h16M7 16V9M12 16V5M17 16v-4"/></svg>Performance &amp; cost</button>
+  <button class="nav-item" data-view="usage"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2 .8 3 3 3 6"/></svg>Usage &amp; adoption</button>
+  <div class="nav-group">Govern</div>
+  <button class="nav-item" data-view="gov"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Governance<span class="count" id="nc-gov"></span></button>
+  <button class="nav-item" data-view="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>About &amp; how to use</button>
+  <div class="nav-foot">
+    <div>Data updated on <b>19 Oct 2026, 23:59</b></div>
+    <div>Refreshes hourly from <span class="mono">dbt_ops</span></div>
+    <div class="synthetic"><span class="dot none"></span>Synthetic data, fictional company</div>
+  </div>
+</nav>
+<main>
+  <header class="header">
+    <div>
+      <div class="crumb" id="crumb">Monitor / <b>Health overview</b></div>
+      <h1 id="title">Health overview<span class="q">Is anything on fire right now?</span></h1>
+    </div>
+    <div class="updated">Data updated on <b>19 Oct 2026, 23:59</b><br>90 days of history from 22 Jul 2026</div>
+    <button class="icon-btn" id="info-btn" aria-label="How to read this page" title="How to read this page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button>
+  </header>
+  <div class="filters">
+    <div class="ctl"><span class="ctl-label">Period</span><div class="seg" id="f-period"><button data-v="7">Last 7 days</button><button data-v="30">Last 30 days</button><button data-v="90">Last 90 days</button></div></div>
+    <div class="ctl"><span class="ctl-label">Platform</span><div class="seg" id="f-plat"><button data-v="all">All</button><button data-v="snowflake"><span class="pdot" style="background:var(--p-snowflake)"></span>Snowflake</button><button data-v="databricks"><span class="pdot" style="background:var(--p-databricks)"></span>Databricks</button><button data-v="redshift"><span class="pdot" style="background:var(--p-redshift)"></span>Redshift</button></div></div>
+    <span class="hint" id="filter-hint"></span>
+    <div class="sel-chip" id="sel-chip" hidden><span id="sel-chip-text"></span><button id="sel-clear" aria-label="Clear selection"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 2l6 6M8 2 2 8" stroke="currentColor" stroke-width="1.5"/></svg></button></div>
+  </div>
+  <div class="content">
+    <section class="view" id="v-health"></section>
+    <section class="view" id="v-lineage"></section>
+    <section class="view" id="v-blast"></section>
+    <section class="view" id="v-runs"></section>
+    <section class="view" id="v-quality"></section>
+    <section class="view" id="v-fresh"></section>
+    <section class="view" id="v-perf"></section>
+    <section class="view" id="v-usage"></section>
+    <section class="view" id="v-gov"></section>
+    <section class="view" id="v-about"></section>
+  </div>
+</main>
+<div id="tip" role="tooltip"></div>
+</div></div>

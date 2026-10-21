@@ -4,7 +4,7 @@ A reference design for monitoring a modern data team's data products (BI dashboa
 
 **The data model is the product. The BI layer is interchangeable.**
 
-This repo holds the synthetic dataset and the generator that builds it. The flagship dashboard is a Tableau Public workbook, with a Claude-built data hub as the second build. The full design is in [docs/spec.md](docs/spec.md).
+This repo holds the synthetic dataset, the generator that builds it, the Tableau-ready mart layer, the approved HTML mockup and the Tableau workbook. The flagship dashboard is a Tableau Public workbook, with a Claude-built data hub as the second build. The full design is in [docs/spec.md](docs/spec.md).
 
 > Acme Retail Co. is fictional. Every name, email, number and URL in this repo is synthetic. No real company, client or employer data is used anywhere.
 
@@ -27,10 +27,21 @@ generator/
   world.yaml         the company: teams, owners, sources, dbt models, BI semantic objects, exposures
   generate.py        entry point
   lct/               one module per concern (catalog, graph, runs, freshness, semantic, consumption, cost, incidents, stories)
-data/                15 CSVs (see the dictionary)
+  aggregate.py       rolls the raw tables up into the shared logic behind the mockup and the marts
+  marts.py           writes the Tableau-ready mart layer (the dbt_ops layer a real team would build)
+data/                15 raw CSVs (see the dictionary)
+  marts/             14 Tableau-ready tables the workbook connects to
+mockup/
+  lineage-control-tower.html   the approved clickable prototype of all 9 tabs (open in a browser)
+  src/               mockup source, assembled by src/build.py
+  data/lct_agg.json  the aggregate the mockup and marts are built from
+tableau/
+  Lineage_Control_Tower_Project_Dashboard.twb   the workbook, data source connected (multi-fact model)
 docs/
   spec.md            the project spec
-  data_dictionary.md every table and column, what it means and where it comes from in a real company
+  data_dictionary.md every raw table and column, what it means and where it comes from in a real company
+  tableau-data-model.md  the Tableau data model: relationships, mart grains, parameters, hard charts
+  phase4_handoff.md  where the Tableau build stands and what comes next
 validation/
   check_world.py     graph sanity checks
   check_stories.py   one pass/fail check and one chart per story
@@ -38,6 +49,16 @@ validation/
   story_results.md   latest results
   charts/            validation charts
 ```
+
+### From raw data to Tableau
+
+```bash
+python generator/aggregate.py data mockup/data/lct_agg.json          # shared logic
+python generator/marts.py data mockup/data/lct_agg.json data/marts    # Tableau-ready marts
+python mockup/src/build.py mockup/src mockup/data/lct_agg.json mockup/lineage-control-tower.html
+```
+
+Tableau connects to `data/marts/`, not the raw tables. A multi-fact model cannot mix a dimension from one fact table with a measure from another, so the cross-table graph logic (exposure status, upstream culprits, reachability, lineage layout) is computed in the mart layer, the way a `dbt_ops` project would do it. See [docs/tableau-data-model.md](docs/tableau-data-model.md).
 
 ## The company
 
