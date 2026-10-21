@@ -34,7 +34,8 @@ def main() -> None:
     world = build_world(cfg, spec)
     tables["dim_owners"] = world.owners
     tables["dim_date"] = build_dim_date(cfg)
-    tables["dim_nodes"] = world.nodes
+    # base_daily_* are knobs for the usage simulation, not catalog facts, so they stay internal
+    tables["dim_nodes"] = world.nodes.drop(columns=["base_daily_events", "base_daily_consumers"])
     tables["fct_lineage_edges"] = world.edges
 
     # 2. Graph tables Tableau can use without recursion
