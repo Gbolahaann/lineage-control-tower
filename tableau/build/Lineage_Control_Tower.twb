@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8' ?>
 
 <!-- build 20263.26.1015.1742                               -->
-<workbook _.fcp.WorkbookFingerprinting.true...author-id='970349a3671cc96a9a38b1aa98a9f8eb81ef3254b50e1dd9bade70cc520f1753' _.fcp.WorkbookFingerprinting.true...creator-author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-license-type='paid' _.fcp.WorkbookFingerprinting.true...creator-machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...license-type='paid' _.fcp.WorkbookFingerprinting.true...machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' original-version='18.1' source-build='2026.3.0 (20263.26.1015.1742)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+<workbook _.fcp.WorkbookFingerprinting.true...author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-author-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...creator-license-type='paid' _.fcp.WorkbookFingerprinting.true...creator-machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' _.fcp.WorkbookFingerprinting.true...license-type='paid' _.fcp.WorkbookFingerprinting.true...machine-id='f101f0ce2abd9904804439ff3f502beb08a921343f24451f2a530478736ba8ea' original-version='18.1' source-build='2026.3.0 (20263.26.1015.1742)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
   <document-format-change-manifest>
     <AnimationOnByDefault />
     <MarkAnimation />
@@ -10,7 +10,6 @@
     <ObjectModelTableType />
     <SchemaViewerObjectModel />
     <SheetIdentifierTracking />
-    <SpatialFileLayer />
     <WindowsPersistSimpleIdentifiers />
     <_.fcp.WorkbookFingerprinting.true...WorkbookFingerprinting />
     <AccessibleZoneTabOrder />
@@ -425,9 +424,6 @@
           <named-connection caption='mart_node_daily' name='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn'>
             <connection class='textscan' directory='/Users/GbolahanAdebayo1/Desktop/Data Analytics/My Portfolio/Tableau/Data Lineage &amp; Operations Monitoring Dashboard/lct-tableau-marts/data/marts' filename='mart_node_daily.csv' password='' server='' />
           </named-connection>
-          <named-connection caption='mart_exposure_tiles' name='ogrdirect.faa6fd6eea116bf8cc439f6c3324'>
-            <connection class='ogrdirect' directory='/Users/GbolahanAdebayo1/Desktop/Data Analytics/My Portfolio/Tableau/Data Lineage &amp; Operations Monitoring Dashboard/lct-tableau-marts/data/marts' filename='mart_exposure_tiles.geojson' server='' />
-          </named-connection>
         </named-connections>
         <relation type='collection'>
           <relation connection='textscan.0k5jexq0ngajdw1e8cchh0sdzqcn' name='fct_incidents.csv' table='[fct_incidents#csv]' type='table'>
@@ -721,34 +717,8 @@
               <column datatype='string' name='weekday' ordinal='9' />
             </columns>
           </relation>
-          <relation connection='ogrdirect.faa6fd6eea116bf8cc439f6c3324' name='mart_exposure_tiles.geojson' table='[mart_exposure_tiles.geojson]' type='table'>
-            <columns>
-              <column datatype='string' name='feature_type' ordinal='0' />
-              <column datatype='string' name='layout' ordinal='1' />
-              <column datatype='string' name='node_id' ordinal='2' />
-              <column datatype='string' name='group_label' ordinal='3' />
-              <column datatype='integer' name='group_order' ordinal='4' />
-              <column datatype='integer' name='group_count' ordinal='5' />
-              <column datatype='real' name='label_lon' ordinal='6' />
-              <column datatype='real' name='label_lat' ordinal='7' />
-              <column datatype='integer' name='tile_row' ordinal='8' />
-              <column datatype='integer' name='tile_col' ordinal='9' />
-              <column datatype='real' name='name_lon' ordinal='10' />
-              <column datatype='real' name='name_lat' ordinal='11' />
-              <column datatype='real' name='meta_lon' ordinal='12' />
-              <column datatype='real' name='meta_lat' ordinal='13' />
-              <column datatype='real' name='trust_lon' ordinal='14' />
-              <column datatype='real' name='trust_lat' ordinal='15' />
-              <column datatype='real' name='score_lon' ordinal='16' />
-              <column datatype='real' name='score_lat' ordinal='17' />
-              <column datatype='real' name='dot_lon' ordinal='18' />
-              <column datatype='real' name='dot_lat' ordinal='19' />
-              <column datatype='spatial' name='Geometry' ordinal='20' />
-            </columns>
-          </relation>
         </relation>
         <cols>
-          <map key='[Geometry]' value='[mart_exposure_tiles.geojson].[Geometry]' />
           <map key='[access_path]' value='[dim_nodes.csv].[access_path]' />
           <map key='[allocated_cost_usd]' value='[mart_exposure_daily.csv].[allocated_cost_usd]' />
           <map key='[avg_daily_consumers_30d (mart_blast_radius.csv)]' value='[mart_blast_radius.csv].[avg_daily_consumers_30d]' />
@@ -797,8 +767,6 @@
           <map key='[display_name]' value='[dim_nodes.csv].[display_name]' />
           <map key='[display_short]' value='[dim_nodes.csv].[display_short]' />
           <map key='[domain]' value='[dim_nodes.csv].[domain]' />
-          <map key='[dot_lat]' value='[mart_exposure_tiles.geojson].[dot_lat]' />
-          <map key='[dot_lon]' value='[mart_exposure_tiles.geojson].[dot_lon]' />
           <map key='[downstream_consumers_30d]' value='[dim_nodes.csv].[downstream_consumers_30d]' />
           <map key='[downstream_consumers_7d]' value='[dim_nodes.csv].[downstream_consumers_7d]' />
           <map key='[downstream_consumers_90d]' value='[dim_nodes.csv].[downstream_consumers_90d]' />
@@ -831,14 +799,10 @@
           <map key='[failed_at]' value='[mart_recovery_episodes.csv].[failed_at]' />
           <map key='[failed_calls]' value='[mart_exposure_daily.csv].[failed_calls]' />
           <map key='[fails]' value='[mart_test_daily.csv].[fails]' />
-          <map key='[feature_type]' value='[mart_exposure_tiles.geojson].[feature_type]' />
           <map key='[fresh_checks_error]' value='[mart_node_daily.csv].[fresh_checks_error]' />
           <map key='[fresh_checks_pass]' value='[mart_node_daily.csv].[fresh_checks_pass]' />
           <map key='[fresh_checks_warn]' value='[mart_node_daily.csv].[fresh_checks_warn]' />
           <map key='[freshness_lag_min]' value='[dim_nodes.csv].[freshness_lag_min]' />
-          <map key='[group_count]' value='[mart_exposure_tiles.geojson].[group_count]' />
-          <map key='[group_label]' value='[mart_exposure_tiles.geojson].[group_label]' />
-          <map key='[group_order]' value='[mart_exposure_tiles.geojson].[group_order]' />
           <map key='[has_description]' value='[dim_nodes.csv].[has_description]' />
           <map key='[health_score]' value='[mart_exposure_daily.csv].[health_score]' />
           <map key='[health_score_now]' value='[dim_nodes.csv].[health_score_now]' />
@@ -863,8 +827,6 @@
           <map key='[job_run_id (mart_job_runs.csv)]' value='[mart_job_runs.csv].[job_run_id]' />
           <map key='[job_run_id]' value='[mart_run_errors.csv].[job_run_id]' />
           <map key='[kind]' value='[mart_recovery_episodes.csv].[kind]' />
-          <map key='[label_lat]' value='[mart_exposure_tiles.geojson].[label_lat]' />
-          <map key='[label_lon]' value='[mart_exposure_tiles.geojson].[label_lon]' />
           <map key='[last_error_message]' value='[dim_nodes.csv].[last_error_message]' />
           <map key='[last_event_at]' value='[dim_nodes.csv].[last_event_at]' />
           <map key='[last_refresh_sec]' value='[dim_nodes.csv].[last_refresh_sec]' />
@@ -874,7 +836,6 @@
           <map key='[layer]' value='[dim_nodes.csv].[layer]' />
           <map key='[layer_column]' value='[dim_nodes.csv].[layer_column]' />
           <map key='[layer_order]' value='[dim_nodes.csv].[layer_order]' />
-          <map key='[layout]' value='[mart_exposure_tiles.geojson].[layout]' />
           <map key='[layout_scope]' value='[mart_lineage_layout.csv].[layout_scope]' />
           <map key='[load_every_minutes]' value='[dim_nodes.csv].[load_every_minutes]' />
           <map key='[mapped_exposure_id]' value='[mart_observed_access.csv].[mapped_exposure_id]' />
@@ -884,8 +845,6 @@
           <map key='[maturity]' value='[dim_nodes.csv].[maturity]' />
           <map key='[max_lag_min]' value='[mart_node_daily.csv].[max_lag_min]' />
           <map key='[max_rows_built]' value='[dim_nodes.csv].[max_rows_built]' />
-          <map key='[meta_lat]' value='[mart_exposure_tiles.geojson].[meta_lat]' />
-          <map key='[meta_lon]' value='[mart_exposure_tiles.geojson].[meta_lon]' />
           <map key='[metrics_called]' value='[mart_exposure_daily.csv].[metrics_called]' />
           <map key='[migrated_from_platform]' value='[dim_nodes.csv].[migrated_from_platform]' />
           <map key='[migration_date]' value='[dim_nodes.csv].[migration_date]' />
@@ -894,11 +853,8 @@
           <map key='[models_skipped]' value='[mart_job_runs.csv].[models_skipped]' />
           <map key='[month]' value='[dim_date.csv].[month]' />
           <map key='[month_name]' value='[dim_date.csv].[month_name]' />
-          <map key='[name_lat]' value='[mart_exposure_tiles.geojson].[name_lat]' />
-          <map key='[name_lon]' value='[mart_exposure_tiles.geojson].[name_lon]' />
           <map key='[node_id (dim_nodes.csv)]' value='[dim_nodes.csv].[node_id]' />
           <map key='[node_id (mart_blast_radius.csv)]' value='[mart_blast_radius.csv].[node_id]' />
-          <map key='[node_id (mart_exposure_tiles.geojson)]' value='[mart_exposure_tiles.geojson].[node_id]' />
           <map key='[node_id (mart_lineage_layout.csv)]' value='[mart_lineage_layout.csv].[node_id]' />
           <map key='[node_id (mart_node_reach.csv)]' value='[mart_node_reach.csv].[node_id]' />
           <map key='[node_id (mart_observed_access.csv)]' value='[mart_observed_access.csv].[node_id]' />
@@ -957,8 +913,6 @@
           <map key='[runtime_trend_pct]' value='[mart_node_daily.csv].[runtime_trend_pct]' />
           <map key='[schedule]' value='[mart_job_runs.csv].[schedule]' />
           <map key='[schema_name]' value='[dim_nodes.csv].[schema_name]' />
-          <map key='[score_lat]' value='[mart_exposure_tiles.geojson].[score_lat]' />
-          <map key='[score_lon]' value='[mart_exposure_tiles.geojson].[score_lon]' />
           <map key='[semantic_object_type]' value='[dim_nodes.csv].[semantic_object_type]' />
           <map key='[service_principal]' value='[dim_nodes.csv].[service_principal]' />
           <map key='[severity (fct_incidents.csv)]' value='[fct_incidents.csv].[severity]' />
@@ -986,13 +940,9 @@
           <map key='[tests_passing]' value='[dim_nodes.csv].[tests_passing]' />
           <map key='[tests_warn]' value='[mart_node_daily.csv].[tests_warn]' />
           <map key='[tests_warning]' value='[dim_nodes.csv].[tests_warning]' />
-          <map key='[tile_col]' value='[mart_exposure_tiles.geojson].[tile_col]' />
-          <map key='[tile_row]' value='[mart_exposure_tiles.geojson].[tile_row]' />
           <map key='[title]' value='[fct_incidents.csv].[title]' />
           <map key='[triggered_by]' value='[mart_job_runs.csv].[triggered_by]' />
           <map key='[trust_badge]' value='[dim_nodes.csv].[trust_badge]' />
-          <map key='[trust_lat]' value='[mart_exposure_tiles.geojson].[trust_lat]' />
-          <map key='[trust_lon]' value='[mart_exposure_tiles.geojson].[trust_lon]' />
           <map key='[unique_consumers]' value='[mart_exposure_daily.csv].[unique_consumers]' />
           <map key='[upstream_node_count]' value='[dim_nodes.csv].[upstream_node_count]' />
           <map key='[warn_after_minutes]' value='[dim_nodes.csv].[warn_after_minutes]' />
@@ -4391,262 +4341,6 @@
             <collation flag='0' name='LEN_RUS' />
             <object-id>[mart_test_daily.csv_34C9F211FF984FF6ADF37D0DD0E2E144]</object-id>
           </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>feature_type</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[feature_type]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>feature_type</remote-alias>
-            <ordinal>235</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>layout</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[layout]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>layout</remote-alias>
-            <ordinal>236</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>node_id</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[node_id (mart_exposure_tiles.geojson)]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>node_id</remote-alias>
-            <ordinal>237</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>group_label</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[group_label]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>group_label</remote-alias>
-            <ordinal>238</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>group_order</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[group_order]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>group_order</remote-alias>
-            <ordinal>239</ordinal>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>group_count</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[group_count]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>group_count</remote-alias>
-            <ordinal>240</ordinal>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>label_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[label_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>label_lon</remote-alias>
-            <ordinal>241</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>label_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[label_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>label_lat</remote-alias>
-            <ordinal>242</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>tile_row</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[tile_row]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>tile_row</remote-alias>
-            <ordinal>243</ordinal>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>tile_col</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[tile_col]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>tile_col</remote-alias>
-            <ordinal>244</ordinal>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>name_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[name_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>name_lon</remote-alias>
-            <ordinal>245</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>name_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[name_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>name_lat</remote-alias>
-            <ordinal>246</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>meta_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[meta_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>meta_lon</remote-alias>
-            <ordinal>247</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>meta_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[meta_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>meta_lat</remote-alias>
-            <ordinal>248</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>trust_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[trust_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>trust_lon</remote-alias>
-            <ordinal>249</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>trust_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[trust_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>trust_lat</remote-alias>
-            <ordinal>250</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>score_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[score_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>score_lon</remote-alias>
-            <ordinal>251</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>score_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[score_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>score_lat</remote-alias>
-            <ordinal>252</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>dot_lon</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[dot_lon]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>dot_lon</remote-alias>
-            <ordinal>253</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>dot_lat</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[dot_lat]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>dot_lat</remote-alias>
-            <ordinal>254</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>Geometry</remote-name>
-            <remote-type>8</remote-type>
-            <local-name>[Geometry]</local-name>
-            <parent-name>[mart_exposure_tiles.geojson]</parent-name>
-            <remote-alias>Geometry</remote-alias>
-            <ordinal>255</ordinal>
-            <local-type>spatial</local-type>
-            <aggregation>Collect</aggregation>
-            <contains-null>true</contains-null>
-            <object-id>[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]</object-id>
-          </metadata-record>
         </metadata-records>
       </connection>
       <aliases enabled='yes' />
@@ -4656,7 +4350,6 @@
       <column caption='Incidents' datatype='table' name='[__tableau_internal_object_id__].[fct_incidents.csv_84CA4339B68E49DA9E67CC1C1EA0B556]' role='measure' type='quantitative' />
       <column caption='Blast Radius' datatype='table' name='[__tableau_internal_object_id__].[mart_blast_radius.csv_A97ACB5E6CFB4A9CB2D1F5AF5D6338B7]' role='measure' type='quantitative' />
       <column caption='Exposure Daily' datatype='table' name='[__tableau_internal_object_id__].[mart_exposure_daily.csv_F0D9821F4CBC40F487B7C584F602A7CF]' role='measure' type='quantitative' />
-      <column caption='Exposure Tiles' datatype='table' name='[__tableau_internal_object_id__].[mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A]' role='measure' type='quantitative' />
       <column caption='Job Runs' datatype='table' name='[__tableau_internal_object_id__].[mart_job_runs.csv_4E7CDE473B9A4834BFE44623C17073CA]' role='measure' type='quantitative' />
       <column caption='Lineage Layout' datatype='table' name='[__tableau_internal_object_id__].[mart_lineage_layout.csv_5AD8C02B14FF485F9FE3A3B784E5DEE5]' role='measure' type='quantitative' />
       <column caption='Node Daily' datatype='table' name='[__tableau_internal_object_id__].[mart_node_daily.csv_0FF4EB4E1931464BA889080A7040414F]' role='measure' type='quantitative' />
@@ -4713,8 +4406,6 @@
       <column caption='Display Name' datatype='string' name='[display_name]' role='dimension' type='nominal' />
       <column caption='Display Short' datatype='string' name='[display_short]' role='dimension' type='nominal' />
       <column caption='Domain' datatype='string' name='[domain]' role='dimension' type='nominal' />
-      <column aggregation='Avg' datatype='real' name='[dot_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[dot_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Downstream Consumers 30D' datatype='real' name='[downstream_consumers_30d]' role='measure' type='quantitative' />
       <column caption='Downstream Consumers 7D' datatype='real' name='[downstream_consumers_7d]' role='measure' type='quantitative' />
       <column caption='Downstream Consumers 90D' datatype='real' name='[downstream_consumers_90d]' role='measure' type='quantitative' />
@@ -4775,8 +4466,6 @@
       <column caption='Job Run Id (Job Runs)' datatype='string' name='[job_run_id (mart_job_runs.csv)]' role='dimension' type='nominal' />
       <column caption='Job Run Id' datatype='string' name='[job_run_id]' role='dimension' type='nominal' />
       <column caption='Kind' datatype='string' name='[kind]' role='dimension' type='nominal' />
-      <column aggregation='Avg' datatype='real' name='[label_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[label_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Last Error Message' datatype='string' name='[last_error_message]' role='dimension' type='nominal' />
       <column caption='Last Event At' datatype='datetime' name='[last_event_at]' role='dimension' type='ordinal' />
       <column caption='Last Refresh Sec' datatype='real' name='[last_refresh_sec]' role='measure' type='quantitative' />
@@ -4795,8 +4484,6 @@
       <column caption='Maturity' datatype='string' name='[maturity]' role='dimension' type='nominal' />
       <column caption='Max Lag Min' datatype='real' name='[max_lag_min]' role='measure' type='quantitative' />
       <column caption='Max Rows Built' datatype='real' name='[max_rows_built]' role='measure' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[meta_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[meta_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Metrics Called' datatype='real' name='[metrics_called]' role='measure' type='quantitative' />
       <column caption='Migrated From Platform' datatype='string' name='[migrated_from_platform]' role='dimension' type='nominal' />
       <column caption='Migration Date' datatype='date' name='[migration_date]' role='dimension' type='ordinal' />
@@ -4805,8 +4492,6 @@
       <column caption='Models Skipped' datatype='integer' name='[models_skipped]' role='measure' type='quantitative' />
       <column caption='Month' datatype='integer' name='[month]' role='dimension' type='quantitative' />
       <column caption='Month Name' datatype='string' name='[month_name]' role='dimension' type='nominal' />
-      <column aggregation='Avg' datatype='real' name='[name_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[name_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Node Id (Nodes)' datatype='string' name='[node_id (dim_nodes.csv)]' role='dimension' type='nominal' />
       <column caption='Node Id (Blast Radius)' datatype='string' name='[node_id (mart_blast_radius.csv)]' role='dimension' type='nominal' />
       <column caption='Node Id (Lineage Layout)' datatype='string' name='[node_id (mart_lineage_layout.csv)]' role='dimension' type='nominal' />
@@ -4867,8 +4552,6 @@
       <column caption='Runtime Trend Pct' datatype='real' name='[runtime_trend_pct]' role='measure' type='quantitative' />
       <column caption='Schedule' datatype='string' name='[schedule]' role='dimension' type='nominal' />
       <column caption='Schema Name' datatype='string' name='[schema_name]' role='dimension' type='nominal' />
-      <column aggregation='Avg' datatype='real' name='[score_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[score_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Semantic Object Type' datatype='string' name='[semantic_object_type]' role='dimension' type='nominal' />
       <column caption='Service Principal' datatype='string' name='[service_principal]' role='dimension' type='nominal' />
       <column caption='Severity (Incidents)' datatype='string' name='[severity (fct_incidents.csv)]' role='dimension' type='nominal' />
@@ -4899,8 +4582,6 @@
       <column caption='Title' datatype='string' name='[title]' role='dimension' type='nominal' />
       <column caption='Triggered By' datatype='string' name='[triggered_by]' role='dimension' type='nominal' />
       <column caption='Trust Badge' datatype='string' name='[trust_badge]' role='dimension' type='nominal' />
-      <column aggregation='Avg' datatype='real' name='[trust_lat]' role='measure' semantic-role='[Geographical].[Latitude]' type='quantitative' />
-      <column aggregation='Avg' datatype='real' name='[trust_lon]' role='measure' semantic-role='[Geographical].[Longitude]' type='quantitative' />
       <column caption='Unique Consumers' datatype='integer' name='[unique_consumers]' role='measure' type='quantitative' />
       <column caption='Upstream Node Count' datatype='real' name='[upstream_node_count]' role='measure' type='quantitative' />
       <column caption='Warn After Minutes' datatype='real' name='[warn_after_minutes]' role='measure' type='quantitative' />
@@ -5179,20 +4860,33 @@
       <column caption='Warehouse Cost - Trend Out Period' datatype='real' name='[Calculation_4504844918117665692]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Warehouse Cost - Trend Out Period&#13;&#10;// The trend bars outside the selected window (grey #D9DCD7 set on the pane).&#13;&#10;IF NOT ATTR([Calculation_1409194560049525583]) THEN [Calculation_2340317715032000993] END' />
       </column>
-      <column caption='Is Tile Layout Match' datatype='boolean' name='[Calculation_6095821144001551766]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Is Tile Layout Match&#13;&#10;// Keeps the layout that matches the All / Needs attention buttons. Put on Filters (True).&#13;&#10;[layout] = [Parameters].[Parameter 8]' />
+      <column caption='Exposure Group Sort' datatype='integer' name='[Calculation_1368642606501877949]' role='dimension' type='ordinal'>
+        <calculation class='tableau' formula='// Exposure Group Sort&#13;&#10;// Prototype group order: BI dashboards, Apps ML and notebooks, AI agents and data hubs, Unregistered.&#13;&#10;CASE [exposure_group]&#13;&#10;WHEN &quot;BI dashboards&quot;                        THEN 1&#13;&#10;WHEN &quot;Apps, ML and notebooks&quot;               THEN 2&#13;&#10;WHEN &quot;AI agents and data hubs&quot;              THEN 3&#13;&#10;WHEN &quot;Unregistered, found in query history&quot; THEN 4&#13;&#10;END' />
       </column>
-      <column caption='Tile Fill Key' datatype='string' name='[Calculation_2950369687746909721]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Tile Fill Key&#13;&#10;// Fill for the rounded tile: status tint, or faded when the tile is outside the Platform filter.&#13;&#10;IF [feature_type] &lt;&gt; &quot;tile&quot;&#13;&#10;    THEN &quot;None&quot;&#13;&#10;ELSEIF NOT [Calculation_2214252331607255986]&#13;&#10;    THEN &quot;Faded&quot;&#13;&#10;ELSEIF [current_status_code] = 3&#13;&#10;    THEN &quot;Critical&quot;&#13;&#10;ELSEIF [current_status_code] = 2&#13;&#10;    THEN &quot;Warning&quot;&#13;&#10;ELSE &quot;Healthy&quot;&#13;&#10;END' />
+      <column caption='Is Exposure' datatype='boolean' name='[Calculation_8377152860883702219]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Is Exposure&#13;&#10;// Keeps exposure rows only. Put on Filters (True).&#13;&#10;[resource_type] = &quot;exposure&quot;' />
       </column>
-      <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+      <column caption='Show Exposure Tile' datatype='boolean' name='[Calculation_1065115793061580082]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Show Exposure Tile&#13;&#10;// The All / Needs attention switch above the grid.&#13;&#10;[Parameters].[Parameter 8] = &quot;All&quot;&#13;&#10;OR [Calculation_2875175252813195699]' />
       </column>
-      <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
-        <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+      <column caption='Exposure Group Label' datatype='string' name='[Calculation_2442059920660643562]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Exposure Group Label&#13;&#10;// Group header with its tile count, for example &quot;BI DASHBOARDS   17&quot;.&#13;&#10;// The count is FIXED with the platform and tile-view rules inside it, so no context filters are needed.&#13;&#10;UPPER([exposure_group]) + &quot;   &quot;&#13;&#10;+ STR({ FIXED [exposure_group] :&#13;&#10;    SUM(IF [Calculation_8377152860883702219] AND [Calculation_2214252331607255986] AND [Calculation_1065115793061580082]&#13;&#10;        THEN 1 END) })' />
       </column>
-      <column caption='Tile Header Text' datatype='string' name='[Calculation_3219610012864781816]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Text&#13;&#10;// Group label in caps with its count, e.g. &quot;BI DASHBOARDS  17&quot;. Blank on tile rows.&#13;&#10;// v04 (one map layer): the label is centred on its anchor dot at the left edge of the grid, so it is padded on the&#13;&#10;// right with no-break spaces (about 2.4 per capital) to push the visible text to start at the dot.&#13;&#10;IF [feature_type] = &quot;header&quot;&#13;&#10;    THEN UPPER([group_label]) + &quot;  &quot; + STR([group_count])&#13;&#10;        + REPLACE(SPACE(INT((LEN([group_label]) + 4) * 2.4)), &quot; &quot;, &quot; &quot;)&#13;&#10;END' />
+      <column caption='Tile Row' datatype='integer' name='[Calculation_1091687039505899741]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Tile Row&#13;&#10;// Row inside each group. Same compute-using and sort as Tile Column. Make it discrete.&#13;&#10;INT((INDEX() - 1) / 5) + 1'>
+          <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+        </calculation>
+      </column>
+      <column caption='Tile Column' datatype='integer' name='[Calculation_7154026945591774946]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Tile Column&#13;&#10;// Column 1 to 5 in the tile grid (the prototype shows 5 tiles per row).&#13;&#10;// Table calc: Specific dimensions = exposure_group, node_id (dim_nodes.csv); restart every exposure_group;&#13;&#10;// sort by Tile Sort Key, MIN, ascending. Make it discrete.&#13;&#10;(INDEX() - 1) % 5 + 1'>
+          <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+        </calculation>
+      </column>
+      <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
+      </column>
+      <column caption='Status Tint Key' datatype='string' name='[Calculation_1400495547723235965]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Status Tint Key&#13;&#10;// Same values as Status Label, kept as a separate field so it can carry the light tint palette&#13;&#10;// for tile and alert backgrounds: Healthy #FFFFFF, Warning #FDF3E1, Critical #FBEAE9, No data #F1F2F4.&#13;&#10;[Calculation_3105941082857465865]' />
       </column>
       <column caption='Tile Name Short' datatype='string' name='[Calculation_8990803335852813669]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile Name Short&#13;&#10;// Tile title cut to fit a 163px tile: 22 characters, then &quot;…&quot;. The tooltip has the full name.&#13;&#10;IF LEN([display_name]) &gt; 23 THEN LEFT([display_name], 22) + &quot;…&quot; ELSE [display_name] END' />
@@ -5221,6 +4915,15 @@
       <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
       </column>
+      <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
+      </column>
+      <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+      </column>
+      <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
+        <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+      </column>
       <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
       </column>
@@ -5247,12 +4950,6 @@
       </column>
       <column caption='Is Attention Node' datatype='boolean' name='[Calculation_3175454921771165665]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Attention Node&#13;&#10;// Upstream nodes (not exposures) that are Warning or Critical right now. Today: 3 nodes.&#13;&#10;[resource_type] &lt;&gt; &quot;exposure&quot;&#13;&#10;AND [Calculation_2875175252813195699]' />
-      </column>
-      <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
-      </column>
-      <column caption='Status Tint Key' datatype='string' name='[Calculation_1400495547723235965]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Status Tint Key&#13;&#10;// Same values as Status Label, kept as a separate field so it can carry the light tint palette&#13;&#10;// for tile and alert backgrounds: Healthy #FFFFFF, Warning #FDF3E1, Critical #FBEAE9, No data #F1F2F4.&#13;&#10;[Calculation_3105941082857465865]' />
       </column>
       <column caption='Attention Icon Critical' datatype='string' name='[Calculation_3020345249174904341]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Attention Icon Critical&#13;&#10;// &quot;✕&quot; in red before a Critical node. Split by status so each icon gets its own colour.&#13;&#10;IF [current_status_code] = 3 THEN &quot;✕&quot; ELSE &quot;&quot; END' />
@@ -5316,6 +5013,12 @@
       <column caption='Show Info Panel' datatype='boolean' name='[Calculation_3095764547146903988]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Show Info Panel&#13;&#10;// DZV for GL Info Panel: shown while p_show_info is True.&#13;&#10;[Parameters].[Parameter 7]' />
       </column>
+      <column-instance column='[Calculation_1290101426377148290]' derivation='None' name='[none:Calculation_1290101426377148290:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_1733161848805935888]' derivation='None' name='[none:Calculation_1733161848805935888:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_1400495547723235965]' derivation='Attribute' name='[attr:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_1284089094536110577]' derivation='None' name='[none:Calculation_1284089094536110577:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_1400495547723235965]' derivation='None' name='[none:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Calculation_2946817898410042583]' derivation='None' name='[none:Calculation_2946817898410042583:ok]' pivot='key' type='ordinal' />
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <style>
         <style-rule element='mark'>
@@ -5335,8 +5038,8 @@
               <bucket>false</bucket>
             </map>
           </encoding>
-          <encoding attr='color' field='[attr:Calculation_2950369687746909721:nk]' type='palette'>
-            <map to='#f7f8f6'>
+          <encoding attr='color' field='[attr:Calculation_1400495547723235965:nk]' type='palette'>
+            <map to='#ffffff'>
               <bucket>&quot;Healthy&quot;</bucket>
             </map>
             <map to='#fdf3e1'>
@@ -5345,11 +5048,8 @@
             <map to='#fbeae9'>
               <bucket>&quot;Critical&quot;</bucket>
             </map>
-            <map to='#fbfbfa'>
-              <bucket>&quot;Faded&quot;</bucket>
-            </map>
-            <map to='#ffffff'>
-              <bucket>&quot;None&quot;</bucket>
+            <map to='#f1f2f4'>
+              <bucket>&quot;No data&quot;</bucket>
             </map>
           </encoding>
           <encoding attr='color' field='[none:Calculation_1284089094536110577:nk]' type='palette'>
@@ -5393,6 +5093,58 @@
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
       </semantic-values>
+      <datasource-dependencies datasource='Parameters'>
+        <column alias='Last 30 days' caption='p_period' datatype='integer' datatype-customized='true' name='[Parameter 1]' param-domain-type='list' role='measure' type='quantitative' value='30'>
+          <calculation class='tableau' formula='30' />
+          <aliases>
+            <alias key='7' value='Last 7 days' />
+            <alias key='30' value='Last 30 days' />
+            <alias key='90' value='Last 90 days' />
+          </aliases>
+          <members>
+            <member alias='Last 7 days' value='7' />
+            <member alias='Last 30 days' value='30' />
+            <member alias='Last 90 days' value='90' />
+          </members>
+        </column>
+        <column alias='All' caption='p_platform' datatype='string' datatype-customized='true' name='[Parameter 2]' param-domain-type='list' role='measure' type='nominal' value='&quot;All&quot;'>
+          <calculation class='tableau' formula='&quot;All&quot;' />
+          <aliases>
+            <alias key='&quot;All&quot;' value='All' />
+            <alias key='&quot;snowflake&quot;' value='Snowflake' />
+            <alias key='&quot;databricks&quot;' value='Databricks' />
+            <alias key='&quot;redshift&quot;' value='Redshift' />
+          </aliases>
+          <members>
+            <member alias='All' value='&quot;All&quot;' />
+            <member alias='Snowflake' value='&quot;snowflake&quot;' />
+            <member alias='Databricks' value='&quot;databricks&quot;' />
+            <member alias='Redshift' value='&quot;redshift&quot;' />
+          </members>
+        </column>
+        <column alias='Hide' caption='p_show_info' datatype='boolean' datatype-customized='true' name='[Parameter 7]' param-domain-type='list' role='measure' type='nominal' value='false'>
+          <calculation class='tableau' formula='false' />
+          <aliases>
+            <alias key='true' value='Show' />
+            <alias key='false' value='Hide' />
+          </aliases>
+          <members>
+            <member alias='Show' value='true' />
+            <member alias='Hide' value='false' />
+          </members>
+        </column>
+        <column alias='All' caption='p_tile_view' datatype='string' datatype-customized='true' name='[Parameter 8]' param-domain-type='list' role='measure' type='nominal' value='&quot;All&quot;'>
+          <calculation class='tableau' formula='&quot;All&quot;' />
+          <aliases>
+            <alias key='&quot;All&quot;' value='All' />
+            <alias key='&quot;Needs attention&quot;' value='Needs attention' />
+          </aliases>
+          <members>
+            <member alias='All' value='&quot;All&quot;' />
+            <member alias='Needs attention' value='&quot;Needs attention&quot;' />
+          </members>
+        </column>
+      </datasource-dependencies>
       <object-graph>
         <objects>
           <object caption='Dates' id='dim_date.csv_DF8950FB8176406B9520773745BC3E0D'>
@@ -5572,35 +5324,6 @@
                   <column datatype='real' name='failed_calls' ordinal='11' />
                   <column datatype='boolean' name='is_observed_only' ordinal='12' />
                   <column datatype='real' name='allocated_cost_usd' ordinal='13' />
-                </columns>
-              </relation>
-            </properties>
-          </object>
-          <object caption='Exposure Tiles' id='mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A'>
-            <properties context=''>
-              <relation connection='ogrdirect.faa6fd6eea116bf8cc439f6c3324' name='mart_exposure_tiles.geojson' table='[mart_exposure_tiles.geojson]' type='table'>
-                <columns>
-                  <column datatype='string' name='feature_type' ordinal='0' />
-                  <column datatype='string' name='layout' ordinal='1' />
-                  <column datatype='string' name='node_id' ordinal='2' />
-                  <column datatype='string' name='group_label' ordinal='3' />
-                  <column datatype='integer' name='group_order' ordinal='4' />
-                  <column datatype='integer' name='group_count' ordinal='5' />
-                  <column datatype='real' name='label_lon' ordinal='6' />
-                  <column datatype='real' name='label_lat' ordinal='7' />
-                  <column datatype='integer' name='tile_row' ordinal='8' />
-                  <column datatype='integer' name='tile_col' ordinal='9' />
-                  <column datatype='real' name='name_lon' ordinal='10' />
-                  <column datatype='real' name='name_lat' ordinal='11' />
-                  <column datatype='real' name='meta_lon' ordinal='12' />
-                  <column datatype='real' name='meta_lat' ordinal='13' />
-                  <column datatype='real' name='trust_lon' ordinal='14' />
-                  <column datatype='real' name='trust_lat' ordinal='15' />
-                  <column datatype='real' name='score_lon' ordinal='16' />
-                  <column datatype='real' name='score_lat' ordinal='17' />
-                  <column datatype='real' name='dot_lon' ordinal='18' />
-                  <column datatype='real' name='dot_lat' ordinal='19' />
-                  <column datatype='spatial' name='Geometry' ordinal='20' />
                 </columns>
               </relation>
             </properties>
@@ -5863,14 +5586,6 @@
           </relationship>
           <relationship>
             <expression op='='>
-              <expression op='[node_id (mart_exposure_tiles.geojson)]' />
-              <expression op='[node_id (dim_nodes.csv)]' />
-            </expression>
-            <first-end-point object-id='mart_exposure_tiles.geojson_FAA6FD6EEA116BF8CC439F6C3324941A' />
-            <second-end-point object-id='dim_nodes.csv_273AA73B14884E2FB287033E49518972' />
-          </relationship>
-          <relationship>
-            <expression op='='>
               <expression op='[node_id (mart_lineage_layout.csv)]' />
               <expression op='[node_id (dim_nodes.csv)]' />
             </expression>
@@ -5974,7 +5689,7 @@
       <agg-type type='attr' />
       <clear-option type='do-nothing' value='s:LROOT:' />
       <params>
-        <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (mart_exposure_tiles.geojson):nk]' />
+        <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:node_id (dim_nodes.csv):nk]' />
         <param name='target-parameter' value='[Parameters].[Parameter 3]' />
       </params>
     </edit-parameter-action>
@@ -6393,8 +6108,8 @@
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='header'>
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok]' scope='cols' value='false' />
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1395152531449864650:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
@@ -6537,8 +6252,8 @@
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='header'>
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok]' scope='cols' value='false' />
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1997623788981524034:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
@@ -7124,7 +6839,7 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9292920473058013561:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1409042108075507256:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1953312242491521622:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -7503,7 +7218,7 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1950607229902710421:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1148189262971748201:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1953312242491521622:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -7883,7 +7598,7 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3150169085595565380:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1352644649828212213:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1953312242491521622:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -8223,14 +7938,14 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8' bold='true'>EXPOSURES AT RISK  ⓘ</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#002c55' fontname='Arial' fontsize='18' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2866140559093986658:qk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='9'> </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='9'>Æ </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='9'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2683875477335081578:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1964810160360354757:qk]&gt;</run>
-                <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'> critical</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  ·  </run>
+                <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>Æ critical</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  ·  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_8920847743012969069:qk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'> warning</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ warning</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -8604,7 +8319,7 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_8864060235112699764:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2992056182811374933:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1953312242491521622:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -8983,7 +8698,7 @@
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_6597731815754042260:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3322579375304469107:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>  </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ  </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1953312242491521622:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -9217,9 +8932,6 @@
             <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
             <datasource name='Parameters' />
           </datasources>
-          <mapsources>
-            <mapsource name='Tableau' />
-          </mapsources>
           <datasource-dependencies datasource='Parameters'>
             <column alias='All' caption='p_platform' datatype='string' datatype-customized='true' name='[Parameter 2]' param-domain-type='list' role='measure' type='nominal' value='&quot;All&quot;'>
               <calculation class='tableau' formula='&quot;All&quot;' />
@@ -9249,23 +8961,39 @@
             </column>
           </datasource-dependencies>
           <datasource-dependencies datasource='federated.07vo3ft0hzn0yt1e7nb981upju80'>
-            <column caption='Is Tile Layout Match' datatype='boolean' name='[Calculation_6095821144001551766]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Is Tile Layout Match&#13;&#10;// Keeps the layout that matches the All / Needs attention buttons. Put on Filters (True).&#13;&#10;[layout] = [Parameters].[Parameter 8]' />
+            <column caption='Exposure Group Sort' datatype='integer' name='[Calculation_1368642606501877949]' role='dimension' type='ordinal'>
+              <calculation class='tableau' formula='// Exposure Group Sort&#13;&#10;// Prototype group order: BI dashboards, Apps ML and notebooks, AI agents and data hubs, Unregistered.&#13;&#10;CASE [exposure_group]&#13;&#10;WHEN &quot;BI dashboards&quot;                        THEN 1&#13;&#10;WHEN &quot;Apps, ML and notebooks&quot;               THEN 2&#13;&#10;WHEN &quot;AI agents and data hubs&quot;              THEN 3&#13;&#10;WHEN &quot;Unregistered, found in query history&quot; THEN 4&#13;&#10;END' />
+            </column>
+            <column caption='Is Exposure' datatype='boolean' name='[Calculation_8377152860883702219]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Is Exposure&#13;&#10;// Keeps exposure rows only. Put on Filters (True).&#13;&#10;[resource_type] = &quot;exposure&quot;' />
             </column>
             <column caption='Is Platform Match Node' datatype='boolean' name='[Calculation_2214252331607255986]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Platform Match Node&#13;&#10;// Node-level platform filter (dim_nodes). A migrated node matches both Redshift and Snowflake,&#13;&#10;// so it still shows when someone looks at Redshift history.&#13;&#10;[Parameters].[Parameter 2] = &quot;All&quot;&#13;&#10;OR CONTAINS([platform_filter_values], &quot;|&quot; + [Parameters].[Parameter 2] + &quot;|&quot;)' />
             </column>
-            <column caption='Tile Fill Key' datatype='string' name='[Calculation_2950369687746909721]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Tile Fill Key&#13;&#10;// Fill for the rounded tile: status tint, or faded when the tile is outside the Platform filter.&#13;&#10;IF [feature_type] &lt;&gt; &quot;tile&quot;&#13;&#10;    THEN &quot;None&quot;&#13;&#10;ELSEIF NOT [Calculation_2214252331607255986]&#13;&#10;    THEN &quot;Faded&quot;&#13;&#10;ELSEIF [current_status_code] = 3&#13;&#10;    THEN &quot;Critical&quot;&#13;&#10;ELSEIF [current_status_code] = 2&#13;&#10;    THEN &quot;Warning&quot;&#13;&#10;ELSE &quot;Healthy&quot;&#13;&#10;END' />
+            <column caption='Is At Risk Now' datatype='boolean' name='[Calculation_2875175252813195699]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Is At Risk Now&#13;&#10;// Warning or Critical in the current snapshot. Shared by Health, Blast radius and Governance.&#13;&#10;[current_status_code] &gt;= 2' />
             </column>
-            <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+            <column caption='Show Exposure Tile' datatype='boolean' name='[Calculation_1065115793061580082]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Show Exposure Tile&#13;&#10;// The All / Needs attention switch above the grid.&#13;&#10;[Parameters].[Parameter 8] = &quot;All&quot;&#13;&#10;OR [Calculation_2875175252813195699]' />
             </column>
-            <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
-              <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+            <column caption='Exposure Group Label' datatype='string' name='[Calculation_2442059920660643562]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Exposure Group Label&#13;&#10;// Group header with its tile count, for example &quot;BI DASHBOARDS   17&quot;.&#13;&#10;// The count is FIXED with the platform and tile-view rules inside it, so no context filters are needed.&#13;&#10;UPPER([exposure_group]) + &quot;   &quot;&#13;&#10;+ STR({ FIXED [exposure_group] :&#13;&#10;    SUM(IF [Calculation_8377152860883702219] AND [Calculation_2214252331607255986] AND [Calculation_1065115793061580082]&#13;&#10;        THEN 1 END) })' />
             </column>
-            <column caption='Tile Header Text' datatype='string' name='[Calculation_3219610012864781816]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Text&#13;&#10;// Group label in caps with its count, e.g. &quot;BI DASHBOARDS  17&quot;. Blank on tile rows.&#13;&#10;// v04 (one map layer): the label is centred on its anchor dot at the left edge of the grid, so it is padded on the&#13;&#10;// right with no-break spaces (about 2.4 per capital) to push the visible text to start at the dot.&#13;&#10;IF [feature_type] = &quot;header&quot;&#13;&#10;    THEN UPPER([group_label]) + &quot;  &quot; + STR([group_count])&#13;&#10;        + REPLACE(SPACE(INT((LEN([group_label]) + 4) * 2.4)), &quot; &quot;, &quot; &quot;)&#13;&#10;END' />
+            <column caption='Tile Row' datatype='integer' name='[Calculation_1091687039505899741]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Tile Row&#13;&#10;// Row inside each group. Same compute-using and sort as Tile Column. Make it discrete.&#13;&#10;INT((INDEX() - 1) / 5) + 1'>
+                <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+              </calculation>
+            </column>
+            <column caption='Tile Column' datatype='integer' name='[Calculation_7154026945591774946]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Tile Column&#13;&#10;// Column 1 to 5 in the tile grid (the prototype shows 5 tiles per row).&#13;&#10;// Table calc: Specific dimensions = exposure_group, node_id (dim_nodes.csv); restart every exposure_group;&#13;&#10;// sort by Tile Sort Key, MIN, ascending. Make it discrete.&#13;&#10;(INDEX() - 1) % 5 + 1'>
+                <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+              </calculation>
+            </column>
+            <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
+            </column>
+            <column caption='Status Tint Key' datatype='string' name='[Calculation_1400495547723235965]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Status Tint Key&#13;&#10;// Same values as Status Label, kept as a separate field so it can carry the light tint palette&#13;&#10;// for tile and alert backgrounds: Healthy #FFFFFF, Warning #FDF3E1, Critical #FBEAE9, No data #F1F2F4.&#13;&#10;[Calculation_3105941082857465865]' />
             </column>
             <column caption='Tile Name Short' datatype='string' name='[Calculation_8990803335852813669]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile Name Short&#13;&#10;// Tile title cut to fit a 163px tile: 22 characters, then &quot;…&quot;. The tooltip has the full name.&#13;&#10;IF LEN([display_name]) &gt; 23 THEN LEFT([display_name], 22) + &quot;…&quot; ELSE [display_name] END' />
@@ -9294,34 +9022,44 @@
             <column caption='Tile Score Text' datatype='string' name='[Calculation_1659843968626155727]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile Score Text&#13;&#10;// 7-day health score on the tile, one decimal: &quot;99.7&quot;.&#13;&#10;IF ISNULL([health_score_now]) THEN &quot;&quot;&#13;&#10;ELSE STR(INT(ROUND([health_score_now] * 10) / 10)) + &quot;.&quot; + STR(INT(ROUND([health_score_now] * 10)) % 10)&#13;&#10;END' />
             </column>
+            <column caption='Tile Sort Key' datatype='string' name='[Calculation_4441281616373123992]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Tile Sort Key&#13;&#10;// Worst first, then name, inside each group: &quot;6...&quot; Critical, &quot;7...&quot; Warning, &quot;8...&quot; Healthy.&#13;&#10;// Used as the custom sort (MIN, ascending) of the tile INDEX.&#13;&#10;STR(9 - [current_status_code]) + [display_name]' />
+            </column>
+            <column caption='Clear Node Value' datatype='string' name='[Calculation_1962397006096080865]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Clear Node Value&#13;&#10;// Empty string a parameter action can write into p_selected_node, to clear it (prototype: opening an exposure clears the node).&#13;&#10;&quot;&quot;' />
+            </column>
+            <column caption='Clear Node Key Value' datatype='integer' name='[Calculation_7177065549275409274]' role='dimension' type='ordinal'>
+              <calculation class='tableau' formula='// Clear Node Key Value&#13;&#10;// Companion to Clear Node Value for p_selected_node_key. -1 matches no node.&#13;&#10;-1' />
+            </column>
             <column caption='Tile Tooltip Why' datatype='string' name='[Calculation_1883889205833775337]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Tile Tooltip Why&#13;&#10;// Tooltip &quot;Why&quot; block: the upstream nodes behind the status, or a reassurance line.&#13;&#10;IF [culprit_count] &gt; 0 THEN [culprit_nodes]&#13;&#10;ELSE &quot;Every upstream step is healthy&quot;&#13;&#10;END' />
             </column>
-            <column datatype='spatial' name='[Geometry]' role='measure' type='quantitative' />
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
             <column caption='Culprit Count' datatype='real' name='[culprit_count]' role='measure' type='quantitative' />
             <column caption='Culprit Nodes' datatype='string' name='[culprit_nodes]' role='dimension' type='nominal' />
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Display Name' datatype='string' name='[display_name]' role='dimension' type='nominal' />
+            <column caption='Exposure Group' datatype='string' name='[exposure_group]' role='dimension' type='nominal' />
             <column caption='Exposure Type' datatype='string' name='[exposure_type]' role='dimension' type='nominal' />
-            <column datatype='string' name='[feature_type]' role='dimension' type='nominal' />
-            <column datatype='integer' name='[group_count]' role='measure' type='quantitative' />
-            <column datatype='string' name='[group_label]' role='dimension' type='nominal' />
             <column caption='Health Score Now' datatype='real' name='[health_score_now]' role='measure' type='quantitative' />
-            <column datatype='string' name='[layout]' role='dimension' type='nominal' />
             <column caption='Node Id (Nodes)' datatype='string' name='[node_id (dim_nodes.csv)]' role='dimension' type='nominal' />
-            <column datatype='string' name='[node_id (mart_exposure_tiles.geojson)]' role='dimension' type='nominal' />
             <column caption='Owner Name' datatype='string' name='[owner_name]' role='dimension' type='nominal' />
             <column caption='Platform Filter Values' datatype='string' name='[platform_filter_values]' role='dimension' type='nominal' />
+            <column caption='Resource Type' datatype='string' name='[resource_type]' role='dimension' type='nominal' />
             <column caption='Trust Badge' datatype='string' name='[trust_badge]' role='dimension' type='nominal' />
-            <column-instance column='[Calculation_6095821144001551766]' derivation='None' name='[none:Calculation_6095821144001551766:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_2950369687746909721]' derivation='Attribute' name='[attr:Calculation_2950369687746909721:nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_id (mart_exposure_tiles.geojson)]' derivation='None' name='[none:node_id (mart_exposure_tiles.geojson):nk]' pivot='key' type='nominal' />
-            <column-instance column='[node_id (dim_nodes.csv)]' derivation='Attribute' name='[attr:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1962397006096080865]' derivation='Attribute' name='[attr:Calculation_1962397006096080865:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_7177065549275409274]' derivation='Attribute' name='[attr:Calculation_7177065549275409274:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[Calculation_3219610012864781816]' derivation='Attribute' name='[attr:Calculation_3219610012864781816:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1368642606501877949]' derivation='None' name='[none:Calculation_1368642606501877949:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_2442059920660643562]' derivation='None' name='[none:Calculation_2442059920660643562:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1091687039505899741]' derivation='User' name='[usr:Calculation_1091687039505899741:ok]' pivot='key' type='ordinal'>
+              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+            </column-instance>
+            <column-instance column='[Calculation_7154026945591774946]' derivation='User' name='[usr:Calculation_7154026945591774946:ok]' pivot='key' type='ordinal'>
+              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_4441281616373123992]' ordering-type='Field' />
+            </column-instance>
+            <column-instance column='[Calculation_8377152860883702219]' derivation='None' name='[none:Calculation_8377152860883702219:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_2214252331607255986]' derivation='None' name='[none:Calculation_2214252331607255986:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1065115793061580082]' derivation='None' name='[none:Calculation_1065115793061580082:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1400495547723235965]' derivation='Attribute' name='[attr:Calculation_1400495547723235965:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_8990803335852813669]' derivation='Attribute' name='[attr:Calculation_8990803335852813669:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2336170961516567926]' derivation='Attribute' name='[attr:Calculation_2336170961516567926:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_3035768374696072600]' derivation='Attribute' name='[attr:Calculation_3035768374696072600:nk]' pivot='key' type='nominal' />
@@ -9331,16 +9069,28 @@
             <column-instance column='[Calculation_1522121282636949905]' derivation='Attribute' name='[attr:Calculation_1522121282636949905:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_4692392410293798022]' derivation='Attribute' name='[attr:Calculation_4692392410293798022:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1659843968626155727]' derivation='Attribute' name='[attr:Calculation_1659843968626155727:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_4441281616373123992]' derivation='None' name='[none:Calculation_4441281616373123992:nk]' pivot='key' type='nominal' />
+            <column-instance column='[node_id (dim_nodes.csv)]' derivation='Attribute' name='[attr:node_id (dim_nodes.csv):nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1962397006096080865]' derivation='Attribute' name='[attr:Calculation_1962397006096080865:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_7177065549275409274]' derivation='Attribute' name='[attr:Calculation_7177065549275409274:qk]' pivot='key' type='quantitative' />
             <column-instance column='[display_name]' derivation='Attribute' name='[attr:display_name:nk]' pivot='key' type='nominal' />
             <column-instance column='[trust_badge]' derivation='Attribute' name='[attr:trust_badge:nk]' pivot='key' type='nominal' />
             <column-instance column='[owner_name]' derivation='Attribute' name='[attr:owner_name:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1883889205833775337]' derivation='Attribute' name='[attr:Calculation_1883889205833775337:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
-          <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_6095821144001551766:nk]'>
-            <groupfilter function='member' level='[none:Calculation_6095821144001551766:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_8377152860883702219:nk]'>
+            <groupfilter function='member' level='[none:Calculation_8377152860883702219:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2214252331607255986:nk]'>
+            <groupfilter function='member' level='[none:Calculation_2214252331607255986:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1065115793061580082:nk]'>
+            <groupfilter function='member' level='[none:Calculation_1065115793061580082:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
           <slices>
-            <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_6095821144001551766:nk]</column>
+            <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_8377152860883702219:nk]</column>
+            <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2214252331607255986:nk]</column>
+            <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1065115793061580082:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -9351,17 +9101,26 @@
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='map'>
-            <format attr='washout' value='1.0' />
+          <style-rule element='header'>
+            <format attr='font-size' value='7' />
+            <format attr='color' value='#7a838e' />
+            <format attr='font-family' value='Arial' />
+            <format attr='font-weight' value='bold' />
+            <format attr='width' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk]' value='110' />
+          </style-rule>
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok]' value='false' />
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok]' value='false' />
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
-            <format attr='line-visibility' scope='rows' value='off' />
-            <format attr='line-visibility' scope='cols' value='off' />
-            <format attr='stroke-color' scope='rows' value='#00000000' />
-            <format attr='stroke-color' scope='cols' value='#00000000' />
+            <format attr='line-visibility' scope='rows' value='on' />
+            <format attr='line-visibility' scope='cols' value='on' />
+            <format attr='stroke-color' scope='rows' value='#e6e7e2' />
+            <format attr='stroke-color' scope='cols' value='#e6e7e2' />
             <format attr='stroke-size' scope='rows' value='1' />
             <format attr='stroke-size' scope='cols' value='1' />
           </style-rule>
@@ -9378,28 +9137,28 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Automatic' />
+            <mark class='Square' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
-              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2950369687746909721:nk]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:node_id (mart_exposure_tiles.geojson):nk]' />
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1400495547723235965:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4441281616373123992:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:node_id (dim_nodes.csv):nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1962397006096080865:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_7177065549275409274:qk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3219610012864781816:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2336170961516567926:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3035768374696072600:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2336170961516567926:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3035768374696072600:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]' />
+              <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:display_name:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:trust_badge:nk]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:owner_name:nk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1883889205833775337:nk]' />
-              <geometry column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Geometry]' />
             </encodings>
             <customized-tooltip>
               <formatted-text>
@@ -9422,20 +9181,19 @@
             </customized-tooltip>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3219610012864781816:nk]&gt;</run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2336170961516567926:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'> · </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ · </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3035768374696072600:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>    </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ    </run>
                 <run fontcolor='#3d41a0' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_4692392410293798022:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>    </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ    </run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -9451,12 +9209,15 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='0.9' />
+                <format attr='has-stroke' value='true' />
+                <format attr='stroke-color' value='#e6e7e2' />
               </style-rule>
             </style>
           </pane>
         </panes>
-        <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]</rows>
-        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]</cols>
+        <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1368642606501877949:ok] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2442059920660643562:nk] / [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1091687039505899741:ok]</rows>
+        <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_7154026945591774946:ok]</cols>
       </table>
       <simple-id uuid='{2EA5DEC8-7691-770B-7ACB-4A1DAAB78096}' />
     </worksheet>
@@ -9518,8 +9279,8 @@
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='header'>
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk]' scope='cols' value='false' />
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2894482038928477351:nk]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
@@ -9704,9 +9465,9 @@
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='header'>
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2821357717055420234:ok]' scope='rows' value='false' />
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' scope='rows' value='false' />
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2821357717055420234:ok]' value='false' />
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
@@ -9756,9 +9517,9 @@
               <formatted-text>
                 <run fontcolor='#d2453f' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3020345249174904341:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1079190453669342032:nk]&gt;</run>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9'>  </run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9'>Æ  </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]&gt;</run>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9'>   </run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9'>Æ   </run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_5034449253068379788:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2745413474489980072:nk]&gt;</run>
@@ -9898,10 +9659,12 @@
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='header'>
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:layer_column:ok]' scope='rows' value='false' />
             <format attr='font-size' value='8' />
             <format attr='color' value='#4a5563' />
             <format attr='width' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_7823664326256286450:nk]' value='112' />
+          </style-rule>
+          <style-rule element='label'>
+            <format attr='display' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:layer_column:ok]' value='false' />
           </style-rule>
           <style-rule element='table'>
             <format attr='background-color' value='#00000000' />
@@ -9961,9 +9724,9 @@
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_7823664326256286450:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_3105941082857465865:nk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>   </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ   </run>
                 <run fontcolor='#002c55' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2446133016301952044:qk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='9'> of </run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='9'>Æ of </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='9'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1760329556827391948:nk]&gt;</run>
               </formatted-text>
             </customized-tooltip>
@@ -9980,6 +9743,8 @@
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.75' />
+                <format attr='has-stroke' value='true' />
+                <format attr='stroke-color' value='#ffffff' />
               </style-rule>
             </style>
           </pane>
@@ -10379,7 +10144,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Health overview</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Health overview</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Is anything on fire right now?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Is anything on fire right now?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -10830,7 +10595,7 @@
                         <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Use with caution     </run>
                         <run fontcolor='#d2453f' fontname='Arial' fontsize='8'>■ </run>
                         <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Do not use</run>
-                        <run fontcolor='#7a838e' fontname='Arial' fontsize='8' italic='true'>          Trust badges can be surfaced inside each dashboard for business users</run>
+                        <run fontcolor='#7a838e' fontname='Arial' fontsize='8' italic='true'>Æ          Trust badges can be surfaced inside each dashboard for business users</run>
                       </formatted-text>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
@@ -11558,7 +11323,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Run &amp; failures</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Run &amp; failures</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   What failed, when, why, and how fast did we recover?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   What failed, when, why, and how fast did we recover?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -12361,7 +12126,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Freshness &amp; SLAs</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Freshness &amp; SLAs</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Is the data arriving on time?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Is the data arriving on time?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -13164,7 +12929,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Lineage explorer</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Lineage explorer</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   What feeds this exposure, and is every step healthy?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   What feeds this exposure, and is every step healthy?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -13967,7 +13732,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Blast radius</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Blast radius</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   If this breaks, who do I need to tell?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   If this breaks, who do I need to tell?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -14770,7 +14535,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Data quality</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Data quality</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Which tests keep failing, and where are we untested?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Which tests keep failing, and where are we untested?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -15573,7 +15338,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Performance &amp; cost</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Performance &amp; cost</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   What is getting slower and more expensive?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   What is getting slower and more expensive?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -16376,7 +16141,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Usage &amp; adoption</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Usage &amp; adoption</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Which data products earn their keep?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Which data products earn their keep?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -17179,7 +16944,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Governance</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Governance</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Is everything owned, documented, tested and declared?</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Is everything owned, documented, tested and declared?</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -17982,7 +17747,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>About &amp; how to use</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>About &amp; how to use</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   What this is, where the numbers come from</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   What this is, where the numbers come from</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -18784,7 +18549,7 @@
                     <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>Documentation</run>
                     <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
                     <run fontcolor='#002c55' fontname='Arial' fontsize='15' bold='true'>Documentation</run>
-                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>   Parameters, actions and build notes</run>
+                    <run fontcolor='#7a838e' fontname='Arial' fontsize='11'>Æ   Parameters, actions and build notes</run>
                   </formatted-text>
                   <zone-style>
                     <format attr='border-color' value='#000000' />

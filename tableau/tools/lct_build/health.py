@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import (LAT, LON, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
+from .core import (ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
                    GOOD, GOOD_INK, I_DIM, I_MEA, INK1, INK2, INK3, LINE, MEDIUM, NAVY, NL, NONE, NONE_TINT,
                    OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, WARN, WARN_INK, WARN_TINT, Pane, R, Sheet, Z, blank,
                    card, card_header, color_map, legend, run, sheet, text)
@@ -67,9 +67,6 @@ NEW = {
     'Attention Order': '// Attention Order\n// Attention Sort turned around, so the natural ascending order of the rows is worst first.\n-[Attention Sort]',
     'Attention Icon Critical': '// Attention Icon Critical\n// "✕" in red before a Critical node. Split by status so each icon gets its own colour.\nIF [current_status_code] = 3 THEN "✕" ELSE "" END',
     'Attention Icon Warning': '// Attention Icon Warning\n// "▲" in the warning text colour before a Warning node.\nIF [current_status_code] = 2 THEN "▲" ELSE "" END',
-    'Is Tile Layout Match': '// Is Tile Layout Match\n// Keeps the layout that matches the All / Needs attention buttons. Put on Filters (True).\n[layout] = [p_tile_view]',
-    'Tile Fill Key': '// Tile Fill Key\n// Fill for the rounded tile: status tint, or faded when the tile is outside the Platform filter.\nIF [feature_type] <> "tile"\n    THEN "None"\nELSEIF NOT [Is Platform Match Node]\n    THEN "Faded"\nELSEIF [current_status_code] = 3\n    THEN "Critical"\nELSEIF [current_status_code] = 2\n    THEN "Warning"\nELSE "Healthy"\nEND',
-    'Tile Header Text': '// Tile Header Text\n// Group label in caps with its count, e.g. "BI DASHBOARDS  17". Blank on tile rows.\n// v04 (one map layer): the label is centred on its anchor dot at the left edge of the grid, so it is padded on the\n// right with no-break spaces (about 2.4 per capital) to push the visible text to start at the dot.\nIF [feature_type] = "header"\n    THEN UPPER([group_label]) + "  " + STR([group_count])\n        + REPLACE(SPACE(INT((LEN([group_label]) + 4) * 2.4)), " ", "\u00a0")\nEND',
     'Layer Label Position': '// Layer Label Position\n// Where the "1 / 27" count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).\nMIN(1.06)',
 }
 
@@ -99,7 +96,6 @@ TYPES = {
     'Layer Share': R_MEA, 'Layer Total': I_MEA, 'Layer Issues': I_MEA, 'Layer Has Critical': B_DIM,
     'Layer Issues Critical Text': S_DIM, 'Layer Issues Warning Text': S_DIM, 'Layer Total Text': S_DIM,
     'Layer Label Position': R_MEA,
-    'Is Tile Layout Match': B_DIM, 'Tile Fill Key': S_DIM, 'Tile Header Text': S_DIM,
 }
 for k in ('Run Success', 'Test Pass', 'Freshness SLA', 'MTTR', 'Warehouse Cost'):
     for s in ('Focus', 'Prior', 'Change', 'Change Good', 'Change Bad', 'Trend'):
@@ -180,24 +176,24 @@ def trend_sheet(name, key, plat, in_colour, caption, fmt) -> Sheet:
 
 
 def tile_sheets() -> list[Sheet]:
-    """Rounded exposure tiles from mart_exposure_tiles.geojson (docs/tableau-tiles-map-layers.md).
-
-    v04 draws the tile polygons as one filled-map layer, with the tile text as that layer's label. The 7-layer
-    version (separate dot, title, meta, trust, score and header layers) follows once a Tableau-saved
-    example of marks layers confirms the XML.
-    """
-    fill = R('Tile Fill Key', 'attr')
-    color_map(fill, {'"Healthy"': '#f7f8f6', '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT,
-                     '"Faded"': '#fbfbfa', '"None"': CARD})
+    tint = R('Status Tint Key', 'attr')
+    color_map(tint, {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
     a = lambda n: R(n, 'attr')
-    node = R('node_id (mart_exposure_tiles.geojson)')
+    texts = [a('Tile Name Short'), a('Consumer Type Label'), a('Tile Owner Text'), a('Tile Owner Missing Text'),
+             a('Tile Trust Critical'), a('Tile Trust Warning'), a('Tile Trust Healthy'), a('Tile AI Tag'), a('Tile Score Text')]
+    tips = [a('display_name'), a('trust_badge'), a('Tile Score Text'), a('owner_name'), a('Tile Tooltip Why')]
     tiles = Sheet(
-        'HO Exposure Status Tiles', rows=[LAT], cols=[LON], map_washout='1.0',
-        filters=[R('Is Tile Layout Match')],
-        panes=Pane('Automatic', geometry='Geometry', color=fill, align='left', valign='center',
-                   lod=[node, a('node_id (dim_nodes.csv)'), a('Clear Node Value'), a('Clear Node Key Value')],
-                   label=[run(a('Tile Header Text'), 8, INK3, SEMI),
-                          run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
+        'HO Exposure Status Tiles',
+        rows=[R('Exposure Group Sort'), R('Exposure Group Label'), R('Tile Row', kind='ok')],
+        cols=[R('Tile Column', kind='ok')],
+        filters=[R('Is Exposure'), R('Is Platform Match Node'), R('Show Exposure Tile')],
+        hide=[R('Exposure Group Sort'), R('Tile Row', kind='ok'), R('Tile Column', kind='ok')],
+        header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
+        header_width={R('Exposure Group Label'): 110}, divider=True,
+        panes=Pane('Square', color=tint, text=texts, size=0.9, valign='center', stroke=LINE,
+                   lod=[R('Tile Sort Key'), a('node_id (dim_nodes.csv)'), a('Clear Node Value'), a('Clear Node Key Value')],
+                   tooltip_fields=tips,
+                   label=[run(a('Tile Name Short'), 9, INK1, SEMI), run(NL, 8, INK3),
                           run(a('Consumer Type Label'), 8, INK3), run(' · ', 8, INK3), run(a('Tile Owner Text'), 8, INK3),
                           run(a('Tile Owner Missing Text'), 8, CRIT_INK, SEMI), run(NL, 8, INK3),
                           run(a('Tile Trust Critical'), 7, CRIT_INK, SEMI), run(a('Tile Trust Warning'), 7, WARN_INK, SEMI),
@@ -243,7 +239,7 @@ def layer_sheet() -> Sheet:
         fixed={share: (0, 1.15), pos: (0, 1.15)},
         header_font={'font-size': '8', 'color': INK2}, header_width={R('Layer Name'): 112},
         panes=[Pane(),
-               Pane('Bar', axis=share, color=R('Status Stack Order'), size=0.75, label_show=False,
+               Pane('Bar', axis=share, color=R('Status Stack Order'), size=0.75, label_show=False, stroke=CARD,
                     tooltip_fields=[a('Status Label'), R('Node Count'), a('Layer Total Text')],
                     tooltip=[run(a('Layer Name'), 9, INK1, SEMI), run(NL, 7, INK3),
                              run(a('Status Label'), 7, INK3, SEMI), run('   ', 7, INK3), run(R('Node Count'), 9, NAVY, SEMI),
@@ -301,7 +297,7 @@ def content() -> Z:
 
 
 ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
-    ('HO Exposure Status Tiles', lambda: R('node_id (mart_exposure_tiles.geojson)'), 'p_selected_exposure', 'HO Tile Select Exposure'),
+    ('HO Exposure Status Tiles', lambda: R('node_id (dim_nodes.csv)', 'attr'), 'p_selected_exposure', 'HO Tile Select Exposure'),
     ('HO Exposure Status Tiles', lambda: R('Clear Node Value', 'attr'), 'p_selected_node', 'HO Tile Clear Node'),
     ('HO Exposure Status Tiles', lambda: R('Clear Node Key Value', 'attr'), 'p_selected_node_key', 'HO Tile Clear Node Key'),
     ('HO Needs Attention List', lambda: R('node_id (dim_nodes.csv)'), 'p_selected_node', 'HO Alert Select Node'),

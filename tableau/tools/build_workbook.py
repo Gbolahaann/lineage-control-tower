@@ -188,8 +188,14 @@ def build(master: Path, out: Path) -> Path:
     calc_xml = '\n'.join(CALCS.column(n) for n in order) + '\n'
     anchor = "      <layout dim-ordering='alphabetic'"
     assert t.count(anchor) == 1
-    t = t.replace(anchor, calc_xml + anchor, 1)
+    t = t.replace(anchor, calc_xml + core.datasource_instances() + anchor, 1)
     t = re.sub(r"(      <layout dim-ordering='alphabetic'[^>]*/>\n)", lambda m: m.group(1) + datasource_style(), t, count=1)
+    # the data source declares the parameters its calcs read, after <semantic-values> (as Tableau writes it)
+    used_params = set()
+    for n in order:
+        used_params |= CALCS.refs(n)[1]
+    assert t.count('      </semantic-values>\n') == 1
+    t = t.replace('      </semantic-values>\n', '      </semantic-values>\n' + core.datasource_param_deps(used_params), 1)
 
     window_ids = {tab[1]: stable_uuid('win:' + tab[1]) for tab in shell.TABS}
     dash_xml, dash_sheets, dzv = [], {}, {}

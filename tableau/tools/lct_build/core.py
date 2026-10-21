@@ -326,9 +326,11 @@ def run(t, size=9, color=INK2, font=BOOK, align=None, **kw) -> dict:
     if isinstance(t, Ref):
         ref, t = t, f'&lt;{t.ref}&gt;'
     elif not (t.startswith('&lt;[') or set(t.split(NL)) == {''}):
-        if t.strip() == '':
-            t = t.replace(' ', '\u00a0')  # a run of plain spaces is dropped by Tableau; no-break spaces are kept
         t = esc(t)
+        if t[:1].isspace():
+            # Tableau trims a run that starts with whitespace unless it is marked literal with a leading Æ
+            # (as Tableau itself writes "Æ " for a plain space between two fields)
+            t = 'Æ' + t
     bold = font.endswith('|bold')
     r = {'fontcolor': color, 'fontname': font.split('|')[0], 'fontsize': str(size), 't': t}
     if bold:
@@ -354,11 +356,12 @@ def runs_xml(runs, ind) -> str:
 class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
-                 geometry=None):
+                 geometry=None, stroke=None):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
         self.mark_color, self.geometry = mark_color, geometry  # geometry: name of a spatial base field
+        self.stroke = stroke  # mark border colour (has-stroke + stroke-color, as Tableau writes it)
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields
@@ -387,6 +390,9 @@ class Pane:
             mark_fmt.append(f"                <format attr='size' value='{self.size}' />")
         if self.mark_color:
             mark_fmt.append(f"                <format attr='mark-color' value='{self.mark_color}' />")
+        if self.stroke:
+            mark_fmt.append("                <format attr='has-stroke' value='true' />")
+            mark_fmt.append(f"                <format attr='stroke-color' value='{self.stroke}' />")
         return (f"          <pane {ident}selection-relaxation-option='selection-relaxation-allow'{ax}>\n"
                 "            <view>\n              <breakdown value='auto' />\n            </view>\n"
                 f"            <mark class='{self.mark}' />\n"
@@ -497,8 +503,10 @@ class Sheet:
                  f"scope='{self.scope(r)}' synchronized='true' type='space' />" for r in self.sync]
         axis += [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
                  for r in self.hide if r.suffix == 'qk']
-        head = [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
-                for r in self.hide if r.suffix != 'qk']
+        head = []
+        # discrete headers are hidden through the label rule (as in a Tableau-saved reference workbook)
+        hidden_headers = [f"            <format attr='display' field='{r.ref}' value='false' />"
+                          for r in self.hide if r.suffix != 'qk']
         if self.header_font:
             head += [f"            <format attr='{k}' value='{v}' />" for k, v in self.header_font.items()]
         head += [f"            <format attr='width' field='{r.ref}' value='{px}' />" for r, px in self.header_width.items()]
@@ -507,6 +515,7 @@ class Sheet:
             r, px = self.row_height
             cell.append(f"            <format attr='height' field='{r.ref}' value='{px}' />")
         label = [f"            <format attr='text-format' field='{r.ref}' value='{esc(f)}' />" for r, f in self.formats.items()]
+        label += hidden_headers
         rules = []
 
         def rule(el, lines):
@@ -569,6 +578,21 @@ def datasource_style() -> str:
         rules.append('          </encoding>')
     return ("      <style>\n        <style-rule element='mark'>\n" + '\n'.join(rules)
             + "\n        </style-rule>\n      </style>\n")
+
+
+def datasource_instances() -> str:
+    """Data-source-level column instances for every coloured field. Tableau only applies a palette whose field
+    instance is declared here (seen in a Tableau-saved reference workbook: every palette key has one)."""
+    return ''.join(ref.instance_xml('      ') + '\n' for ref, _ in COLOR_MAPS)
+
+
+def datasource_param_deps(names) -> str:
+    """The data source's own declaration of the parameters its calcs read (written after <semantic-values>)."""
+    if not names:
+        return ''
+    return ("      <datasource-dependencies datasource='Parameters'>\n"
+            + '\n'.join(param_column(PARAM_BY[n], '        ') for n in sorted(names, key=lambda n: PARAM_ID[n]))
+            + "\n      </datasource-dependencies>\n")
 
 
 # ================================================================ dashboard zones and layout
