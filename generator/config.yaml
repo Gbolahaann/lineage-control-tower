@@ -1,0 +1,246 @@
+# Lineage Control Tower: synthetic data generator config
+#
+# Everything you might want to tweak lives here: the seed, the dates, how often
+# jobs run, baseline failure rates, usage rhythm, thresholds and every planted story.
+# The company itself (sources, models, BI objects, exposures, owners) lives in
+# world.yaml, written in a shape that looks a lot like a dbt project.
+#
+# All timestamps are UTC.
+
+seed: 20261019
+
+dates:
+  start: 2026-07-22
+  end: 2026-10-19
+  data_as_of: 2026-10-19T23:59:00   # feeds the "data last refreshed" stamp
+  # Close window = last 3 and first 3 business days of each month (spec: dim_date)
+  close_window_business_days: 3
+  # Board meetings. Board KPI Pack usage spikes in the days before each one.
+  board_meetings: [2026-08-13, 2026-09-17, 2026-10-15]
+  board_prep_days_before: 3
+
+# ---------------------------------------------------------------------------
+# dbt jobs. Each model in world.yaml names the job that builds it.
+# every_hours: run on a fixed interval, starting at start_minute past the hour
+# hours: run once at each listed hour (UTC)
+# ---------------------------------------------------------------------------
+jobs:
+  core_hourly:
+    dbt_project: acme_core
+    schedule: hourly
+    every_hours: 1
+    start_minute: 5
+  core_finance_daily:
+    dbt_project: acme_core
+    schedule: daily
+    hours: [3]
+    close_window_extra_hours: [9, 15, 21]   # finance runs 4x a day during close
+    start_minute: 0
+  core_weekly_full_refresh:
+    dbt_project: acme_core
+    schedule: weekly
+    weekday: 6          # Sunday (Monday = 0)
+    hours: [6]
+    start_minute: 0
+    runs: incremental_models_in_project   # a --full-refresh of the incremental models
+  product_every_2h:
+    dbt_project: acme_product
+    schedule: hourly
+    every_hours: 2
+    start_minute: 20
+  product_daily:
+    dbt_project: acme_product
+    schedule: daily
+    hours: [4]
+    start_minute: 30
+  marketing_every_4h:
+    dbt_project: acme_marketing
+    schedule: hourly
+    every_hours: 4
+    start_minute: 40
+
+ci:
+  enabled: true
+  runs_per_weekday: [1, 6]      # min, max pull request runs per weekday
+  runs_per_weekend_day: [0, 1]
+  models_per_run: [3, 12]       # "state:modified+" style slim CI
+  failure_rate: 0.12            # CI is where broken code is supposed to fail
+
+# ---------------------------------------------------------------------------
+# Baseline reliability (the background noise)
+# ---------------------------------------------------------------------------
+baseline:
+  job_failure_rate: 0.025        # target ~97.5% job success before stories
+  extra_failed_models_max: 1     # a failing job usually has 1, sometimes 2 bad models
+  persist_next_run_prob: 0.25    # chance a random failure is still there next run
+  error_mix:                     # error_category weights for random failures
+    database: 0.35
+    timeout: 0.25
+    permission: 0.10
+    compilation: 0.30
+  test_random_fail_rate: 0.0015  # per test execution
+  test_random_warn_rate: 0.004
+  runtime_noise_sd: 0.12         # lognormal-ish jitter on runtimes
+  weekly_growth: 0.015           # organic growth in rows and runtime, ~1.5% a week
+  # Keep the last few hours before data_as_of free of random noise, so the
+  # "live issues today" view only shows what story 9 plants.
+  quiet_hours_before_as_of: 8
+
+freshness:
+  check_every_minutes: 60
+  check_minute: 0
+  random_delay_rate: 0.01        # chance a scheduled load arrives late
+  random_delay_minutes: [30, 240]
+
+semantic_refresh:
+  random_failure_rate: 0.01
+
+# ---------------------------------------------------------------------------
+# Usage rhythm
+# ---------------------------------------------------------------------------
+usage:
+  weekend_factor: 0.22           # weekday usage is ~4.5x weekend usage
+  close_window_factor: 2.4       # finance exposures during close
+  board_prep_factor: 4.0         # Board KPI Pack in the days before a board meeting
+  daily_noise_sd: 0.18
+
+# ---------------------------------------------------------------------------
+# Warehouse pricing (illustrative list prices, not quotes)
+# ---------------------------------------------------------------------------
+pricing:
+  snowflake_usd_per_credit: 3.00
+  databricks_usd_per_dbu: 0.55
+  redshift_usd_per_rpu_hour: 0.375
+  # Snowflake warehouse sizes burn credits per hour of runtime
+  snowflake_credits_per_hour: {XS: 1, S: 2, M: 4, L: 8}
+  # Snowflake runs migrated Redshift models a bit faster
+  migration_runtime_factor: 0.7
+
+# ---------------------------------------------------------------------------
+# Thresholds (set in the dataset phase, see the README for the reasoning)
+# ---------------------------------------------------------------------------
+thresholds:
+  zombie_max_events_30d: null          # set after the data exists
+  zombie_min_cost_per_event_usd: null
+  incremental_min_rows: null
+  incremental_min_runtime_trend: 0.25  # from the spec
+
+# ---------------------------------------------------------------------------
+# Planted stories. Set enabled: false to switch one off.
+# ---------------------------------------------------------------------------
+stories:
+  s01_slow_creep:
+    enabled: true
+    model: fct_sessions
+    creep_start: 2026-08-20
+    creep_peak: 2026-10-01
+    peak_multiplier: 2.0         # runtime and cost roughly double
+    fixed_on: 2026-10-04         # switched to incremental
+    incremental_runtime_factor: 0.15
+
+  s02_monday_test_failure:
+    enabled: true
+    test: unique_dim_customers_customer_id
+    model: dim_customers
+    first_monday: 2026-08-10
+    failures_range: [40, 180]    # duplicate customer_ids found by the test
+
+  s03_platform_migration:
+    enabled: true
+    from_platform: redshift
+    to_platform: snowflake
+    waves:
+      - name: hubspot_sales
+        migration_date: 2026-09-03
+        sources: [raw_hubspot.deals, raw_hubspot.contacts, raw_hubspot.companies]
+        models: [stg_hubspot__deals, stg_hubspot__deal_stages, stg_hubspot__contacts,
+                 stg_hubspot__companies, int_deals__pipeline, int_contacts__lifecycle,
+                 fct_pipeline, dim_companies, dim_contacts]
+      - name: ads_marketing
+        migration_date: 2026-09-11
+        sources: [raw_google_ads.campaigns, raw_google_ads.ad_stats, raw_meta_ads.ad_insights]
+        models: [stg_google_ads__campaigns, stg_google_ads__ad_stats, stg_meta_ads__ad_insights,
+                 int_ads__unified, int_ads__attribution, int_campaigns__spend_daily,
+                 fct_campaign_performance, fct_ad_spend_daily, fct_attribution, fct_marketing_roi]
+    window_start: 2026-09-01
+    window_end: 2026-09-15
+    cutover_failure_rate: 0.30   # share of a wave's model runs failing on cutover day
+    cutover_days: 2              # cutover day plus the day after
+
+  s04_schema_change:
+    enabled: true
+    date: 2026-09-07
+    broken_from: "06:00"
+    fixed_at: "15:30"
+    source: raw_hubspot
+    renamed_column: "hs_object_id -> record_id"
+    broken_models: [stg_hubspot__deals, stg_hubspot__contacts, stg_hubspot__companies]
+
+  s05_freshness_cascade:
+    enabled: true
+    source: raw_stripe.payments
+    stops_loading_at: 2026-09-30T20:00:00
+    resumes_at: 2026-10-01T10:00:00
+
+  s06_green_dbt_broken_dashboard:
+    enabled: true
+    semantic_object: pds_commerce_sales
+    failing_from: 2026-10-12T00:00:00
+    fixed_at: 2026-10-14T09:00:00
+    error: "Extract refresh failed: OAuth token for Snowflake connection expired"
+
+  s07_zombie_dashboard:
+    enabled: true
+    exposure: web_funnel_analysis
+    max_views_per_month: 4
+
+  s08_orphan_exposure:
+    enabled: true
+    exposure: pricing_experiment_analysis
+
+  s09_live_issues_today:
+    enabled: true
+    date: 2026-10-19
+    warn_source: raw_wms.inventory
+    delay_starts_at: 2026-10-19T17:00:00   # loads stall, lag crosses warn but not error by data_as_of
+
+  s10_dashboard_sprawl:
+    enabled: true
+    semantic_object: pds_finance_revenue
+    # creation dates for the AI-assisted dashboards (5 by default, drop one for 4)
+    created: [2026-09-07, 2026-09-14, 2026-09-22, 2026-10-01, 2026-10-08]
+    launch_views_per_day: [25, 45]
+    decay_half_life_days: 6
+
+  s11_undeclared_consumers:
+    enabled: true
+    consumers:
+      - exposure: undeclared_pricing_agent
+        principal: svc_shared_analytics
+        principal_type: agent
+        first_seen: 2026-09-21
+        reads: [fct_orders, dim_products]
+        queries_per_day: [900, 1600]
+        gb_scanned_per_query: [0.8, 2.5]
+      - exposure: undeclared_promo_notebook
+        principal: svc_jobs_runner
+        principal_type: service
+        first_seen: 2026-09-28
+        reads: [fct_order_items, fct_campaign_performance]
+        queries_per_day: [6, 14]
+        gb_scanned_per_query: [1.0, 4.0]
+      - exposure: undeclared_regional_hub
+        principal: r.alvarez@acme-retail.example
+        principal_type: human
+        first_seen: 2026-10-05
+        reads: [fct_store_sales, dim_stores]
+        queries_per_day: [10, 40]
+        gb_scanned_per_query: [0.1, 0.6]
+
+# ---------------------------------------------------------------------------
+# Lineage layout (fct_lineage_layout)
+# ---------------------------------------------------------------------------
+layout:
+  sub_column_offset: 0.3    # marts that read other marts sit slightly right of them
+  barycenter_sweeps: 8      # passes of the crossing-reduction heuristic
+  edge_points: 12           # points per edge; >2 draws a smooth S-curve in Tableau

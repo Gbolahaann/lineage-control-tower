@@ -1,0 +1,335 @@
+# Acme Retail Co.: the fictional company behind the dataset
+#
+# This file describes the "world": who works on the data team, which raw sources
+# land in which warehouse, which dbt models are built from them, which BI semantic
+# objects sit on top, and which data products (exposures) consume them.
+#
+# It is deliberately shaped like a dbt project: models list their parents the way
+# ref() and source() do, and exposures list what they depend_on.
+#
+# Every person, email and Slack channel here is invented. The .example domain is
+# reserved for documentation, so no email address here can belong to anyone.
+
+company: Acme Retail Co.
+email_domain: acme-retail.example
+
+# ---------------------------------------------------------------------------
+# Teams and owners
+# hygiene: how carefully this team documents and tests its models.
+#   docs = chance a model has a description, tests = chance a model has >= 1 test
+# ---------------------------------------------------------------------------
+teams:
+  Finance Analytics:    {slack: "#data-finance",    hygiene: {docs: 0.92, tests: 0.95}}
+  Commerce Analytics:   {slack: "#data-commerce",   hygiene: {docs: 0.85, tests: 0.90}}
+  Operations Analytics: {slack: "#data-operations", hygiene: {docs: 0.75, tests: 0.80}}
+  Product Analytics:    {slack: "#data-product",    hygiene: {docs: 0.70, tests: 0.75}}
+  Customer Insights:    {slack: "#data-customer",   hygiene: {docs: 0.78, tests: 0.80}}
+  Marketing Analytics:  {slack: "#data-marketing",  hygiene: {docs: 0.45, tests: 0.55}}  # legacy Redshift team
+  Data Platform:        {slack: "#data-platform",   hygiene: {docs: 0.95, tests: 0.97}}
+
+owners:
+  - {name: Priya Raman,   team: Finance Analytics,    on_call: no}
+  - {name: Tomas Ortega,  team: Finance Analytics,    on_call: yes}
+  - {name: Amara Okafor,  team: Commerce Analytics,   on_call: yes}
+  - {name: Liam Chen,     team: Commerce Analytics,   on_call: no}
+  - {name: Noah Fischer,  team: Operations Analytics, on_call: yes}
+  - {name: Aisha Bello,   team: Operations Analytics, on_call: no}
+  - {name: Hannah Weber,  team: Product Analytics,    on_call: yes}
+  - {name: Kwame Mensah,  team: Product Analytics,    on_call: no}
+  - {name: Mei Tanaka,    team: Customer Insights,    on_call: yes}
+  - {name: Lucas Silva,   team: Customer Insights,    on_call: no}
+  - {name: Sofia Rossi,   team: Marketing Analytics,  on_call: yes}
+  - {name: Daniel Kim,    team: Marketing Analytics,  on_call: no}
+  - {name: Grace Nwosu,   team: Data Platform,        on_call: yes}
+  - {name: Ethan Novak,   team: Data Platform,        on_call: yes}
+  - {name: Zara Ahmed,    team: Data Platform,        on_call: yes}
+
+# Which team owns models in each domain (staging models belong to Data Platform)
+domain_teams:
+  Finance: Finance Analytics
+  Commerce: Commerce Analytics
+  Operations: Operations Analytics
+  Product: Product Analytics
+  Customer: Customer Insights
+  Marketing: Marketing Analytics
+
+# ---------------------------------------------------------------------------
+# Platforms and dbt projects
+# compute: what a model run burns per hour of runtime on that platform
+# ---------------------------------------------------------------------------
+platforms:
+  snowflake:  {label: Snowflake,  database: ACME_ANALYTICS, raw_database: ACME_RAW}
+  databricks: {label: Databricks, database: acme_lakehouse, raw_database: acme_lakehouse}
+  redshift:   {label: Redshift,   database: acme_mktg,      raw_database: acme_mktg}
+
+dbt_projects:
+  acme_core:      {platform: snowflake,  warehouse: TRANSFORM_WH,          compute_per_hour: 4}   # Snowflake M = 4 credits/h
+  acme_product:   {platform: databricks, warehouse: dbt-product-jobs,      compute_per_hour: 12}  # DBUs/h
+  acme_marketing: {platform: redshift,   warehouse: marketing-serverless,  compute_per_hour: 16}  # RPUs
+  # after migration, acme_marketing models run on this Snowflake warehouse
+  acme_marketing_on_snowflake: {platform: snowflake, warehouse: MARKETING_WH, compute_per_hour: 2}  # Snowflake S
+
+# ---------------------------------------------------------------------------
+# Raw sources (what Fivetran / Airbyte / custom loaders land in the warehouse)
+# load_every: minutes between loads.  warn / error: freshness thresholds in minutes
+# ---------------------------------------------------------------------------
+sources:
+  # Snowflake, acme_core
+  raw_shopify.orders:            {project: acme_core, domain: Commerce,   load_every: 15,   warn: 60,   error: 180}
+  raw_shopify.order_items:       {project: acme_core, domain: Commerce,   load_every: 15,   warn: 60,   error: 180}
+  raw_shopify.customers:         {project: acme_core, domain: Commerce,   load_every: 60,   warn: 180,  error: 480}
+  raw_shopify.products:          {project: acme_core, domain: Commerce,   load_every: 360,  warn: 720,  error: 1440}
+  raw_stripe.payments:           {project: acme_core, domain: Finance,    load_every: 30,   warn: 180,  error: 360}
+  raw_stripe.refunds:            {project: acme_core, domain: Finance,    load_every: 60,   warn: 240,  error: 480}
+  raw_netsuite.gl_entries:       {project: acme_core, domain: Finance,    load_every: 360,  warn: 600,  error: 1080}
+  raw_netsuite.journal_lines:    {project: acme_core, domain: Finance,    load_every: 360,  warn: 600,  error: 1080}
+  raw_netsuite.accounts:         {project: acme_core, domain: Finance,    load_every: 1440, warn: 2880, error: 4320}
+  raw_wms.inventory:             {project: acme_core, domain: Operations, load_every: 60,   warn: 180,  error: 480}
+  raw_wms.shipments:             {project: acme_core, domain: Operations, load_every: 60,   warn: 180,  error: 480}
+  raw_wms.warehouses:            {project: acme_core, domain: Operations, load_every: 1440, warn: 2880, error: 4320}
+  raw_pos.store_sales:           {project: acme_core, domain: Commerce,   load_every: 60,   warn: 180,  error: 480}
+  raw_dbt_artifacts.run_results: {project: acme_core, domain: Operations, load_every: 60,   warn: 120,  error: 240, team: Data Platform}
+  # Databricks, acme_product
+  raw_events.web_sessions:       {project: acme_product, domain: Product,  load_every: 15, warn: 60,  error: 180}
+  raw_events.page_views:         {project: acme_product, domain: Product,  load_every: 15, warn: 60,  error: 180}
+  raw_events.search_events:      {project: acme_product, domain: Product,  load_every: 15, warn: 60,  error: 180}
+  raw_events.app_events:         {project: acme_product, domain: Product,  load_every: 15, warn: 60,  error: 180}
+  raw_zendesk.tickets:           {project: acme_product, domain: Customer, load_every: 60, warn: 180, error: 480}
+  raw_zendesk.ticket_comments:   {project: acme_product, domain: Customer, load_every: 60, warn: 180, error: 480}
+  raw_experiments.assignments:   {project: acme_product, domain: Product,  load_every: 60, warn: 240, error: 720}
+  # Redshift, acme_marketing (all of these migrate to Snowflake in September)
+  raw_google_ads.campaigns:      {project: acme_marketing, domain: Marketing, load_every: 360, warn: 1440, error: 2160}
+  raw_google_ads.ad_stats:       {project: acme_marketing, domain: Marketing, load_every: 360, warn: 1440, error: 2160}
+  raw_meta_ads.ad_insights:      {project: acme_marketing, domain: Marketing, load_every: 360, warn: 1440, error: 2160}
+  raw_hubspot.deals:             {project: acme_marketing, domain: Marketing, load_every: 60,  warn: 240,  error: 720}
+  raw_hubspot.contacts:          {project: acme_marketing, domain: Marketing, load_every: 60,  warn: 240,  error: 720}
+  raw_hubspot.companies:         {project: acme_marketing, domain: Marketing, load_every: 360, warn: 1440, error: 2160}
+
+# ---------------------------------------------------------------------------
+# dbt models
+# parents: the ref() / source() calls in the model's SQL
+# mat: materialization.  runtime: base seconds per run.  rows: base row count
+# Defaults by layer are applied by the generator when a field is left out:
+#   staging: view, 4s, job = the project's main job
+#   intermediate: view or table as listed
+# ---------------------------------------------------------------------------
+models:
+  # ---------------- acme_core (Snowflake) ----------------
+  stg_shopify__orders:            {project: acme_core, domain: Commerce,   parents: [raw_shopify.orders]}
+  stg_shopify__order_discounts:   {project: acme_core, domain: Commerce,   parents: [raw_shopify.orders]}
+  stg_shopify__order_items:       {project: acme_core, domain: Commerce,   parents: [raw_shopify.order_items]}
+  stg_shopify__customers:         {project: acme_core, domain: Commerce,   parents: [raw_shopify.customers]}
+  stg_shopify__products:          {project: acme_core, domain: Commerce,   parents: [raw_shopify.products]}
+  stg_stripe__payments:           {project: acme_core, domain: Finance,    parents: [raw_stripe.payments]}
+  stg_stripe__refunds:            {project: acme_core, domain: Finance,    parents: [raw_stripe.refunds]}
+  stg_netsuite__gl_entries:       {project: acme_core, domain: Finance,    parents: [raw_netsuite.gl_entries],    job: core_finance_daily}
+  stg_netsuite__journal_lines:    {project: acme_core, domain: Finance,    parents: [raw_netsuite.journal_lines], job: core_finance_daily}
+  stg_netsuite__accounts:         {project: acme_core, domain: Finance,    parents: [raw_netsuite.accounts],      job: core_finance_daily}
+  stg_wms__inventory:             {project: acme_core, domain: Operations, parents: [raw_wms.inventory]}
+  stg_wms__shipments:             {project: acme_core, domain: Operations, parents: [raw_wms.shipments]}
+  stg_wms__warehouses:            {project: acme_core, domain: Operations, parents: [raw_wms.warehouses]}
+  stg_pos__store_sales:           {project: acme_core, domain: Commerce,   parents: [raw_pos.store_sales]}
+  stg_dbt__run_results:           {project: acme_core, domain: Operations, parents: [raw_dbt_artifacts.run_results]}
+
+  int_orders__enriched:      {project: acme_core, domain: Commerce,   mat: table, runtime: 45, rows: 4200000,
+                              parents: [stg_shopify__orders, stg_shopify__order_items, stg_shopify__order_discounts, stg_shopify__products]}
+  int_payments__reconciled:  {project: acme_core, domain: Finance,    mat: table, runtime: 30, rows: 3100000,
+                              parents: [stg_stripe__payments, stg_stripe__refunds, stg_shopify__orders]}
+  int_customers__deduped:    {project: acme_core, domain: Commerce,   mat: table, runtime: 25, rows: 1800000,
+                              parents: [stg_shopify__customers, stg_pos__store_sales]}
+  int_revenue__daily:        {project: acme_core, domain: Finance,    mat: view,
+                              parents: [int_orders__enriched, int_payments__reconciled]}
+  int_gl__mapped:            {project: acme_core, domain: Finance,    mat: table, runtime: 60, rows: 950000, job: core_finance_daily,
+                              parents: [stg_netsuite__gl_entries, stg_netsuite__journal_lines, stg_netsuite__accounts]}
+  int_inventory__snapshots:  {project: acme_core, domain: Operations, mat: table, runtime: 35, rows: 2600000,
+                              parents: [stg_wms__inventory, stg_wms__warehouses]}
+  int_shipments__sla:        {project: acme_core, domain: Operations, mat: view,
+                              parents: [stg_wms__shipments, int_orders__enriched]}
+  int_store_sales__daily:    {project: acme_core, domain: Commerce,   mat: view,
+                              parents: [stg_pos__store_sales, stg_shopify__products]}
+  int_products__catalog:     {project: acme_core, domain: Commerce,   mat: view,
+                              parents: [stg_shopify__products, int_inventory__snapshots]}
+
+  fct_orders:            {project: acme_core, domain: Commerce,   mat: incremental, runtime: 40,  rows: 4200000, parents: [int_orders__enriched]}
+  fct_order_items:       {project: acme_core, domain: Commerce,   mat: incremental, runtime: 55,  rows: 11500000, parents: [int_orders__enriched]}
+  fct_payments:          {project: acme_core, domain: Finance,    mat: incremental, runtime: 30,  rows: 3100000, parents: [int_payments__reconciled]}
+  fct_revenue_daily:     {project: acme_core, domain: Finance,    mat: table,       runtime: 20,  rows: 52000,   parents: [int_revenue__daily]}
+  dim_customers:         {project: acme_core, domain: Commerce,   mat: table,       runtime: 35,  rows: 1750000, parents: [int_customers__deduped]}
+  dim_products:          {project: acme_core, domain: Commerce,   mat: table,       runtime: 10,  rows: 38000,   parents: [int_products__catalog]}
+  fct_gl_journal:        {project: acme_core, domain: Finance,    mat: incremental, runtime: 40,  rows: 950000,  parents: [int_gl__mapped], job: core_finance_daily}
+  fct_finance_close:     {project: acme_core, domain: Finance,    mat: table,       runtime: 75,  rows: 18000,   parents: [int_gl__mapped, int_payments__reconciled], job: core_finance_daily}
+  fct_inventory_daily:   {project: acme_core, domain: Operations, mat: incremental, runtime: 50,  rows: 6400000, parents: [int_inventory__snapshots]}
+  fct_shipments:         {project: acme_core, domain: Operations, mat: incremental, runtime: 30,  rows: 3900000, parents: [int_shipments__sla]}
+  fct_store_sales:       {project: acme_core, domain: Commerce,   mat: incremental, runtime: 25,  rows: 2200000, parents: [int_store_sales__daily]}
+  dim_stores:            {project: acme_core, domain: Operations, mat: table,       runtime: 5,   rows: 240,     parents: [int_store_sales__daily]}
+  fct_partner_payouts:   {project: acme_core, domain: Finance,    mat: table,       runtime: 20,  rows: 64000,   parents: [fct_orders, fct_payments]}
+  fct_board_kpis:        {project: acme_core, domain: Finance,    mat: table,       runtime: 15,  rows: 1200,    parents: [fct_revenue_daily, fct_finance_close, dim_customers, fct_pipeline], job: core_finance_daily}
+  dim_customer_360:      {project: acme_core, domain: Customer,   mat: table,       runtime: 90,  rows: 1750000, parents: [dim_customers, fct_orders, dim_customer_behavior]}
+  fct_ops_model_health:  {project: acme_core, domain: Operations, mat: incremental, runtime: 15,  rows: 260000,  parents: [stg_dbt__run_results], team: Data Platform}
+
+  # ---------------- acme_product (Databricks) ----------------
+  stg_events__web_sessions:     {project: acme_product, domain: Product,  parents: [raw_events.web_sessions]}
+  stg_events__page_views:       {project: acme_product, domain: Product,  parents: [raw_events.page_views]}
+  stg_events__search_events:    {project: acme_product, domain: Product,  parents: [raw_events.search_events]}
+  stg_events__app_events:       {project: acme_product, domain: Product,  parents: [raw_events.app_events]}
+  stg_events__app_installs:     {project: acme_product, domain: Product,  parents: [raw_events.app_events]}
+  stg_zendesk__tickets:         {project: acme_product, domain: Customer, parents: [raw_zendesk.tickets],         job: product_daily}
+  stg_zendesk__ticket_comments: {project: acme_product, domain: Customer, parents: [raw_zendesk.ticket_comments], job: product_daily}
+  stg_experiments__assignments: {project: acme_product, domain: Product,  parents: [raw_experiments.assignments], job: product_daily}
+
+  int_sessions__stitched:       {project: acme_product, domain: Product,  mat: table, runtime: 240, rows: 48000000,
+                                 parents: [stg_events__web_sessions, stg_events__page_views, stg_events__search_events]}
+  int_app__engagement:          {project: acme_product, domain: Product,  mat: table, runtime: 90,  rows: 21000000,
+                                 parents: [stg_events__app_events, stg_events__app_installs]}
+  int_experiments__assignments_enriched: {project: acme_product, domain: Product, mat: view, job: product_daily,
+                                 parents: [stg_experiments__assignments, int_sessions__stitched]}
+  int_tickets__lifecycle:       {project: acme_product, domain: Customer, mat: table, runtime: 40,  rows: 820000, job: product_daily,
+                                 parents: [stg_zendesk__tickets, stg_zendesk__ticket_comments]}
+  int_customer_behavior:        {project: acme_product, domain: Customer, mat: table, runtime: 120, rows: 1750000,
+                                 parents: [int_sessions__stitched, int_app__engagement]}
+  int_funnel__steps:            {project: acme_product, domain: Product,  mat: view,
+                                 parents: [int_sessions__stitched]}
+
+  fct_sessions:           {project: acme_product, domain: Product,  mat: incremental, runtime: 1500, rows: 52000000, parents: [int_sessions__stitched]}  # story 1: a full-refresh table until 4 Oct
+  fct_funnel_daily:       {project: acme_product, domain: Product,  mat: table,       runtime: 60,   rows: 9000,     parents: [int_funnel__steps, fct_sessions]}
+  fct_app_engagement:     {project: acme_product, domain: Product,  mat: incremental, runtime: 80,   rows: 21000000, parents: [int_app__engagement]}
+  fct_experiment_results: {project: acme_product, domain: Product,  mat: table,       runtime: 70,   rows: 4500,     parents: [int_experiments__assignments_enriched, fct_orders], job: product_daily}
+  fct_tickets:            {project: acme_product, domain: Customer, mat: incremental, runtime: 35,   rows: 820000,   parents: [int_tickets__lifecycle], job: product_daily}
+  fct_support_sla_daily:  {project: acme_product, domain: Customer, mat: table,       runtime: 15,   rows: 2700,     parents: [fct_tickets], job: product_daily}
+  dim_customer_behavior:  {project: acme_product, domain: Customer, mat: table,       runtime: 100,  rows: 1750000,  parents: [int_customer_behavior]}
+  fct_churn_features:     {project: acme_product, domain: Customer, mat: table,       runtime: 150,  rows: 1750000,  parents: [dim_customer_behavior, fct_tickets, dim_customers], job: product_daily}
+  fct_demand_signals:     {project: acme_product, domain: Operations, mat: table,     runtime: 110,  rows: 3400000,  parents: [fct_sessions, fct_inventory_daily]}
+
+  # ---------------- acme_marketing (Redshift, migrating to Snowflake) ----------------
+  stg_google_ads__campaigns:  {project: acme_marketing, domain: Marketing, parents: [raw_google_ads.campaigns]}
+  stg_google_ads__ad_stats:   {project: acme_marketing, domain: Marketing, parents: [raw_google_ads.ad_stats]}
+  stg_meta_ads__ad_insights:  {project: acme_marketing, domain: Marketing, parents: [raw_meta_ads.ad_insights]}
+  stg_hubspot__deals:         {project: acme_marketing, domain: Marketing, parents: [raw_hubspot.deals]}
+  stg_hubspot__deal_stages:   {project: acme_marketing, domain: Marketing, parents: [raw_hubspot.deals]}
+  stg_hubspot__contacts:      {project: acme_marketing, domain: Marketing, parents: [raw_hubspot.contacts]}
+  stg_hubspot__companies:     {project: acme_marketing, domain: Marketing, parents: [raw_hubspot.companies]}
+
+  int_ads__unified:           {project: acme_marketing, domain: Marketing, mat: table, runtime: 70, rows: 3300000,
+                               parents: [stg_google_ads__campaigns, stg_google_ads__ad_stats, stg_meta_ads__ad_insights]}
+  int_ads__attribution:       {project: acme_marketing, domain: Marketing, mat: table, runtime: 95, rows: 2100000,
+                               parents: [int_ads__unified, stg_hubspot__contacts]}
+  int_deals__pipeline:        {project: acme_marketing, domain: Marketing, mat: view,
+                               parents: [stg_hubspot__deals, stg_hubspot__deal_stages, stg_hubspot__companies]}
+  int_contacts__lifecycle:    {project: acme_marketing, domain: Marketing, mat: view,
+                               parents: [stg_hubspot__contacts, stg_hubspot__companies]}
+  int_campaigns__spend_daily: {project: acme_marketing, domain: Marketing, mat: view,
+                               parents: [int_ads__unified]}
+
+  fct_campaign_performance: {project: acme_marketing, domain: Marketing, mat: table,       runtime: 55, rows: 410000,  parents: [int_ads__unified, int_campaigns__spend_daily]}
+  fct_ad_spend_daily:       {project: acme_marketing, domain: Marketing, mat: table,       runtime: 25, rows: 96000,   parents: [int_campaigns__spend_daily]}
+  fct_attribution:          {project: acme_marketing, domain: Marketing, mat: table,       runtime: 120, rows: 2100000, parents: [int_ads__attribution, fct_orders]}
+  fct_pipeline:             {project: acme_marketing, domain: Marketing, mat: table,       runtime: 30, rows: 85000,   parents: [int_deals__pipeline]}
+  dim_contacts:             {project: acme_marketing, domain: Marketing, mat: table,       runtime: 40, rows: 640000,  parents: [int_contacts__lifecycle]}
+  dim_companies:            {project: acme_marketing, domain: Marketing, mat: table,       runtime: 12, rows: 31000,   parents: [int_contacts__lifecycle]}
+  fct_marketing_roi:        {project: acme_marketing, domain: Marketing, mat: table,       runtime: 35, rows: 12000,   parents: [fct_campaign_performance, fct_attribution, fct_pipeline]}
+
+# Main job per project (used when a model does not name its own job)
+default_jobs:
+  acme_core: core_hourly
+  acme_product: product_every_2h
+  acme_marketing: marketing_every_4h
+
+# ---------------------------------------------------------------------------
+# BI semantic objects: Tableau published data sources, Sigma datasets,
+# Power BI semantic models.  refreshes_per_day only applies to extracts.
+# ---------------------------------------------------------------------------
+semantic_objects:
+  pds_finance_revenue: {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 6, domain: Finance,
+                        owner: Priya Raman,  parents: [fct_revenue_daily, fct_orders, fct_payments]}
+  pds_commerce_sales:  {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 4, domain: Commerce,
+                        owner: Amara Okafor, parents: [fct_orders, fct_order_items, dim_products, fct_store_sales, fct_inventory_daily, fct_shipments]}
+  pds_board_kpis:      {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 1, domain: Finance,
+                        owner: Priya Raman,  parents: [fct_board_kpis]}
+  pds_finance_close:   {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 1, close_window_refreshes_per_day: 4, domain: Finance,
+                        owner: Tomas Ortega, parents: [fct_finance_close, fct_gl_journal, fct_payments]}
+  pds_web_funnel:      {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 1, domain: Product,
+                        owner: Hannah Weber, parents: [fct_funnel_daily, fct_sessions]}
+  pds_sales_pipeline:  {bi_tool: tableau, type: published_data_source, connection: extract, refreshes_per_day: 4, domain: Marketing,
+                        owner: Daniel Kim,   parents: [fct_pipeline, dim_companies, dim_contacts]}
+  pds_ops_monitor:     {bi_tool: tableau, type: published_data_source, connection: live, domain: Operations,
+                        owner: Grace Nwosu,  parents: [fct_ops_model_health]}
+  sigma_customer_360:       {bi_tool: sigma, type: sigma_dataset, connection: live, domain: Customer,
+                             owner: Mei Tanaka,   parents: [dim_customer_360]}
+  sigma_product_engagement: {bi_tool: sigma, type: sigma_dataset, connection: live, domain: Product,
+                             owner: Kwame Mensah, parents: [fct_app_engagement, dim_customer_behavior]}
+  pbi_marketing: {bi_tool: power_bi, type: pbi_semantic_model, connection: extract, refreshes_per_day: 4, domain: Marketing,
+                  owner: Sofia Rossi, parents: [fct_campaign_performance, fct_marketing_roi, fct_ad_spend_daily]}
+  pbi_inventory: {bi_tool: power_bi, type: pbi_semantic_model, connection: extract, refreshes_per_day: 4, domain: Operations,
+                  owner: Aisha Bello, parents: [fct_inventory_daily, dim_products]}
+  pbi_support:   {bi_tool: power_bi, type: pbi_semantic_model, connection: extract, refreshes_per_day: 4, domain: Customer,
+                  owner: Lucas Silva, parents: [fct_support_sla_daily, fct_tickets]}
+
+# ---------------------------------------------------------------------------
+# Exposures: every consumer of the data, whatever kind it is.
+# events / consumers: typical weekday consumption events and unique consumers
+# principal: the warehouse login this consumer queries with (direct consumers only)
+# ---------------------------------------------------------------------------
+exposures:
+  # ---- BI dashboards (through the BI semantic layer)
+  executive_revenue_dashboard:    {label: Executive Revenue Dashboard, type: dashboard, bi_tool: tableau, domain: Finance, owner: Priya Raman,
+                                   maturity: high, build: hand_built, events: 60, consumers: 25, parents: [pds_finance_revenue, pds_commerce_sales, pds_board_kpis]}
+  finance_close_tracker:          {label: Finance Close Tracker, type: dashboard, bi_tool: tableau, domain: Finance, owner: Tomas Ortega,
+                                   maturity: high, build: hand_built, events: 22, consumers: 9, parents: [pds_finance_close]}
+  board_kpi_pack:                 {label: Board KPI Pack, type: dashboard, bi_tool: tableau, domain: Finance, owner: Priya Raman,
+                                   maturity: high, build: hand_built, events: 5, consumers: 4, parents: [pds_board_kpis, pds_commerce_sales]}
+  web_funnel_analysis:            {label: Web Funnel Analysis, type: dashboard, bi_tool: tableau, domain: Product, owner: Hannah Weber,
+                                   maturity: medium, build: hand_built, events: 0.12, consumers: 1, parents: [pds_web_funnel]}
+  supply_chain_ops:               {label: Supply Chain Ops, type: dashboard, bi_tool: tableau, domain: Operations, owner: Noah Fischer,
+                                   maturity: high, build: hand_built, events: 40, consumers: 15, parents: [pds_commerce_sales]}
+  sales_pipeline:                 {label: Sales Pipeline, type: dashboard, bi_tool: tableau, domain: Marketing, owner: Daniel Kim,
+                                   maturity: medium, build: hand_built, events: 30, consumers: 12, parents: [pds_sales_pipeline]}
+  lineage_control_tower:          {label: Lineage Control Tower, type: dashboard, bi_tool: tableau, domain: Operations, owner: Grace Nwosu,
+                                   maturity: medium, build: hand_built, events: 14, consumers: 6, parents: [pds_ops_monitor]}
+  customer_360:                   {label: Customer 360, type: dashboard, bi_tool: sigma, domain: Customer, owner: Mei Tanaka,
+                                   maturity: high, build: hand_built, events: 45, consumers: 18, parents: [sigma_customer_360]}
+  product_engagement:             {label: Product Engagement, type: dashboard, bi_tool: sigma, domain: Product, owner: Kwame Mensah,
+                                   maturity: medium, build: hand_built, events: 35, consumers: 14, parents: [sigma_product_engagement]}
+  marketing_campaign_performance: {label: Marketing Campaign Performance, type: dashboard, bi_tool: power_bi, domain: Marketing, owner: Sofia Rossi,
+                                   maturity: high, build: hand_built, events: 50, consumers: 20, parents: [pbi_marketing]}
+  inventory_health:               {label: Inventory Health, type: dashboard, bi_tool: power_bi, domain: Operations, owner: Aisha Bello,
+                                   maturity: medium, build: hand_built, events: 30, consumers: 12, parents: [pbi_inventory]}
+  support_sla_tracker:            {label: Support SLA Tracker, type: dashboard, bi_tool: power_bi, domain: Customer, owner: Lucas Silva,
+                                   maturity: medium, build: hand_built, events: 40, consumers: 16, parents: [pbi_support]}
+
+  # ---- Direct warehouse consumers
+  churn_prediction_model:      {label: Churn Prediction Model, type: ml, access_path: direct_warehouse, domain: Customer, owner: Mei Tanaka,
+                                maturity: medium, build: hand_built, events: 6, consumers: 1, principal: svc_churn_model, parents: [fct_churn_features]}
+  pricing_experiment_analysis: {label: Pricing Experiment Analysis, type: notebook, access_path: direct_warehouse, domain: Product, owner: null,
+                                maturity: low, build: hand_built, events: 12, consumers: 3, principal: svc_databricks_notebooks, parents: [fct_experiment_results, fct_orders]}
+  partner_revenue_share:       {label: Partner Revenue Share, type: data_app, access_path: direct_warehouse, domain: Finance, owner: Tomas Ortega,
+                                maturity: high, build: hand_built, events: 120, consumers: 35, principal: svc_partner_portal, parents: [fct_partner_payouts]}
+  demand_forecast_app:         {label: Demand Forecast App, type: data_app, access_path: direct_warehouse, domain: Operations, owner: Noah Fischer,
+                                maturity: medium, build: hand_built, events: 70, consumers: 22, principal: svc_demand_forecast_app, parents: [fct_demand_signals]}
+
+  # ---- AI agents and Claude-built hubs
+  merchandising_copilot: {label: Merchandising Copilot, type: agent, access_path: dbt_semantic_layer, domain: Commerce, owner: Amara Okafor,
+                          maturity: medium, build: ai_assisted, events: 300, consumers: 28, principal: svc_dbt_semantic_layer, parents: [fct_orders, dim_products, fct_inventory_daily]}
+  finance_qa_agent:      {label: Finance Q&A Agent, type: agent, access_path: mcp_server, domain: Finance, owner: Priya Raman,
+                          maturity: medium, build: ai_assisted, events: 150, consumers: 15, principal: svc_finance_mcp, parents: [fct_revenue_daily, fct_finance_close, fct_payments]}
+  store_ops_hub:         {label: Store Ops Hub, type: data_hub, access_path: extract, domain: Operations, owner: Aisha Bello,
+                          maturity: medium, build: ai_assisted, events: 55, consumers: 20, principal: svc_store_ops_hub, parents: [fct_store_sales, fct_inventory_daily, dim_stores]}
+
+  # ---- Story 10: AI-assisted dashboard sprawl (created during the window, see config)
+  revenue_overview_ai:     {label: Revenue Overview (AI), type: dashboard, bi_tool: tableau, domain: Finance, owner: Liam Chen,
+                            maturity: low, build: ai_assisted, sprawl: true, parents: [pds_finance_revenue]}
+  revenue_by_channel_v2:   {label: Revenue by Channel v2, type: dashboard, bi_tool: tableau, domain: Finance, owner: Amara Okafor,
+                            maturity: low, build: ai_assisted, sprawl: true, parents: [pds_finance_revenue]}
+  daily_sales_snapshot:    {label: Daily Sales Snapshot, type: dashboard, bi_tool: tableau, domain: Commerce, owner: Daniel Kim,
+                            maturity: low, build: ai_assisted, sprawl: true, parents: [pds_finance_revenue]}
+  revenue_dashboard_copy:  {label: Revenue Dashboard (copy), type: dashboard, bi_tool: tableau, domain: Finance, owner: Kwame Mensah,
+                            maturity: low, build: ai_assisted, sprawl: true, parents: [pds_finance_revenue]}
+  q3_sales_summary_ai:     {label: Q3 Sales Summary (AI), type: dashboard, bi_tool: tableau, domain: Commerce, owner: Tomas Ortega,
+                            maturity: low, build: ai_assisted, sprawl: true, parents: [pds_finance_revenue]}
+
+  # ---- Story 11: undeclared consumers, only visible in query history
+  undeclared_pricing_agent:  {label: "Unregistered: pricing agent", type: agent, access_path: direct_warehouse, domain: Commerce, owner: null,
+                              maturity: low, build: ai_assisted, declared: false, parents: [fct_orders, dim_products]}
+  undeclared_promo_notebook: {label: "Unregistered: scheduled notebook", type: notebook, access_path: direct_warehouse, domain: Marketing, owner: null,
+                              maturity: low, build: hand_built, declared: false, parents: [fct_order_items, fct_campaign_performance]}
+  undeclared_regional_hub:   {label: "Unregistered: personal Claude hub", type: data_hub, access_path: direct_warehouse, domain: Operations, owner: null,
+                              maturity: low, build: ai_assisted, declared: false, parents: [fct_store_sales, dim_stores]}

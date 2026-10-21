@@ -1,0 +1,16 @@
+owner_name,owner_team,email,slack_channel,on_call_rotation
+Priya Raman,Finance Analytics,priya.raman@acme-retail.example,#data-finance,no
+Tomas Ortega,Finance Analytics,tomas.ortega@acme-retail.example,#data-finance,yes
+Amara Okafor,Commerce Analytics,amara.okafor@acme-retail.example,#data-commerce,yes
+Liam Chen,Commerce Analytics,liam.chen@acme-retail.example,#data-commerce,no
+Noah Fischer,Operations Analytics,noah.fischer@acme-retail.example,#data-operations,yes
+Aisha Bello,Operations Analytics,aisha.bello@acme-retail.example,#data-operations,no
+Hannah Weber,Product Analytics,hannah.weber@acme-retail.example,#data-product,yes
+Kwame Mensah,Product Analytics,kwame.mensah@acme-retail.example,#data-product,no
+Mei Tanaka,Customer Insights,mei.tanaka@acme-retail.example,#data-customer,yes
+Lucas Silva,Customer Insights,lucas.silva@acme-retail.example,#data-customer,no
+Sofia Rossi,Marketing Analytics,sofia.rossi@acme-retail.example,#data-marketing,yes
+Daniel Kim,Marketing Analytics,daniel.kim@acme-retail.example,#data-marketing,no
+Grace Nwosu,Data Platform,grace.nwosu@acme-retail.example,#data-platform,yes
+Ethan Novak,Data Platform,ethan.novak@acme-retail.example,#data-platform,yes
+Zara Ahmed,Data Platform,zara.ahmed@acme-retail.example,#data-platform,yes
