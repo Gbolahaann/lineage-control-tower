@@ -158,6 +158,11 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   by a parameter action from **every** sheet whose click picks a node, with those fields on Detail of the
   clickable layers (ATTR on INDEX-based card grids so the table calc is not split). DZV calcs then compare
   parameters only (`CONTAINS([p_panel_tags], "|ai|")`). Set the defaults to the default node's values.
+- **Go to Sheet** (from GB's example): `<nav-action caption name='[Action2_<hex>]'>` with
+  `<activation type='on-select' />`, `<source type='sheet' worksheet='...' />` (no dashboard attribute) and
+  `<params><param name='sheet' value='<target dashboard>' /></params>`. Keep every nav-action together, after all
+  filter `<action>`s and before `<datasources>`. The same click still runs the sheet's parameter actions, so the
+  target opens on the selection.
 - **A status pill whose colour depends on the data** is easier as a tiny canvas sheet (polygon pill coloured by
   a key, Gantt text) than as one DZV container per state.
 - **Dehighlight after a click** (OKRs and IronViz references): calcs `Dehighlight True` = TRUE and

@@ -50,6 +50,7 @@ H = GRAPH_INNER_H - HEADER_H - GAP_H - LEGEND_H - SH.SLACK   # 740
 COLW = (W - 16) / 6                              # prototype: colW = (W - 16) / 6
 NW = 0.8 * COLW                                  # box width: edges in the mart start at x + 0.8
 PANEL_INNER_W = PANEL_CARD_W - 2 * 16 - 2        # 306
+BULLET_H = 18                                    # Freshness Now canvas height, px
 TABLE_ROW_H = 13                                 # 57 rows (the largest graph) fit the 740 px holder
 
 NH = '[Lineage Box Height]'
@@ -362,8 +363,9 @@ def calcs():
            for k, m in (('Runtime Minutes', '[Runtime Minutes (Daily)]'), ('Worst Lag Hours', '[Worst Lag Hours (Daily)]'),
                         ('Health Score', 'AVG([health_score])'), ('Failed Refreshes', 'SUM([refresh_failed])'))},
     }
-    # freshness bullet: zones and lag bar on a 306 x 14 px canvas, from the Node Daily path (sources only)
-    bw, bh = PANEL_INNER_W - SH.SLACK, 14
+    # freshness bullet: zones and lag bar on a 306 x 18 px canvas, from the Node Daily path (sources only).
+    # Kept a thin bullet, not stretched like the mock (GB, 22 Oct): 12 px bands, the lag a 4 px bar near the top
+    bw, bh = PANEL_INNER_W - SH.SLACK, BULLET_H
     scale = f'({bw:g} / (1.25 * [error_after_minutes]))'
     idx = '[Node Path Index]'
     vtx = f'INT({idx} / 22)'
@@ -372,9 +374,9 @@ def calcs():
         lon = f'CASE {vtx} WHEN 0 THEN (({x0}) - {bw / 2:g}) / 100 WHEN 1 THEN (({x1}) - {bw / 2:g}) / 100 WHEN 2 THEN (({x1}) - {bw / 2:g}) / 100 ELSE (({x0}) - {bw / 2:g}) / 100 END'
         lat = f'CASE {vtx} WHEN 0 THEN {(bh / 2 - y0) / 100:.4f} WHEN 1 THEN {(bh / 2 - y0) / 100:.4f} WHEN 2 THEN {(bh / 2 - y1) / 100:.4f} ELSE {(bh / 2 - y1) / 100:.4f} END'
         return f'MAKEPOINT(\n    {lat},\n    {lon}\n)'
-    f['Bullet Good Point'] = '// Bullet Good Point\n// Freshness bullet: on-time zone, 0 to warn.\n' + rect('0', f'[warn_after_minutes] * {scale}', 3, 11)
-    f['Bullet Warn Point'] = '// Bullet Warn Point\n// Freshness bullet: warn zone.\n' + rect(f'[warn_after_minutes] * {scale}', f'[error_after_minutes] * {scale}', 3, 11)
-    f['Bullet Error Point'] = '// Bullet Error Point\n// Freshness bullet: error zone, up to 1.25 x the error threshold.\n' + rect(f'[error_after_minutes] * {scale}', f'{bw:g}', 3, 11)
+    f['Bullet Good Point'] = '// Bullet Good Point\n// Freshness bullet: on-time zone, 0 to warn.\n' + rect('0', f'[warn_after_minutes] * {scale}', 3, 15)
+    f['Bullet Warn Point'] = '// Bullet Warn Point\n// Freshness bullet: warn zone.\n' + rect(f'[warn_after_minutes] * {scale}', f'[error_after_minutes] * {scale}', 3, 15)
+    f['Bullet Error Point'] = '// Bullet Error Point\n// Freshness bullet: error zone, up to 1.25 x the error threshold.\n' + rect(f'[error_after_minutes] * {scale}', f'{bw:g}', 3, 15)
     f['Bullet Lag Point'] = ('// Bullet Lag Point\n// Freshness bullet: the lag now, as a bar in the status colour.\n'
                              + rect('0', f'MIN({bw:g}, ZN([freshness_lag_min]) * {scale})', 5, 9))
 
@@ -796,8 +798,8 @@ def panel_sheets() -> list[Sheet]:
                                           run(' per use', 8, INK2)], exd, valign='top',
                formats={R('Daily Consumers In Period'): 'n#,##0.0', R('Product Cost (Period)'): 'c"$"#,##0', R('Cost Per Use'): 'c"$"#,##0.00'}),
     ]
-    # freshness bullet: a 302 x 14 px canvas
-    bp = (PANEL_INNER_W - SH.SLACK, 14)
+    # freshness bullet: a 302 x 18 px canvas
+    bp = (PANEL_INNER_W - SH.SLACK, BULLET_H)
     date = R('date', kind='ok')
     bullet = Sheet('LIN Panel Freshness Bullet', rows=[LAT], cols=[LON], filters=[daily], layers=True, no_basemap=True, zoom=None,
                    tooltip=False, panes=[Pane('Automatic', pane_size=bp),
@@ -933,9 +935,9 @@ def content() -> Z:
         _section_label('TESTS, LAST 30 DAYS'),
         sheet('LIN Panel Test Strip', 16),
         sheet('LIN Panel Tests Latest', 18)])
-    source = Z('vert', friendly='LIN Panel Source Section', fixed=168, dzv=('Show Panel Source', False), kids=[
+    source = Z('vert', friendly='LIN Panel Source Section', fixed=172, dzv=('Show Panel Source', False), kids=[
         _section_label('FRESHNESS NOW'),
-        sheet('LIN Panel Freshness Bullet', 18),
+        sheet('LIN Panel Freshness Bullet', BULLET_H + 4),
         two('LIN Panel Lag Now', 'LIN Panel Lag Thresholds', 18, 100),
         _section_label('DAILY WORST LAG, 90 DAYS'),
         sheet('LIN Panel Lag Trend', 46)])

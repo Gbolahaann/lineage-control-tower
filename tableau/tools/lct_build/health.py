@@ -290,3 +290,7 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     *[('HO Needs Attention List', (lambda f=f: R(f)), param, f'HO Alert Set {param}') for f, param in PANEL_WRITES],
     ('HO Tile View Buttons', lambda: R('Tile View Option'), 'p_tile_view', 'HO Set Tile View'),
 ]
+
+# Go to Sheet: a tile or alert click sets the selection above, then opens the Lineage explorer (GB, 22 Oct)
+NAV_ACTIONS = [(ws, 'Lineage explorer', f'Go to Lineage from {ws}')
+               for ws in [f'HO Tiles {suffix}' for _, suffix, _ in TILE_GROUPS] + ['HO Needs Attention List']]

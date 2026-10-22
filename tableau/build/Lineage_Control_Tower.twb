@@ -5696,16 +5696,16 @@
         <calculation class='tableau' formula='// Cost Per Use&#13;&#10;// Product Cost / Product Uses. NULL (shown &quot;-&quot;) when there was no use.&#13;&#10;IF [Calculation_1159284100207867770] = 0 OR ISNULL([Calculation_1159284100207867770]) THEN NULL&#13;&#10;ELSE [Calculation_3016817971858344399] / [Calculation_1159284100207867770]&#13;&#10;END' />
       </column>
       <column caption='Bullet Good Point' datatype='spatial' name='[Calculation_2917886856601150780]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Bullet Good Point&#13;&#10;// Freshness bullet: on-time zone, 0 to warn.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
+        <calculation class='tableau' formula='// Bullet Good Point&#13;&#10;// Freshness bullet: on-time zone, 0 to warn.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
       </column>
       <column caption='Bullet Warn Point' datatype='spatial' name='[Calculation_1544498994739950646]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Bullet Warn Point&#13;&#10;// Freshness bullet: warn zone.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
+        <calculation class='tableau' formula='// Bullet Warn Point&#13;&#10;// Freshness bullet: warn zone.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
       </column>
       <column caption='Bullet Error Point' datatype='spatial' name='[Calculation_2583197384628426240]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Bullet Error Point&#13;&#10;// Freshness bullet: error zone, up to 1.25 x the error threshold.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN ((302) - 151) / 100 WHEN 2 THEN ((302) - 151) / 100 ELSE (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
+        <calculation class='tableau' formula='// Bullet Error Point&#13;&#10;// Freshness bullet: error zone, up to 1.25 x the error threshold.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN ((302) - 151) / 100 WHEN 2 THEN ((302) - 151) / 100 ELSE (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
       </column>
       <column caption='Bullet Lag Point' datatype='spatial' name='[Calculation_4634444041752179346]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Bullet Lag Point&#13;&#10;// Freshness bullet: the lag now, as a bar in the status colour.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0200 WHEN 1 THEN 0.0200 WHEN 2 THEN -0.0200 ELSE -0.0200 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 WHEN 2 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
+        <calculation class='tableau' formula='// Bullet Lag Point&#13;&#10;// Freshness bullet: the lag now, as a bar in the status colour.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN 0.0000 ELSE 0.0000 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 WHEN 2 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
       </column>
       <column caption='Show Info Panel' datatype='boolean' name='[Calculation_3095764547146903988]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Show Info Panel&#13;&#10;// DZV for GL Info Panel: shown while p_show_info is True.&#13;&#10;[Parameters].[Parameter 7]' />
@@ -7110,6 +7110,41 @@
         <param name='target' value='LIN View Buttons' />
       </command>
     </action>
+    <nav-action caption='Go to Lineage from HO Tiles BI Dashboards' name='[Action2_A3CA7B631C265C6A16A075D34357D46C]'>
+      <activation type='on-select' />
+      <source type='sheet' worksheet='HO Tiles BI Dashboards' />
+      <params>
+        <param name='sheet' value='Lineage explorer' />
+      </params>
+    </nav-action>
+    <nav-action caption='Go to Lineage from HO Tiles Apps ML Notebooks' name='[Action2_BE2D73DAD2692D445E8DCF62455392C4]'>
+      <activation type='on-select' />
+      <source type='sheet' worksheet='HO Tiles Apps ML Notebooks' />
+      <params>
+        <param name='sheet' value='Lineage explorer' />
+      </params>
+    </nav-action>
+    <nav-action caption='Go to Lineage from HO Tiles AI Agents Data Hubs' name='[Action2_78988B4C9AFB303AB92749C070A5634F]'>
+      <activation type='on-select' />
+      <source type='sheet' worksheet='HO Tiles AI Agents Data Hubs' />
+      <params>
+        <param name='sheet' value='Lineage explorer' />
+      </params>
+    </nav-action>
+    <nav-action caption='Go to Lineage from HO Tiles Unregistered' name='[Action2_5EAD24AF3AFA7ADFA71688810791C491]'>
+      <activation type='on-select' />
+      <source type='sheet' worksheet='HO Tiles Unregistered' />
+      <params>
+        <param name='sheet' value='Lineage explorer' />
+      </params>
+    </nav-action>
+    <nav-action caption='Go to Lineage from HO Needs Attention List' name='[Action2_2F4D7993E5245E1C65457CE9A25DC25C]'>
+      <activation type='on-select' />
+      <source type='sheet' worksheet='HO Needs Attention List' />
+      <params>
+        <param name='sheet' value='Lineage explorer' />
+      </params>
+    </nav-action>
     <datasources>
       <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
     </datasources>
@@ -29657,19 +29692,19 @@
               <calculation class='tableau' formula='// Node Path Index&#13;&#10;// Point number 0 to 87 along a card outline, from the 90 days of Node Daily.&#13;&#10;MIN(DATEDIFF(&apos;day&apos;, { MIN([date]) }, [date]), 87)' />
             </column>
             <column caption='Bullet Good Point' datatype='spatial' name='[Calculation_2917886856601150780]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Bullet Good Point&#13;&#10;// Freshness bullet: on-time zone, 0 to warn.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
+              <calculation class='tableau' formula='// Bullet Good Point&#13;&#10;// Freshness bullet: on-time zone, 0 to warn.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
             </column>
             <column caption='Bullet Warn Point' datatype='spatial' name='[Calculation_1544498994739950646]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Bullet Warn Point&#13;&#10;// Freshness bullet: warn zone.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
+              <calculation class='tableau' formula='// Bullet Warn Point&#13;&#10;// Freshness bullet: warn zone.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 2 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 ELSE (([warn_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
             </column>
             <column caption='Bullet Error Point' datatype='spatial' name='[Calculation_2583197384628426240]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Bullet Error Point&#13;&#10;// Freshness bullet: error zone, up to 1.25 x the error threshold.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN -0.0400 ELSE -0.0400 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN ((302) - 151) / 100 WHEN 2 THEN ((302) - 151) / 100 ELSE (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
+              <calculation class='tableau' formula='// Bullet Error Point&#13;&#10;// Freshness bullet: error zone, up to 1.25 x the error threshold.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0600 WHEN 1 THEN 0.0600 WHEN 2 THEN -0.0600 ELSE -0.0600 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 WHEN 1 THEN ((302) - 151) / 100 WHEN 2 THEN ((302) - 151) / 100 ELSE (([error_after_minutes] * (302 / (1.25 * [error_after_minutes]))) - 151) / 100 END&#13;&#10;)' />
             </column>
             <column caption='Status Label' datatype='string' name='[Calculation_3105941082857465865]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Status Label&#13;&#10;// One status vocabulary for every sheet. Assign the palette once on this field:&#13;&#10;// Healthy #2F9E6B, Warning #E8A33D, Critical #D2453F, No data #A3ADB8.&#13;&#10;CASE [current_status_code]&#13;&#10;WHEN 3 THEN &quot;Critical&quot;&#13;&#10;WHEN 2 THEN &quot;Warning&quot;&#13;&#10;WHEN 1 THEN &quot;Healthy&quot;&#13;&#10;ELSE &quot;No data&quot;&#13;&#10;END' />
             </column>
             <column caption='Bullet Lag Point' datatype='spatial' name='[Calculation_4634444041752179346]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Bullet Lag Point&#13;&#10;// Freshness bullet: the lag now, as a bar in the status colour.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0200 WHEN 1 THEN 0.0200 WHEN 2 THEN -0.0200 ELSE -0.0200 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 WHEN 2 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
+              <calculation class='tableau' formula='// Bullet Lag Point&#13;&#10;// Freshness bullet: the lag now, as a bar in the status colour.&#13;&#10;MAKEPOINT(&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN 0.0400 WHEN 1 THEN 0.0400 WHEN 2 THEN 0.0000 ELSE 0.0000 END,&#13;&#10;    CASE INT([Calculation_2690238693341099106] / 22) WHEN 0 THEN ((0) - 151) / 100 WHEN 1 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 WHEN 2 THEN ((MIN(302, ZN([freshness_lag_min]) * (302 / (1.25 * [error_after_minutes])))) - 151) / 100 ELSE ((0) - 151) / 100 END&#13;&#10;)' />
             </column>
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Date' datatype='date' name='[date]' role='dimension' type='ordinal' />
@@ -29696,7 +29731,7 @@
         <style>
           <style-rule element='axis'>
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' scope='rows' value='false' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' field-type='quantitative' max='0.07' min='-0.07' range-type='fixed' scope='rows' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Latitude (generated)]' field-type='quantitative' max='0.09' min='-0.09' range-type='fixed' scope='rows' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='1.51' min='-1.51' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
@@ -29755,8 +29790,8 @@
               <style-rule element='pane'>
                 <format attr='minwidth' value='302' />
                 <format attr='maxwidth' value='302' />
-                <format attr='minheight' value='14' />
-                <format attr='maxheight' value='14' />
+                <format attr='minheight' value='18' />
+                <format attr='maxheight' value='18' />
                 <format attr='aspect' value='0' />
               </style-rule>
             </style>
@@ -29787,8 +29822,8 @@
               <style-rule element='pane'>
                 <format attr='minwidth' value='302' />
                 <format attr='maxwidth' value='302' />
-                <format attr='minheight' value='14' />
-                <format attr='maxheight' value='14' />
+                <format attr='minheight' value='18' />
+                <format attr='maxheight' value='18' />
                 <format attr='aspect' value='0' />
               </style-rule>
             </style>
@@ -29819,8 +29854,8 @@
               <style-rule element='pane'>
                 <format attr='minwidth' value='302' />
                 <format attr='maxwidth' value='302' />
-                <format attr='minheight' value='14' />
-                <format attr='maxheight' value='14' />
+                <format attr='minheight' value='18' />
+                <format attr='maxheight' value='18' />
                 <format attr='aspect' value='0' />
               </style-rule>
             </style>
@@ -29851,8 +29886,8 @@
               <style-rule element='pane'>
                 <format attr='minwidth' value='302' />
                 <format attr='maxwidth' value='302' />
-                <format attr='minheight' value='14' />
-                <format attr='maxheight' value='14' />
+                <format attr='minheight' value='18' />
+                <format attr='maxheight' value='18' />
                 <format attr='aspect' value='0' />
               </style-rule>
             </style>
@@ -29883,8 +29918,8 @@
               <style-rule element='pane'>
                 <format attr='minwidth' value='302' />
                 <format attr='maxwidth' value='302' />
-                <format attr='minheight' value='14' />
-                <format attr='maxheight' value='14' />
+                <format attr='minheight' value='18' />
+                <format attr='maxheight' value='18' />
                 <format attr='aspect' value='0' />
               </style-rule>
             </style>
@@ -34015,7 +34050,7 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='168' friendly-name='LIN Panel Source Section' h='0' hidden-by-user='true' id='466' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='67300'>
+                  <zone fixed-size='172' friendly-name='LIN Panel Source Section' h='0' hidden-by-user='true' id='466' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='67300'>
                     <zone fixed-size='24' h='2400' id='459' is-fixed='true' type-v2='text' w='19125' x='78062' y='67300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>FRESHNESS NOW</run>
@@ -34028,7 +34063,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='460' is-fixed='true' name='LIN Panel Freshness Bullet' show-title='false' w='19125' x='78062' y='69700'>
+                    <zone fixed-size='22' h='2200' id='460' is-fixed='true' name='LIN Panel Freshness Bullet' show-title='false' w='19125' x='78062' y='69700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -34036,8 +34071,8 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='463' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='71500'>
-                      <zone fixed-size='100' h='1800' id='461' is-fixed='true' name='LIN Panel Lag Now' show-title='false' w='6250' x='78062' y='71500'>
+                    <zone fixed-size='18' h='1800' id='463' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='71900'>
+                      <zone fixed-size='100' h='1800' id='461' is-fixed='true' name='LIN Panel Lag Now' show-title='false' w='6250' x='78062' y='71900'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -34045,7 +34080,7 @@
                           <format attr='margin' value='0' />
                         </zone-style>
                       </zone>
-                      <zone h='1800' id='462' name='LIN Panel Lag Thresholds' show-title='false' w='12875' x='84312' y='71500'>
+                      <zone h='1800' id='462' name='LIN Panel Lag Thresholds' show-title='false' w='12875' x='84312' y='71900'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -34060,7 +34095,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='464' is-fixed='true' type-v2='text' w='19125' x='78062' y='73300'>
+                    <zone fixed-size='24' h='2400' id='464' is-fixed='true' type-v2='text' w='19125' x='78062' y='73700'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>DAILY WORST LAG, 90 DAYS</run>
                       </formatted-text>
@@ -34072,7 +34107,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='46' h='4600' id='465' is-fixed='true' name='LIN Panel Lag Trend' show-title='false' w='19125' x='78062' y='75700'>
+                    <zone fixed-size='46' h='4600' id='465' is-fixed='true' name='LIN Panel Lag Trend' show-title='false' w='19125' x='78062' y='76100'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />

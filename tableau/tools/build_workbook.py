@@ -39,6 +39,7 @@ VERSIONS = ROOT / 'tableau' / 'versions'
 
 CONTENT = {'HO': health.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
 TAB_ACTIONS = {'HO': health.ACTIONS, 'LIN': lineage.ACTIONS}
+TAB_NAV = {'HO': health.NAV_ACTIONS}
 # clickable sheets that clear their selection after a click (one dashboard each; the GL buttons are on all 11)
 DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
                'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
@@ -82,8 +83,8 @@ def param_ctrl_deps(zones) -> str:
 
 def actions(dash_sheets) -> str:
     # Tableau's schema: every filter <action> first, then the data source and the calcs those actions use, then
-    # every <edit-parameter-action> (v17 interleaved them and would not open: "element 'action' is not allowed")
-    out, filters = [], []
+    # every <edit-parameter-action> (filters then nav-actions, as in GB's Go to Sheet example; v17 interleaved them and would not open: "element 'action' is not allowed")
+    out, filters, navs = [], [], []
 
     def param_action(dname, ws, src, param, caption):
         out.append(
@@ -109,6 +110,15 @@ def actions(dash_sheets) -> str:
                 "multi-select='true' url-escape='true' />\n"
                 f"      <command command='tsc:tsl-filter'>\n        <param name='target' value='{esc(ws)}' />\n      </command>\n"
                 "    </action>\n")
+        # Go to Sheet, written as in GB's example (Go_to_Sheet_Action_Example.twbx): a <nav-action> on the
+        # worksheet with no dashboard on its source, after the filter actions
+        for ws, target, cap in TAB_NAV.get(tab[0], []):
+            navs.append(
+                f"    <nav-action caption='{esc(cap)}' name='[Action2_{hashlib.md5(cap.encode()).hexdigest().upper()}]'>\n"
+                "      <activation type='on-select' />\n"
+                f"      <source type='sheet' worksheet='{esc(ws)}' />\n"
+                f"      <params>\n        <param name='sheet' value='{esc(target)}' />\n      </params>\n"
+                "    </nav-action>\n")
         for ws, field, param, cap in shell.SHELL_ACTIONS:
             if ws in dash_sheets[dname]:
                 param_action(dname, ws, R(field), param, f'{cap} ({dname})')
@@ -120,7 +130,7 @@ def actions(dash_sheets) -> str:
                 f"    <datasource-dependencies datasource='{DS}'>\n"
                 + '\n'.join(CALCS.column(n, '      ') for n in ('Dehighlight True', 'Dehighlight False'))
                 + "\n    </datasource-dependencies>\n")
-    return '  <actions>\n' + ''.join(filters) + deps + ''.join(out) + '  </actions>\n'
+    return '  <actions>\n' + ''.join(filters) + ''.join(navs) + deps + ''.join(out) + '  </actions>\n'
 
 
 WORKSHEET_CARDS = """      <cards>
