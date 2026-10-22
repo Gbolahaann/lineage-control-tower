@@ -729,13 +729,15 @@ class Z:
         # with margin-left 7 laid out 424 wide, and 38px nav buttons with margin-bottom 4 laid out 42 tall)
         sides = ('margin-left', 'margin-right') if self.kind == 'horz' else ('margin-top', 'margin-bottom')
         outer = lambda k: k.fixed + sum(int(k.style.get(sd, k.style.get('margin', 0))) for sd in sides)
-        fixed = sum(outer(k) for k in self.kids if k.fixed is not None)
-        flex = [k for k in self.kids if k.fixed is None]
+        # zones hidden by dynamic zone visibility at first open take no space (Tableau lays out what is shown)
+        shown = lambda k: not (k.dzv and k.dzv[1] is False)
+        fixed = sum(outer(k) for k in self.kids if k.fixed is not None and shown(k))
+        flex = [k for k in self.kids if k.fixed is None and shown(k)]
         free = max(main - fixed, 0)
         tw = sum(k.weight for k in flex) or 1
         pos = cx if self.kind == 'horz' else cy
         for k in self.kids:
-            size = outer(k) if k.fixed is not None else free * k.weight / tw
+            size = 0 if not shown(k) else outer(k) if k.fixed is not None else free * k.weight / tw
             if self.kind == 'horz':
                 k.layout(pos, cy, size, ch)
             else:
@@ -767,6 +769,7 @@ class Z:
             a['is-scaled'], a['param'], a['type-v2'] = '1', f'Image/{self.image}', 'bitmap'
         elif self.kind == 'paramctrl':
             a['mode'], a['param'], a['type-v2'] = 'compact', f'[Parameters].{PARAM_ID[self.param]}', 'paramctrl'
+            a['show-title'] = 'false'  # the picker needs no 'p_selected_exposure' title above it
         elif self.kind == 'imgbutton':
             a['type-v2'] = 'dashboard-object'
             b = self.button

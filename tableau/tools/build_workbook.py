@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import core, health, shapes, shell  # noqa: E402
+from lct_build import core, health, lineage, shapes, shell  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -37,8 +37,8 @@ MASTER = ROOT / 'tableau' / 'Lineage_Control_Tower_Project_Dashboard.twb'
 OUT = ROOT / 'tableau' / 'build' / 'Lineage_Control_Tower.twb'
 VERSIONS = ROOT / 'tableau' / 'versions'
 
-CONTENT = {'HO': health.content}          # tab prefix -> content tree builder (others get the placeholder)
-TAB_ACTIONS = {'HO': health.ACTIONS}
+CONTENT = {'HO': health.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
+TAB_ACTIONS = {'HO': health.ACTIONS, 'LIN': lineage.ACTIONS}
 
 
 def dashboard(tab, window_ids):
@@ -53,6 +53,8 @@ def dashboard(tab, window_ids):
     zones = list(root.walk()) + list(panel.walk())
     if p == 'HO':
         health.check_fit(zones)
+    if p == 'LIN':
+        lineage.check_fit(zones)
     xml = (f"    <dashboard enable-sort-zone-taborder='true' name='{esc(name)}'>\n"
            "      <style>\n        <style-rule element='table'>\n"
            f"          <format attr='background-color' value='{core.CANVAS}' />\n        </style-rule>\n      </style>\n"
@@ -186,8 +188,9 @@ def build(master: Path, out: Path) -> Path:
     # workbook font: Arial family (the master was saved with Tableau Book)
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
-    sheet_objs = shell.gl_sheets() + health.sheets()
-    names = [r.name for s in sheet_objs for r in s.all_refs() if r.is_calc] + ['Show Info Panel', 'Info Toggle Value']
+    sheet_objs = shell.gl_sheets() + health.sheets() + lineage.sheets()
+    dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})
+    names = [r.name for s in sheet_objs for r in s.all_refs() if r.is_calc] + ['Show Info Panel', 'Info Toggle Value'] + dzv_calcs
     order, _p, _f = CALCS.closure(list(dict.fromkeys(names)))
     calc_xml = '\n'.join(CALCS.column(n) for n in order) + '\n'
     anchor = "      <layout dim-ordering='alphabetic'"
