@@ -7111,6 +7111,17 @@
         <param name='target' value='LIN View Buttons' />
       </command>
     </action>
+    <datasources>
+      <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
+    </datasources>
+    <datasource-dependencies datasource='federated.07vo3ft0hzn0yt1e7nb981upju80'>
+      <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
+      </column>
+      <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
+      </column>
+    </datasource-dependencies>
     <nav-action caption='Go to Lineage from HO Tiles BI Dashboards' name='[Action2_A3CA7B631C265C6A16A075D34357D46C]'>
       <activation type='on-select' />
       <source type='sheet' worksheet='HO Tiles BI Dashboards' />
@@ -7146,17 +7157,6 @@
         <param name='sheet' value='Lineage explorer' />
       </params>
     </nav-action>
-    <datasources>
-      <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
-    </datasources>
-    <datasource-dependencies datasource='federated.07vo3ft0hzn0yt1e7nb981upju80'>
-      <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
-      </column>
-      <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
-      </column>
-    </datasource-dependencies>
     <edit-parameter-action caption='GL Set Period (Health overview)' name='[Action1_9A5E5C442C42EE6364AEA207E6A99BBC]'>
       <activation type='on-select' />
       <source dashboard='Health overview' type='sheet' worksheet='GL Period Buttons' />

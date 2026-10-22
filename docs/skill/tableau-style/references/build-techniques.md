@@ -160,8 +160,8 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   parameters only (`CONTAINS([p_panel_tags], "|ai|")`). Set the defaults to the default node's values.
 - **Go to Sheet** (from GB's example): `<nav-action caption name='[Action2_<hex>]'>` with
   `<activation type='on-select' />`, `<source type='sheet' worksheet='...' />` (no dashboard attribute) and
-  `<params><param name='sheet' value='<target dashboard>' /></params>`. Keep every nav-action together, after all
-  filter `<action>`s and before `<datasources>`. The same click still runs the sheet's parameter actions, so the
+  `<params><param name='sheet' value='<target dashboard>' /></params>`. Full order inside `<actions>`, as
+  Tableau states it: `action*`, `datasources`, `datasource-dependencies*`, `nav-action*`, `edit-parameter-action*`. The same click still runs the sheet's parameter actions, so the
   target opens on the selection.
   **The manifest must declare `<NavigationAction />`**, or Tableau stops with "no declaration found for element
   'nav-action'". General rule: when an element is "not declared", compare the reference's
@@ -174,7 +174,7 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   `user:ui-action-filter='[action name]'`, and a `tsc:tsl-filter` action from the sheet onto itself with
   expression `tsl:<sheet>?[ds].[false]~s0=<[ds].[true]~na>`. Clicks set parameters without greying the view.
   **Order inside `<actions>` is fixed by the schema:** every `<action>` first, then `<datasources>` and
-  `<datasource-dependencies>` (the TRUE / FALSE calcs), then every `<edit-parameter-action>`. Interleaving them
+  `<datasource-dependencies>` (the TRUE / FALSE calcs), then every `<nav-action>`, then every `<edit-parameter-action>`. Interleaving them
   stops the workbook opening.
 - **Tables with pills** are a canvas too: one fixed pane per row, rectangles and pills as polygons from the row's
   own multi-point rows, and every text cell written and measured by the build (CASE on the key) and placed as a

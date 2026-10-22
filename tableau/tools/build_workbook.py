@@ -83,7 +83,7 @@ def param_ctrl_deps(zones) -> str:
 
 def actions(dash_sheets) -> str:
     # Tableau's schema: every filter <action> first, then the data source and the calcs those actions use, then
-    # every <edit-parameter-action> (filters then nav-actions, as in GB's Go to Sheet example; v17 interleaved them and would not open: "element 'action' is not allowed")
+    # every <nav-action>, then every <edit-parameter-action> (Tableau's error listed the model in v19; v17 interleaved them and would not open: "element 'action' is not allowed")
     out, filters, navs = [], [], []
 
     def param_action(dname, ws, src, param, caption):
@@ -111,7 +111,7 @@ def actions(dash_sheets) -> str:
                 f"      <command command='tsc:tsl-filter'>\n        <param name='target' value='{esc(ws)}' />\n      </command>\n"
                 "    </action>\n")
         # Go to Sheet, written as in GB's example (Go_to_Sheet_Action_Example.twbx): a <nav-action> on the
-        # worksheet with no dashboard on its source, after the filter actions
+        # worksheet with no dashboard on its source, after the data source block
         for ws, target, cap in TAB_NAV.get(tab[0], []):
             navs.append(
                 f"    <nav-action caption='{esc(cap)}' name='[Action2_{hashlib.md5(cap.encode()).hexdigest().upper()}]'>\n"
@@ -130,7 +130,7 @@ def actions(dash_sheets) -> str:
                 f"    <datasource-dependencies datasource='{DS}'>\n"
                 + '\n'.join(CALCS.column(n, '      ') for n in ('Dehighlight True', 'Dehighlight False'))
                 + "\n    </datasource-dependencies>\n")
-    return '  <actions>\n' + ''.join(filters) + ''.join(navs) + deps + ''.join(out) + '  </actions>\n'
+    return '  <actions>\n' + ''.join(filters) + deps + ''.join(navs) + ''.join(out) + '  </actions>\n'
 
 
 WORKSHEET_CARDS = """      <cards>
