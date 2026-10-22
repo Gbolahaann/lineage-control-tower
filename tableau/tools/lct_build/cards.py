@@ -176,14 +176,14 @@ def calcs():
     }
     cw, ch, cr = SH.COUNT
     for g, _, title in TILE_GROUPS:
-        x = SH.text_width(title, 7, True) + 10 + cw / 2
+        x = 2 * SH.LABEL_GAP + SH.text_width(title, 7, True) + 6 + cw / 2   # title starts at 2 x gap
         f[f'Is Tile Group {g}'] = f'// Is Tile Group {g}\n// Keeps the tiles of one exposure group on its own sheet. Put on Filters (True).\n[Exposure Group Sort] = {g}'
         f[f'Tile Header Chip Border Point {g}'] = _mp(f'Tile Header Chip Border Point {g}', 'Count chip outline after the group name.',
                                                       _rr(EXP_IDX, hp, x, hp[1] / 2, cw, ch, cr))
         f[f'Tile Header Chip Fill Point {g}'] = _mp(f'Tile Header Chip Fill Point {g}', 'Count chip fill.',
                                                     _rr(EXP_IDX, hp, x, hp[1] / 2, cw - 2, ch - 2, cr - 1))
         f[f'Tile Header Count Point {g}'] = _mp(f'Tile Header Count Point {g}', 'Middle of the count chip.', _xy(x, hp[1] / 2, hp))
-    f['Tile Header Title Point'] = _mp('Tile Header Title Point', 'Start of the group name.', _xy(0, hp[1] / 2, hp))
+    f['Tile Header Title Point'] = _mp('Tile Header Title Point', 'Start of the group name.', _xy(SH.LABEL_GAP, hp[1] / 2, hp))
 
     types = {n: SP_MEA for n in f if n.endswith('Point') or ' Point ' in n}
     types.update({'Exposure Path Index': I_DIM, 'Node Path Index': I_DIM, 'Tile Group Count': I_MEA,
@@ -219,10 +219,14 @@ def _poly(title, point, path, pane, lod, *, color=None, mark_color=None, inert=T
                 lod=[R(point, 'clct'), *lod], pane_size=pane, tooltip=tooltip)
 
 
-def _line(title, point, runs, pane, lod=(), align='right'):
-    """One line of text on a hairline Gantt: right = starts at the point, left = ends there, center = centred."""
-    return label_pane(title=title, inert=True, text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align,
-                      valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane)
+def _line(title, point, runs, pane, lod=(), align='start'):
+    """One line of text on a hairline Gantt at a point. align: start = the text starts at the point, end = it ends
+    there, center = centred on it. On a map pane a Gantt label goes on the opposite side to its text-align
+    (v12 screenshot: text-align right put the text left of its point, clamped to the pane edge), so start is
+    written as left and end as right."""
+    tableau_align = {'start': 'left', 'end': 'right', 'center': 'center'}[align]
+    return label_pane(title=title, inert=True, text=[r['_ref'] for r in runs if '_ref' in r], label=runs,
+                      align=tableau_align, valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane)
 
 
 def _grid(sheet_obj, pane):
@@ -262,7 +266,7 @@ def tile_sheets() -> list[Sheet]:
                                                 run(_a('Tile Trust Warning'), 7, WARN_INK, SEMI),
                                                 run(_a('Tile Trust Healthy'), 7, GOOD_INK, SEMI)], pane, [key]),
             _line('AI text', 'Tile AI Text Point', [run(_a('Tile AI Tag'), 7, AI_INK)], pane, [key], align='center'),
-            _line('Score', 'Tile Score Point', [run(_a('Tile Score Text'), 8, INK2, SEMI)], pane, [key], align='left'),
+            _line('Score', 'Tile Score Point', [run(_a('Tile Score Text'), 8, INK2, SEMI)], pane, [key], align='end'),
         ]
         out.append(_grid(Sheet(
             f'HO Tiles {suffix}', rows=[Cross([trow, LAT])], cols=[Cross([tcol, LON])], filters=filters,

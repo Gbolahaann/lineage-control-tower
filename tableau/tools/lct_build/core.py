@@ -595,7 +595,9 @@ class Sheet:
         def rule(el, lines):
             if lines:
                 rules.append(f"          <style-rule element='{el}'>\n" + '\n'.join(lines) + '\n          </style-rule>\n')
-        rule('axis', axis + ["            <format attr='tick-color' value='#00000000' />"] + axis_h)
+        rulers = (["            <format attr='line-visibility' value='off' />", "            <format attr='stroke-size' value='0' />"]
+                  if self.no_basemap else [])  # map canvases: no axis rulers (faint lines under the v12 group headers)
+        rule('axis', axis + ["            <format attr='tick-color' value='#00000000' />"] + rulers + axis_h)
         rule('cell', cell)
         rule('gridline', ["            <format attr='line-visibility' value='off' />"])
         rule('header', head)
@@ -603,6 +605,8 @@ class Sheet:
         if self.map_washout is not None or self.no_basemap:
             rule('map', [f"            <format attr='washout' value='{self.map_washout or 0}' />"])
         # no "N nulls" badge: the In / Out window halves of a trend are null by design
+        if self.no_basemap:
+            rule('pane', ["            <format attr='border-style' value='none' />", "            <format attr='border-width' value='0' />"])
         rule('table', ["            <format attr='show-null-value-warning' value='false' />",
                        "            <format attr='background-color' value='#00000000' />"])
         div = ['on', LINE] if self.divider else ['off', '#00000000']

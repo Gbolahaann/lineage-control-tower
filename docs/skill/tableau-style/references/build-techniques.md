@@ -51,6 +51,15 @@ the label **beside** the mark, it does not justify it inside a box:
 Vertical alignment works the same way (`bottom` = the label hangs below the point). Tableau leaves about 4px
 between the point and the label.
 
+**Exception: Gantt label marks on a map pane go the other way.** There `text-align='left'` puts the text to the
+right of the point (it starts there) and `right` puts it to the left (it ends there). Learned the hard way: with
+`right`, every tile name was pushed left of its point and clamped to the pane edge, scores ran past the card,
+and a label whose point sat exactly on the pane edge was dropped. On ordinary axes (buttons, bar-end counts)
+Gantt labels follow the table above. Keep the point at least a few px inside the pane, never on its edge.
+
+Map canvases also draw faint axis rulers and pane borders unless turned off: `<style-rule element='axis'>` with
+`line-visibility off` and `stroke-size 0`, and `<style-rule element='pane'>` with `border-style none`.
+
 **One line per mark.** With `right` or `left`, a multi-line label is also justified that way, so lines go
 ragged. Put each line of a card on its own layer.
 

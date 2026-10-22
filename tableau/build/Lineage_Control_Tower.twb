@@ -4980,55 +4980,55 @@
         <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Border Point 1' datatype='spatial' name='[Calculation_1129826418626077172]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Border Point 1&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((101.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Border Point 1&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((105.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Fill Point 1' datatype='spatial' name='[Calculation_3269593527923829219]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Fill Point 1&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((101.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Fill Point 1&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((105.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Title Point' datatype='spatial' name='[Calculation_1239260752454714087]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.2000&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.1600&#13;&#10;)' />
       </column>
       <column caption='Tile Group Count' datatype='integer' name='[Calculation_2601468149520387165]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Tile Group Count&#13;&#10;// Tiles in this group after the Platform filter and the All / Needs attention switch.&#13;&#10;COUNTD([node_id (dim_nodes.csv)])' />
       </column>
       <column caption='Tile Header Count Point 1' datatype='spatial' name='[Calculation_2166497026583613469]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Count Point 1&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -3.1883&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Count Point 1&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -3.1483&#13;&#10;)' />
       </column>
       <column caption='Is Tile Group 2' datatype='boolean' name='[Calculation_1617075257079254832]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Tile Group 2&#13;&#10;// Keeps the tiles of one exposure group on its own sheet. Put on Filters (True).&#13;&#10;[Calculation_1368642606501877949] = 2' />
       </column>
       <column caption='Tile Header Chip Border Point 2' datatype='spatial' name='[Calculation_2016781804334846504]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Border Point 2&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Border Point 2&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Fill Point 2' datatype='spatial' name='[Calculation_3235027401630484562]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Fill Point 2&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Fill Point 2&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Count Point 2' datatype='spatial' name='[Calculation_1751133796904004772]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Count Point 2&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6830&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Count Point 2&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6430&#13;&#10;)' />
       </column>
       <column caption='Is Tile Group 3' datatype='boolean' name='[Calculation_1578473119693928549]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Tile Group 3&#13;&#10;// Keeps the tiles of one exposure group on its own sheet. Put on Filters (True).&#13;&#10;[Calculation_1368642606501877949] = 3' />
       </column>
       <column caption='Tile Header Chip Border Point 3' datatype='spatial' name='[Calculation_3479913310745802258]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Border Point 3&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Border Point 3&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Fill Point 3' datatype='spatial' name='[Calculation_3391211921367864302]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Fill Point 3&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Fill Point 3&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Count Point 3' datatype='spatial' name='[Calculation_1306975744353670788]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Count Point 3&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6866&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Count Point 3&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6466&#13;&#10;)' />
       </column>
       <column caption='Is Tile Group 4' datatype='boolean' name='[Calculation_1702540457298106261]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Is Tile Group 4&#13;&#10;// Keeps the tiles of one exposure group on its own sheet. Put on Filters (True).&#13;&#10;[Calculation_1368642606501877949] = 4' />
       </column>
       <column caption='Tile Header Chip Border Point 4' datatype='spatial' name='[Calculation_1008212743854094983]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Border Point 4&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((226.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Border Point 4&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((230.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Fill Point 4' datatype='spatial' name='[Calculation_2201745012478190178]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Chip Fill Point 4&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((226.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Chip Fill Point 4&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((230.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Header Count Point 4' datatype='spatial' name='[Calculation_2938508471437873771]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Header Count Point 4&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -1.9380&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Header Count Point 4&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -1.8980&#13;&#10;)' />
       </column>
       <column caption='Tile View Option' datatype='string' name='[Calculation_2894482038928477351]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Tile View Option&#13;&#10;// Scaffold for the All / Needs attention buttons (first 2 days of dim_date). Filter to non-null.&#13;&#10;CASE [day_index]&#13;&#10;WHEN 0 THEN &quot;All&quot;&#13;&#10;WHEN 1 THEN &quot;Needs attention&quot;&#13;&#10;END' />
@@ -9690,6 +9690,8 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='0.84' min='-0.84' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9700,6 +9702,10 @@
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -10022,11 +10028,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -10065,11 +10071,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -10110,11 +10116,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -10192,11 +10198,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -10282,19 +10288,19 @@
               <calculation class='tableau' formula='// Exposure Path Index&#13;&#10;// Point number 0 to 87 along a card outline, from the 90 days of Exposure Daily.&#13;&#10;MIN(DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]), 87)' />
             </column>
             <column caption='Tile Header Chip Border Point 1' datatype='spatial' name='[Calculation_1129826418626077172]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Border Point 1&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((101.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Border Point 1&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((105.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Chip Fill Point 1' datatype='spatial' name='[Calculation_3269593527923829219]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Fill Point 1&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((101.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Fill Point 1&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((105.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Title Point' datatype='spatial' name='[Calculation_1239260752454714087]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.2000&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.1600&#13;&#10;)' />
             </column>
             <column caption='Tile Group Count' datatype='integer' name='[Calculation_2601468149520387165]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Tile Group Count&#13;&#10;// Tiles in this group after the Platform filter and the All / Needs attention switch.&#13;&#10;COUNTD([node_id (dim_nodes.csv)])' />
             </column>
             <column caption='Tile Header Count Point 1' datatype='spatial' name='[Calculation_2166497026583613469]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Count Point 1&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -3.1883&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Count Point 1&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -3.1483&#13;&#10;)' />
             </column>
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
@@ -10340,12 +10346,18 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='4.2' min='-4.2' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -10475,11 +10487,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -10801,6 +10813,8 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='0.84' min='-0.84' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -10811,6 +10825,10 @@
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -11133,11 +11151,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -11176,11 +11194,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -11221,11 +11239,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -11303,11 +11321,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -11393,19 +11411,19 @@
               <calculation class='tableau' formula='// Exposure Path Index&#13;&#10;// Point number 0 to 87 along a card outline, from the 90 days of Exposure Daily.&#13;&#10;MIN(DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]), 87)' />
             </column>
             <column caption='Tile Header Chip Border Point 2' datatype='spatial' name='[Calculation_2016781804334846504]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Border Point 2&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Border Point 2&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Chip Fill Point 2' datatype='spatial' name='[Calculation_3235027401630484562]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Fill Point 2&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Fill Point 2&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.701171875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Title Point' datatype='spatial' name='[Calculation_1239260752454714087]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.2000&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.1600&#13;&#10;)' />
             </column>
             <column caption='Tile Group Count' datatype='integer' name='[Calculation_2601468149520387165]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Tile Group Count&#13;&#10;// Tiles in this group after the Platform filter and the All / Needs attention switch.&#13;&#10;COUNTD([node_id (dim_nodes.csv)])' />
             </column>
             <column caption='Tile Header Count Point 2' datatype='spatial' name='[Calculation_1751133796904004772]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Count Point 2&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6830&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Count Point 2&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6430&#13;&#10;)' />
             </column>
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
@@ -11451,12 +11469,18 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='4.2' min='-4.2' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -11586,11 +11610,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -11912,6 +11936,8 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='0.84' min='-0.84' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -11922,6 +11948,10 @@
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -12244,11 +12274,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -12287,11 +12317,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -12332,11 +12362,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -12414,11 +12444,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -12504,19 +12534,19 @@
               <calculation class='tableau' formula='// Exposure Path Index&#13;&#10;// Point number 0 to 87 along a card outline, from the 90 days of Exposure Daily.&#13;&#10;MIN(DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]), 87)' />
             </column>
             <column caption='Tile Header Chip Border Point 3' datatype='spatial' name='[Calculation_3479913310745802258]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Border Point 3&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Border Point 3&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Chip Fill Point 3' datatype='spatial' name='[Calculation_3391211921367864302]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Fill Point 3&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((151.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Fill Point 3&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((155.3359375) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Title Point' datatype='spatial' name='[Calculation_1239260752454714087]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.2000&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.1600&#13;&#10;)' />
             </column>
             <column caption='Tile Group Count' datatype='integer' name='[Calculation_2601468149520387165]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Tile Group Count&#13;&#10;// Tiles in this group after the Platform filter and the All / Needs attention switch.&#13;&#10;COUNTD([node_id (dim_nodes.csv)])' />
             </column>
             <column caption='Tile Header Count Point 3' datatype='spatial' name='[Calculation_1306975744353670788]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Count Point 3&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6866&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Count Point 3&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -2.6466&#13;&#10;)' />
             </column>
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
@@ -12562,12 +12592,18 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='4.2' min='-4.2' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -12697,11 +12733,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -13023,6 +13059,8 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='0.84' min='-0.84' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -13033,6 +13071,10 @@
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -13355,11 +13397,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -13398,11 +13440,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -13443,11 +13485,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -13525,11 +13567,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -13615,19 +13657,19 @@
               <calculation class='tableau' formula='// Exposure Path Index&#13;&#10;// Point number 0 to 87 along a card outline, from the 90 days of Exposure Daily.&#13;&#10;MIN(DATEDIFF(&apos;day&apos;, { MIN([date (mart_exposure_daily.csv)]) }, [date (mart_exposure_daily.csv)]), 87)' />
             </column>
             <column caption='Tile Header Chip Border Point 4' datatype='spatial' name='[Calculation_1008212743854094983]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Border Point 4&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((226.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Border Point 4&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((230.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Chip Fill Point 4' datatype='spatial' name='[Calculation_2201745012478190178]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Chip Fill Point 4&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((226.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Chip Fill Point 4&#13;&#10;// Count chip fill.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 6 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((230.1953125) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 6 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Header Title Point' datatype='spatial' name='[Calculation_1239260752454714087]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.2000&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Title Point&#13;&#10;// Start of the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -4.1600&#13;&#10;)' />
             </column>
             <column caption='Tile Group Count' datatype='integer' name='[Calculation_2601468149520387165]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Tile Group Count&#13;&#10;// Tiles in this group after the Platform filter and the All / Needs attention switch.&#13;&#10;COUNTD([node_id (dim_nodes.csv)])' />
             </column>
             <column caption='Tile Header Count Point 4' datatype='spatial' name='[Calculation_2938508471437873771]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Header Count Point 4&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -1.9380&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Header Count Point 4&#13;&#10;// Middle of the count chip.&#13;&#10;MAKEPOINT(&#13;&#10;    0.0000,&#13;&#10;    -1.8980&#13;&#10;)' />
             </column>
             <column caption='Current Status Code' datatype='integer' name='[current_status_code]' role='dimension' type='ordinal' />
             <column caption='Date (Exposure Daily)' datatype='date' name='[date (mart_exposure_daily.csv)]' role='dimension' type='ordinal' />
@@ -13673,12 +13715,18 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='4.2' min='-4.2' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -13808,11 +13856,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -14260,6 +14308,8 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' scope='cols' value='false' />
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Longitude (generated)]' field-type='quantitative' max='1.895' min='-1.895' range-type='fixed' scope='cols' type='space' />
             <format attr='tick-color' value='#00000000' />
+            <format attr='line-visibility' value='off' />
+            <format attr='stroke-size' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -14270,6 +14320,10 @@
           </style-rule>
           <style-rule element='map'>
             <format attr='washout' value='0' />
+          </style-rule>
+          <style-rule element='pane'>
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -14656,11 +14710,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -14698,11 +14752,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -14740,11 +14794,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -14786,11 +14840,11 @@
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='right' />
+                <format attr='text-align' value='left' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
