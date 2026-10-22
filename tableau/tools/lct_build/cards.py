@@ -21,6 +21,7 @@ from .core import (LAT, LON, AI_INK, B_DIM, CALCS, CARD, CRIT, CRIT_INK, CRIT_TI
 EXP_IDX, NODE_IDX = '[Exposure Path Index]', '[Node Path Index]'
 GAP = SH.LABEL_GAP
 TILE_PAD_SPACES, ALERT_PAD_SPACES = 3, 11  # from GB's v13 adjustments
+SCORE_INSET = 15                           # GB moved the score point from 0.74 to 0.65 (9px in) on v13
 OFFWHITE = '#f5f5f3'
 AI_BG, AI_LINE = '#eef0fb', '#d9dcf4'
 
@@ -155,7 +156,7 @@ def calcs():
         'Tile Meta Point': _mp('Tile Meta Point', 'Start of the tool and owner line.', _xy(tx + SH.TILE_PAD - GAP, ty + L['meta'], tp)),
         'Tile Trust Point': _mp('Tile Trust Point', 'Start of the trust badge.', _xy(tx + SH.TILE_PAD - GAP, ty + L['trust'], tp)),
         'Tile AI Text Point': _mp('Tile AI Text Point', 'Middle of the AI-built pill.', _xy(ai_x, ty + L['trust'], tp)),
-        'Tile Score Point': _mp('Tile Score Point', 'Right end of the score.', _xy(tx + SH.TILE_W - SH.TILE_PAD + GAP, ty + L['trust'], tp)),
+        'Tile Score Point': _mp('Tile Score Point', 'Right end of the score: 15px in from the card edge, as GB set it on v13.', _xy(tx + SH.TILE_W - SCORE_INSET, ty + L['trust'], tp)),
         # alert polygons
         'Alert Border Point': _mp('Alert Border Point', 'Alert outline, 372 x 76 px, radius 8.', _rr(NODE_IDX, ap, acx, acy, SH.ALERT_W, SH.ALERT_H, 8)),
         'Alert Fill Point': _mp('Alert Fill Point', 'Alert fill, 1px inside the border.', _rr(NODE_IDX, ap, acx, acy, SH.ALERT_W - 2, SH.ALERT_H - 2, 7)),

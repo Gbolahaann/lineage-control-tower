@@ -161,5 +161,6 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 
 Gbolahan often fixes a build in Tableau and re-saves it. Diff the re-saved `.twb` against the build, sheet by
 sheet (ignore `datasource-dependencies` and run attribute order) and dashboard by dashboard (zone rects, fit,
-viewpoints), then fold every change into the builder so the next build keeps it. Tableau's re-save also shows
+viewpoints), **and every calculation formula in the data source** (a nudged MAKEPOINT position lives there, not
+on the sheet: missed once on the v13 tile score), then fold every change into the builder so the next build keeps it. Tableau's re-save also shows
 the real laid-out zone sizes, which are the ground truth for card sizing.

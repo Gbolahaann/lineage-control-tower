@@ -4977,7 +4977,7 @@
         <calculation class='tableau' formula='// Tile AI Text Point&#13;&#10;// Middle of the AI-built pill.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    ((4 + CASE [current_status_code] WHEN 3 THEN 87.3 WHEN 2 THEN 113.0 ELSE 72.9 END) - 84) / 100&#13;&#10;)' />
       </column>
       <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
-        <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
+        <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score: 15px in from the card edge, as GB set it on v13.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.6500&#13;&#10;)' />
       </column>
       <column caption='Tile Header Chip Border Point 1' datatype='spatial' name='[Calculation_1129826418626077172]' role='measure' type='nominal'>
         <calculation class='tableau' formula='// Tile Header Chip Border Point 1&#13;&#10;// Count chip outline after the group name.&#13;&#10;MAKEPOINT(&#13;&#10;    (0 + ((IF INT([Calculation_2209184240857417826] / 22) &lt; 2 THEN 1 ELSE -1 END) * 0 + 7 * SIN(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100,&#13;&#10;    ((105.16796875) - 420 + ((CASE INT([Calculation_2209184240857417826] / 22) WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * 5 + 7 * COS(RADIANS(INT([Calculation_2209184240857417826] / 22) * 90 + ([Calculation_2209184240857417826] % 22 + 0.5) * 90 / 22)))) / 100&#13;&#10;)' />
@@ -9589,7 +9589,7 @@
               <calculation class='tableau' formula='// Tile AI Text Point&#13;&#10;// Middle of the AI-built pill.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    ((4 + CASE [current_status_code] WHEN 3 THEN 87.3 WHEN 2 THEN 113.0 ELSE 72.9 END) - 84) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score: 15px in from the card edge, as GB set it on v13.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.6500&#13;&#10;)' />
             </column>
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
@@ -10715,7 +10715,7 @@
               <calculation class='tableau' formula='// Tile AI Text Point&#13;&#10;// Middle of the AI-built pill.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    ((4 + CASE [current_status_code] WHEN 3 THEN 87.3 WHEN 2 THEN 113.0 ELSE 72.9 END) - 84) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score: 15px in from the card edge, as GB set it on v13.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.6500&#13;&#10;)' />
             </column>
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
@@ -11841,7 +11841,7 @@
               <calculation class='tableau' formula='// Tile AI Text Point&#13;&#10;// Middle of the AI-built pill.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    ((4 + CASE [current_status_code] WHEN 3 THEN 87.3 WHEN 2 THEN 113.0 ELSE 72.9 END) - 84) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score: 15px in from the card edge, as GB set it on v13.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.6500&#13;&#10;)' />
             </column>
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
@@ -12967,7 +12967,7 @@
               <calculation class='tableau' formula='// Tile AI Text Point&#13;&#10;// Middle of the AI-built pill.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    ((4 + CASE [current_status_code] WHEN 3 THEN 87.3 WHEN 2 THEN 113.0 ELSE 72.9 END) - 84) / 100&#13;&#10;)' />
             </column>
             <column caption='Tile Score Point' datatype='spatial' name='[Calculation_3365331846570732051]' role='measure' type='nominal'>
-              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.7400&#13;&#10;)' />
+              <calculation class='tableau' formula='// Tile Score Point&#13;&#10;// Right end of the score: 15px in from the card edge, as GB set it on v13.&#13;&#10;MAKEPOINT(&#13;&#10;    -0.1700,&#13;&#10;    0.6500&#13;&#10;)' />
             </column>
             <column caption='Bi Tool' datatype='string' name='[bi_tool]' role='dimension' type='nominal' />
             <column caption='Build Method' datatype='string' name='[build_method]' role='dimension' type='nominal' />
