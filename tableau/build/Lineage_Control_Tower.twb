@@ -7059,6 +7059,41 @@
         <param name='target' value='HO Tile View Buttons' />
       </command>
     </action>
+    <action caption='Dehighlight LIN Lineage Graph' name='[Action9_C1BBA78FB1554F9C785070492DB98D31]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN Lineage Graph' />
+      <link caption='Dehighlight LIN Lineage Graph' delimiter=',' escape='\' expression='tsl:LIN%20Lineage%20Graph?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
+      <command command='tsc:tsl-filter'>
+        <param name='target' value='LIN Lineage Graph' />
+      </command>
+    </action>
+    <action caption='Dehighlight LIN Lineage Table' name='[Action9_B6047975D77B69EB921007A4443DC783]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN Lineage Table' />
+      <link caption='Dehighlight LIN Lineage Table' delimiter=',' escape='\' expression='tsl:LIN%20Lineage%20Table?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
+      <command command='tsc:tsl-filter'>
+        <param name='target' value='LIN Lineage Table' />
+      </command>
+    </action>
+    <action caption='Dehighlight LIN View Buttons' name='[Action9_D18C0120B8B05AB8E05F3E154FBE7C2D]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN View Buttons' />
+      <link caption='Dehighlight LIN View Buttons' delimiter=',' escape='\' expression='tsl:LIN%20View%20Buttons?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
+      <command command='tsc:tsl-filter'>
+        <param name='target' value='LIN View Buttons' />
+      </command>
+    </action>
+    <datasources>
+      <datasource caption='Lineage Control Tower' name='federated.07vo3ft0hzn0yt1e7nb981upju80' />
+    </datasources>
+    <datasource-dependencies datasource='federated.07vo3ft0hzn0yt1e7nb981upju80'>
+      <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
+      </column>
+      <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
+      </column>
+    </datasource-dependencies>
     <edit-parameter-action caption='GL Set Period (Health overview)' name='[Action1_9A5E5C442C42EE6364AEA207E6A99BBC]'>
       <activation type='on-select' />
       <source dashboard='Health overview' type='sheet' worksheet='GL Period Buttons' />
@@ -7299,30 +7334,6 @@
         <param name='target-parameter' value='[Parameters].[Parameter 7]' />
       </params>
     </edit-parameter-action>
-    <action caption='Dehighlight LIN Lineage Graph' name='[Action9_C1BBA78FB1554F9C785070492DB98D31]'>
-      <activation auto-clear='true' type='on-select' />
-      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN Lineage Graph' />
-      <link caption='Dehighlight LIN Lineage Graph' delimiter=',' escape='\' expression='tsl:LIN%20Lineage%20Graph?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
-      <command command='tsc:tsl-filter'>
-        <param name='target' value='LIN Lineage Graph' />
-      </command>
-    </action>
-    <action caption='Dehighlight LIN Lineage Table' name='[Action9_B6047975D77B69EB921007A4443DC783]'>
-      <activation auto-clear='true' type='on-select' />
-      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN Lineage Table' />
-      <link caption='Dehighlight LIN Lineage Table' delimiter=',' escape='\' expression='tsl:LIN%20Lineage%20Table?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
-      <command command='tsc:tsl-filter'>
-        <param name='target' value='LIN Lineage Table' />
-      </command>
-    </action>
-    <action caption='Dehighlight LIN View Buttons' name='[Action9_D18C0120B8B05AB8E05F3E154FBE7C2D]'>
-      <activation auto-clear='true' type='on-select' />
-      <source dashboard='Lineage explorer' type='sheet' worksheet='LIN View Buttons' />
-      <link caption='Dehighlight LIN View Buttons' delimiter=',' escape='\' expression='tsl:LIN%20View%20Buttons?%5Bfederated.07vo3ft0hzn0yt1e7nb981upju80%5D.%5BCalculation_1841670643858094106%5D~s0=&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_1329749043964588995]~na&gt;' include-null='true' multi-select='true' url-escape='true' />
-      <command command='tsc:tsl-filter'>
-        <param name='target' value='LIN View Buttons' />
-      </command>
-    </action>
     <edit-parameter-action caption='GL Set Period (Lineage explorer)' name='[Action1_D440215A92CD98B460B9EBD2648D5F89]'>
       <activation type='on-select' />
       <source dashboard='Lineage explorer' type='sheet' worksheet='GL Period Buttons' />

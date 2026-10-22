@@ -158,6 +158,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   (`user:auto-column='sheet_link'`, crossjoin of the FALSE calc), a sheet filter on that group with
   `user:ui-action-filter='[action name]'`, and a `tsc:tsl-filter` action from the sheet onto itself with
   expression `tsl:<sheet>?[ds].[false]~s0=<[ds].[true]~na>`. Clicks set parameters without greying the view.
+  **Order inside `<actions>` is fixed by the schema:** every `<action>` first, then `<datasources>` and
+  `<datasource-dependencies>` (the TRUE / FALSE calcs), then every `<edit-parameter-action>`. Interleaving them
+  stops the workbook opening.
 - **Tables with pills** are a canvas too: one fixed pane per row, rectangles and pills as polygons from the row's
   own multi-point rows, and every text cell written and measured by the build (CASE on the key) and placed as a
   centred label at half its width, left or right of its column edge. Rows taller than the zone scroll inside it.

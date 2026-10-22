@@ -81,7 +81,9 @@ def param_ctrl_deps(zones) -> str:
 
 
 def actions(dash_sheets) -> str:
-    out = []
+    # Tableau's schema: every filter <action> first, then the data source and the calcs those actions use, then
+    # every <edit-parameter-action> (v17 interleaved them and would not open: "element 'action' is not allowed")
+    out, filters = [], []
 
     def param_action(dname, ws, src, param, caption):
         out.append(
@@ -99,7 +101,7 @@ def actions(dash_sheets) -> str:
             src = f'[{DS}].[{CALCS.cid("Dehighlight False")}]'
             from urllib.parse import quote
             expr = f"tsl:{quote(ws)}?{quote(src)}~s0=&lt;[{DS}].[{CALCS.cid('Dehighlight True')}]~na&gt;"
-            out.append(
+            filters.append(
                 f"    <action caption='{esc('Dehighlight ' + ws)}' name='{core.dehighlight_action_name(ws)}'>\n"
                 "      <activation auto-clear='true' type='on-select' />\n"
                 f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
@@ -112,7 +114,13 @@ def actions(dash_sheets) -> str:
                 param_action(dname, ws, R(field), param, f'{cap} ({dname})')
         for ws, src, param, cap in TAB_ACTIONS.get(tab[0], []):
             param_action(dname, ws, src(), param, cap)
-    return '  <actions>\n' + ''.join(out) + '  </actions>\n'
+    deps = ''
+    if filters:
+        deps = (f"    <datasources>\n      <datasource caption='{core.DS_CAPTION}' name='{DS}' />\n    </datasources>\n"
+                f"    <datasource-dependencies datasource='{DS}'>\n"
+                + '\n'.join(CALCS.column(n, '      ') for n in ('Dehighlight True', 'Dehighlight False'))
+                + "\n    </datasource-dependencies>\n")
+    return '  <actions>\n' + ''.join(filters) + deps + ''.join(out) + '  </actions>\n'
 
 
 WORKSHEET_CARDS = """      <cards>
