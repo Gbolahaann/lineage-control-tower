@@ -25,7 +25,7 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 from . import cards, shapes as SH
-from .core import (ACCENT, AI_INK, B_DIM, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, CRIT, CRIT_INK, CRIT_TINT, GOOD,
+from .core import (Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, CRIT, CRIT_INK, CRIT_TINT, GOOD,
                    GOOD_INK, I_DIM, I_MEA, IMAGES, INK1, INK2, INK3, INK4, LAT, LINE, LINE_SOFT, LON, NAVY, NL, NONE,
                    NONE_TINT, OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, WARN_INK, WARN_TINT, Nest, Pane, R,
                    Sheet, Z, blank, card, color_map, label_pane, run, sheet, text)
@@ -243,12 +243,14 @@ def calcs():
         'Lineage Box Label': label,
         'Lineage Label Width': width,
         'Lineage Label On Path': ('// Lineage Label On Path\n// Box name in ink, for boxes on the selected path (or every box when nothing is selected).\n'
+                                  '// NULL (not "") on every other row: a box\'s name layer also holds its edge rows, and ATTR of a name\n'
+                                  '// and "" shows "*" (v16).\n'
                                   'IF [row_type] = "node" AND [Is On Path Node] AND [node_id (mart_lineage_layout.csv)] <> [layout_scope]\n'
-                                  '    THEN [Lineage Box Label] ELSE "" END'),
+                                  '    THEN [Lineage Box Label] END'),
         'Lineage Label Faded': ('// Lineage Label Faded\n// Box name in pale grey, for boxes off the selected path.\n'
-                                'IF [row_type] = "node" AND NOT [Is On Path Node] THEN [Lineage Box Label] ELSE "" END'),
+                                'IF [row_type] = "node" AND NOT [Is On Path Node] THEN [Lineage Box Label] END'),
         'Lineage Label Exposure': ('// Lineage Label Exposure\n// The exposure\'s own box name, in bold.\n'
-                                   'IF [row_type] = "node" AND [node_id (mart_lineage_layout.csv)] = [layout_scope] THEN [Lineage Box Label] ELSE "" END'),
+                                   'IF [row_type] = "node" AND [node_id (mart_lineage_layout.csv)] = [layout_scope] THEN [Lineage Box Label] END'),
         # ---- graph colour keys (palettes below)
         'Lineage Box Border Key': ('// Lineage Box Border Key\n// Box border: navy for the selected box, the status colour for warning and critical, pale off the path.\n'
                                    'IF [Is Selected Node Box] THEN "Selected"\nELSEIF NOT [Is On Path Node] THEN "Faded"\n'
@@ -278,20 +280,6 @@ def calcs():
         'Show Trust Use With Caution': '// Show Trust Use With Caution\n// DZV: amber "Use with caution" pill.\n[Selected Exposure Trust] = "Use with caution"',
         'Show Trust Trusted': '// Show Trust Trusted\n// DZV: green "Trusted" pill.\n[Selected Exposure Trust] = "Trusted"',
         # ---- table
-        'Table Head Node': '// Table Head Node\n// Column title row of the lineage table (one scaffold row).\n"NODE"',
-        'Table Head Layer': '// Table Head Layer\n// Column title.\n"LAYER"',
-        'Table Head Platform': '// Table Head Platform\n// Column title.\n"PLATFORM"',
-        'Table Head Hops': '// Table Head Hops\n// Column title.\n"HOPS"',
-        'Table Head Last Run': '// Table Head Last Run\n// Column title.\n"LAST RUN OR CHECK"',
-        'Table Head Runtime': '// Table Head Runtime\n// Column title.\n"RUNTIME"',
-        'Table Head Tests': '// Table Head Tests\n// Column title.\n"TESTS"',
-        'Table Head Owner': '// Table Head Owner\n// Column title.\n"OWNER"',
-        'Table Tests Text': ('// Table Tests Text\n// Tests column: "12 pass · 1 fail · 1 warn". Blank for nodes without tests.\n'
-                             '[Tests Pass Text] + [Tests Fail Text] + [Tests Warn Text]'),
-        'Table Status Critical': '// Table Status Critical\n// Status column, red. One of the four status fields is filled per row.\nIF [current_status_code] = 3 THEN "✕ Critical" ELSE "" END',
-        'Table Status Warning': '// Table Status Warning\n// Status column, amber ink.\nIF [current_status_code] = 2 THEN "▲ Warning" ELSE "" END',
-        'Table Status Healthy': '// Table Status Healthy\n// Status column, green.\nIF [current_status_code] = 1 THEN "✓ Healthy" ELSE "" END',
-        'Table Status No Data': '// Table Status No Data\n// Status column, grey.\nIF [current_status_code] = 0 THEN "– No data" ELSE "" END',
         # ---- panel
         'Panel Status Code': '// Panel Status Code\n// Status code of the panel node, on every row (for the pills and callout).\n' + pan('[current_status_code]'),
         'Panel Platform': '// Panel Platform\n// Platform of the panel node, on every row.\n' + pan('[platform_now]'),
@@ -329,6 +317,13 @@ def calcs():
         'Panel Tests Good': '// Panel Tests Good\n// Number of tests defined, models only.\nIF [resource_type] = "model" AND [test_count] > 0 THEN STR([test_count]) ELSE "" END',
         'Panel Tests None': '// Panel Tests None\n// "None" in amber ink for models without tests.\nIF [resource_type] = "model" AND [test_count] = 0 THEN "None" ELSE "" END',
         'Panel Last Run Text': '// Panel Last Run Text\n// Bold part of "Last run 1s at 19 Oct, 21:25".\nIF [Last Runtime Label] = "" THEN "-" ELSE [Last Runtime Label] END',
+        'Runtime Change Up Text': ('// Runtime Change Up Text\n// "▲ 30%" in red: runtime up more than 25% (7 days against the 28 before).\n'
+                                   'IF [Runtime Trend Now] > 0.25 THEN "▲ " + STR(ROUND([Runtime Trend Now] * 100)) + "%" END'),
+        'Runtime Change Down Text': ('// Runtime Change Down Text\n// "▼ 30%" in green: runtime down more than 25%.\n'
+                                     'IF [Runtime Trend Now] < -0.25 THEN "▼ " + STR(ROUND(-[Runtime Trend Now] * 100)) + "%" END'),
+        'Runtime Change Flat Text': ('// Runtime Change Flat Text\n// "▲ 3%" in ink: within 25% either way.\n'
+                                     'IF ABS([Runtime Trend Now]) <= 0.25\n'
+                                     '    THEN IF [Runtime Trend Now] >= 0 THEN "▲ " ELSE "▼ " END + STR(ROUND(ABS([Runtime Trend Now]) * 100)) + "%" END'),
         'Runtime Change Text': ('// Runtime Change Text\n// "7d vs 28d" after the runtime change, grey.\nIF ISNULL([Runtime Trend Now]) THEN "" ELSE "  7d vs 28d" END'),
         'Failed Runs Bad Text': '// Failed Runs Bad Text\n// "1 failed" in red when any run failed in the period.\nIF [Failed Runs In Period] > 0 THEN STR([Failed Runs In Period]) + " failed" END',
         'Failed Runs Good Text': '// Failed Runs Good Text\n// "0 failed" in green.\nIF [Failed Runs In Period] = 0 THEN "0 failed" END',
@@ -376,7 +371,7 @@ def calcs():
         'Panel Status Code': I_MEA, 'Panel Is Declared': I_MEA,
         'Failed Runs Bad Text': S_MEA, 'Failed Runs Good Text': S_MEA, 'Panel Refresh Ok Text': S_MEA,
         'Panel Refresh Failed Text': S_MEA, 'Panel Refresh Rest Text': S_MEA, 'Panel Uses Text': S_MEA,
-        'Runtime Change Text': S_MEA,
+        'Runtime Change Text': S_MEA, 'Runtime Change Up Text': S_MEA, 'Runtime Change Down Text': S_MEA, 'Runtime Change Flat Text': S_MEA,
         **{n: R_MEA for n in f if n.endswith(' In Period') or n.endswith(' Out Period')},
         **{n: B_DIM for n in f if n.startswith('Show ') or n.startswith('Is ')},
         'Lineage Divider Bucket': I_DIM, 'Lineage Heading Bucket': I_DIM,
@@ -407,6 +402,151 @@ _f, _t = calcs()
 CALCS.add(formulas=_f, types={**PACK_TYPES, **_t})
 
 
+
+# ================================================================ table mode (pixel canvas, prototype rows)
+TABLE_W = GRAPH_INNER_W - 18 - SH.SLACK          # 909: room for the table's own vertical scroll bar
+TABLE_ROW = (TABLE_W, 28)                        # one pane per row, 28 px (prototype rows, GB 22 Oct)
+TCOL = {'node': 8, 'layer': 199, 'platform': 307, 'status': 401, 'hops': 520, 'last': 536, 'runtime': 726,
+        'tests': 810, 'owner': 826}             # x px: left edge, or right edge for hops, runtime and tests
+PLAT_PILL = {k: int(SH.text_width('■ ' + k, 7) + 14) for k in PLAT_COL}
+STATUS_TEXT = {'Critical': '✕ Critical', 'Warning': '▲ Warning', 'Healthy': '✓ Healthy', 'No data': '– No data'}
+STATUS_PILL = {k: int(SH.text_width(v, 7, True) + 16) for k, v in STATUS_TEXT.items()}
+LAYER_NAME = {'source': 'Sources', 'staging': 'Staging', 'intermediate': 'Intermediate', 'mart': 'Marts',
+              'semantic': 'BI semantic layer', 'exposure': 'Exposures'}
+
+
+def _num(x):
+    """Tableau STR(ROUND(x, 1)): half up, and no trailing .0."""
+    v = float(x)
+    v = int(v * 10 + (0.5 if v >= 0 else -0.5)) / 10
+    return str(int(v)) if v == int(v) else f'{v:.1f}'
+
+
+def _runtime_or_lag(r):
+    """Mirror of Runtime Or Lag Label (calc pack 4.3), so the build can measure it."""
+    if r['last_runtime_sec']:
+        sec = float(r['last_runtime_sec'])
+        if sec < 60:
+            return str(int(sec + 0.5)) + 's'
+        return _num(sec / 60) + ' min' if sec < 3600 else _num(sec / 3600) + ' h'
+    if r['freshness_lag_min']:
+        m = float(r['freshness_lag_min'])
+        return 'lag ' + (str(int(m + 0.5)) + ' min' if m < 60 else _num(m / 60) + ' h')
+    return ''
+
+
+def _tests(r):
+    p, f_, w = (r[k] for k in ('tests_passing', 'tests_failing', 'tests_warning'))
+    pas = '' if not p else _num(p) + ' pass'
+    fail = f' · {_num(f_)} fail' if f_ and float(f_) > 0 else ''
+    warn = f' · {_num(w)} warn' if w and float(w) > 0 else ''
+    return pas, fail, warn
+
+
+def _table_calcs():
+    rows = sorted([r for r in NODES if r['resource_type'] != 'exposure'], key=lambda r: r['node_id'])
+    cols = {
+        'Node': lambda r: (_fit(r['display_name'], TCOL['layer'] - TCOL['node'] - 12, 8), 8, False),
+        'Layer': lambda r: (LAYER_NAME.get(r['layer'], ''), 8, False),
+        'Last Run': lambda r: (_event_label(r['last_event_at']) or '-', 8, False),
+        'Runtime': lambda r: (_runtime_or_lag(r), 8, False),
+        'Tests Pass': lambda r: (_tests(r)[0], 8, False),
+        'Tests Fail': lambda r: (_tests(r)[1], 8, False),
+        'Tests Warn': lambda r: (_tests(r)[2], 8, False),
+        'Owner': lambda r: (_fit(r['owner_name'] or 'No owner', TABLE_W - TCOL['owner'] - 4, 8), 8, False),
+    }
+    f = {}
+    for col, get in cols.items():
+        txt = '\n'.join(f'WHEN {_q(r["node_id"])} THEN {_q(get(r)[0])}' for r in rows)
+        f[f'Table {col} Text'] = (f'// Table {col} Text\n// Table cell "{col}", written by the build from dim_nodes so it can be measured\n'
+                                  f'// (map-pane labels only centre reliably, so each cell is placed at half its width).\n'
+                                  f'CASE [node_id (mart_lineage_layout.csv)]\n{txt}\nEND')
+        wid = '\n'.join(f'WHEN {_q(r["node_id"])} THEN {SH.text_width(get(r)[0], 8):.1f}' for r in rows)
+        f[f'Table {col} Width'] = (f'// Table {col} Width\n// Width in px of Table {col} Text (Arial 8pt).\n'
+                                   f'CASE [node_id (mart_lineage_layout.csv)]\n{wid}\nELSE 0\nEND')
+    return f
+
+
+def _table_point(name, why, x):
+    return (f'// {name}\n// {why}\nIF [row_type] = "node" THEN MAKEPOINT(0, (({x}) - {TABLE_W / 2:g}) / 100) END')
+
+
+def _table_rect(name, why, x0, x1, y0, y1, r=0):
+    """A rectangle (r = 0) or pill on a table row, from the node's outgoing edge rows (point_order 1 to 12)."""
+    cx, cy, w, h = f'(({x0}) + ({x1})) / 2', (y0 + y1) / 2, f'(({x1}) - ({x0}))', y1 - y0
+    i = '(INT([point_order]) - 1)'
+    k = f'INT({i} / 3)'
+    th = f'RADIANS({k} * 90 + ({i} % 3 + 0.5) * 30)'
+    dx = f'((CASE {k} WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * ({w} / 2 - {r}) + {r} * COS({th}))'
+    dy = f'((IF {k} < 2 THEN 1 ELSE -1 END) * ({h / 2 - r:g}) + {r} * SIN({th}))'
+    lat = f'({TABLE_ROW[1] / 2 - cy:g} + {dy}) / 100'
+    lon = f'({cx} + {dx} - {TABLE_W / 2:g}) / 100'
+    return f'// {name}\n// {why}\nIF [row_type] = "edge" THEN MAKEPOINT(\n    {lat},\n    {lon}\n) END'
+
+
+def table_calcs():
+    f = _table_calcs()
+    pw = 'CASE [Platform Name] ' + ' '.join(f'WHEN "{k}" THEN {v}' for k, v in PLAT_PILL.items()) + ' ELSE 0 END'
+    sw = 'CASE [Status Label] ' + ' '.join(f'WHEN "{k}" THEN {v}' for k, v in STATUS_PILL.items()) + ' ELSE 0 END'
+    digit = SH.text_width('0', 8)
+    f.update({
+        'Table Hops': ('// Table Hops\n// Hops from this node to the selected exposure (Blast Radius), on every row of the node.\n'
+                       '{ FIXED [node_id (dim_nodes.csv)] : MIN(IF [exposure_id (mart_blast_radius.csv)] = [p_selected_exposure] THEN [hops] END) }'),
+        'Table Hops Text': '// Table Hops Text\n// Hops as text for the right-aligned column.\nIF ISNULL([Table Hops]) THEN "" ELSE STR([Table Hops]) END',
+        'Table Row Key': ('// Table Row Key\n// Highlights the selected node\'s row (light accent), as in the prototype.\n'
+                          'IF [Is Selected Node Box] THEN "Selected" ELSE "Default" END'),
+        'Table Platform Snowflake': '// Table Platform Snowflake\n// Coloured square in the platform pill.\nIF [platform_now] = "snowflake" THEN "■ " END',
+        'Table Platform Databricks': '// Table Platform Databricks\n// Coloured square in the platform pill.\nIF [platform_now] = "databricks" THEN "■ " END',
+        'Table Platform Redshift': '// Table Platform Redshift\n// Coloured square in the platform pill.\nIF [platform_now] = "redshift" THEN "■ " END',
+        'Table Status Critical': '// Table Status Critical\n// Status pill text, red. One of the four status fields is filled per row.\nIF [current_status_code] = 3 THEN "✕ Critical" END',
+        'Table Status Warning': '// Table Status Warning\n// Status pill text, amber ink.\nIF [current_status_code] = 2 THEN "▲ Warning" END',
+        'Table Status Healthy': '// Table Status Healthy\n// Status pill text, green.\nIF [current_status_code] = 1 THEN "✓ Healthy" END',
+        'Table Status No Data': '// Table Status No Data\n// Status pill text, grey.\nIF [current_status_code] = 0 THEN "– No data" END',
+        'Table Status Key': '// Table Status Key\n// Status pill fill (status tint).\n[Status Label]',
+        'Table Band Point': _table_rect('Table Band Point', 'Row background: light accent for the selected node, otherwise white.',
+                                        0, TABLE_W, 0, TABLE_ROW[1] - 1),
+        'Table Divider Point': _table_rect('Table Divider Point', 'The 1 px line under each row.', 0, TABLE_W, TABLE_ROW[1] - 1, TABLE_ROW[1]),
+        'Table Platform Border Point': _table_rect('Table Platform Border Point', 'Platform pill outline (light grey, radius 4).',
+                                                   TCOL['platform'], f'{TCOL["platform"]} + {pw}', 5, 23, 4),
+        'Table Platform Fill Point': _table_rect('Table Platform Fill Point', 'Platform pill fill.',
+                                                 TCOL['platform'] + 1, f'{TCOL["platform"]} + {pw} - 1', 6, 22, 3),
+        'Table Status Pill Point': _table_rect('Table Status Pill Point', 'Status pill (tinted, fully rounded).',
+                                               TCOL['status'], f'{TCOL["status"]} + {sw}', 5, 23, 9),
+        'Table Node Point': _table_point('Table Node Point', 'Middle of the node name (left-aligned at its column).', f'{TCOL["node"]} + [Table Node Width] / 2'),
+        'Table Layer Point': _table_point('Table Layer Point', 'Middle of the layer name.', f'{TCOL["layer"]} + [Table Layer Width] / 2'),
+        'Table Platform Text Point': _table_point('Table Platform Text Point', 'Middle of the platform pill.', f'{TCOL["platform"]} + ({pw}) / 2'),
+        'Table Status Text Point': _table_point('Table Status Text Point', 'Middle of the status pill.', f'{TCOL["status"]} + ({sw}) / 2'),
+        'Table Hops Point': _table_point('Table Hops Point', 'Middle of the hops number (right-aligned).',
+                                         f'{TCOL["hops"]} - LEN([Table Hops Text]) * {digit:.2f} / 2'),
+        'Table Last Run Point': _table_point('Table Last Run Point', 'Middle of the last run or check time.', f'{TCOL["last"]} + [Table Last Run Width] / 2'),
+        'Table Runtime Point': _table_point('Table Runtime Point', 'Middle of the runtime (right-aligned).', f'{TCOL["runtime"]} - [Table Runtime Width] / 2'),
+        'Table Tests Point': _table_point('Table Tests Point', 'Middle of the tests text (right-aligned).',
+                                          f'{TCOL["tests"]} - ([Table Tests Pass Width] + [Table Tests Fail Width] + [Table Tests Warn Width]) / 2'),
+        'Table Owner Point': _table_point('Table Owner Point', 'Middle of the owner name.', f'{TCOL["owner"]} + [Table Owner Width] / 2'),
+        'Is Table Row': '// Is Table Row\n// Every upstream node of the graph (the exposure itself is the graph\'s end, not a row).\n[node_id (mart_lineage_layout.csv)] <> [layout_scope]',
+    })
+    heads = [('NODE', TCOL['node'], 'l'), ('LAYER', TCOL['layer'], 'l'), ('PLATFORM', TCOL['platform'], 'l'),
+             ('STATUS', TCOL['status'], 'l'), ('HOPS', TCOL['hops'], 'r'), ('LAST RUN OR CHECK', TCOL['last'], 'l'),
+             ('RUNTIME', TCOL['runtime'], 'r'), ('TESTS', TCOL['tests'], 'r'), ('OWNER', TCOL['owner'], 'l')]
+    hx = 'CASE [Table Heading Bucket] ' + ' '.join(
+        f'WHEN {i + 1} THEN {(x + SH.text_width(h, 7, True) / 2) if a == "l" else (x - SH.text_width(h, 7, True) / 2):.1f}'
+        for i, (h, x, a) in enumerate(heads)) + ' END'
+    f['Table Heading Bucket'] = ('// Table Heading Bucket\n// Column title number 1 to 9, from the edge rows\' point_order.\n'
+                                 'IF [row_type] = "edge" AND INT([point_order]) <= 9 THEN INT([point_order]) END')
+    f['Table Heading'] = ('// Table Heading\n// Column title of the lineage table.\nCASE [Table Heading Bucket]\n'
+                          + '\n'.join(f'WHEN {i + 1} THEN "{h}"' for i, (h, _, _) in enumerate(heads)) + '\nEND')
+    f['Table Heading Point'] = (f'// Table Heading Point\n// Middle of a column title.\n'
+                                f'IF NOT ISNULL([Table Heading Bucket]) THEN MAKEPOINT(0, (({hx}) - {TABLE_W / 2:g}) / 100) END')
+    types = {n: SP_MEA for n in f if n.endswith('Point')}
+    types.update({n: R_MEA for n in f if n.endswith('Width')})
+    types.update({'Table Hops': R_MEA, 'Is Table Row': B_DIM, 'Table Heading Bucket': I_DIM})
+    types.update({n: S_DIM for n in f if n not in types})
+    return f, types
+
+
+_tf, _tt = table_calcs()
+CALCS.add(formulas=_tf, types=_tt)
+
 def palettes():
     color_map(R('Edge Colour Key'), {'"Faded"': '#eef0f2', '"Critical"': CRIT, '"Warning"': WARN, '"On path"': ACCENT, '"Default"': '#cbd0d5'})
     color_map(R('Lineage Box Border Key'), {'"Selected"': NAVY, '"Critical"': CRIT, '"Warning"': WARN, '"Default"': LINE, '"Faded"': '#eef0f2'})
@@ -420,6 +560,8 @@ def palettes():
     color_map(R('Panel Test Key'), {'"No run"': LINE_SOFT, '"All passed"': GOOD, '"Warning"': WARN, '"Failed"': CRIT})
     color_map(R('Status Label'), {'"Healthy"': GOOD, '"Warning"': WARN, '"Critical"': CRIT, '"No data"': NONE})
     color_map(R('Is Active Lineage View'), {'true': CARD, 'false': CANVAS})
+    color_map(R('Table Row Key'), {'"Selected"': '#eef4fb', '"Default"': CARD})
+    color_map(R('Table Status Key'), {'"Healthy"': '#eaf6ef', '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
 
 
 # ================================================================ sheets
@@ -483,29 +625,47 @@ def graph_sheet() -> Sheet:
                        no_basemap=True, zoom=None, panes=[Pane('Automatic', pane_size=(W, H)), *layers]), (W, H))
 
 
-TABLE_COLS = [  # (field for the body, header calc, width px)
-    ('display_name', 'Table Head Node', 196), ('Layer Name', 'Table Head Layer', 96), ('Platform Name', 'Table Head Platform', 84),
-    ('hops', 'Table Head Hops', 44), ('Last Event Label', 'Table Head Last Run', 112), ('Runtime Or Lag Label', 'Table Head Runtime', 80),
-    ('Table Tests Text', 'Table Head Tests', 108), ('owner_name', 'Table Head Owner', 118),
-]
-
-
 def table_sheets() -> list[Sheet]:
-    body = [R(f) for f, _, _ in TABLE_COLS]
-    heads = [R(h) for _, h, _ in TABLE_COLS]
-    hidden = [R('layer_column'), R('Status Severity Sort')]
-    font = {'font-size': '7', 'color': INK1, 'font-family': 'Arial'}
-    table = Sheet('LIN Lineage Table', rows=[Nest([*hidden, *body])], filters=[R('Is Selected Exposure Upstream Row')],
-                  hide=hidden, header_font=font, header_width={r: w for r, (_, _, w) in zip(body, TABLE_COLS)},
-                  row_height=(body[0], TABLE_ROW_H), divider=True, zoom=None,
-                  panes=label_pane(text=[R('Table Status Critical'), R('Table Status Warning'), R('Table Status Healthy'), R('Table Status No Data')],
-                                   label=[run(R('Table Status Critical'), 7, CRIT_INK, SEMI), run(R('Table Status Warning'), 7, WARN_INK, SEMI),
-                                          run(R('Table Status Healthy'), 7, GOOD_INK, SEMI), run(R('Table Status No Data'), 7, INK3, SEMI)],
-                                   lod=[R('node_id (mart_blast_radius.csv)'), R('node_key')]))
-    header = Sheet('LIN Lineage Table Header', rows=[Nest(heads)], filters=[R('Is Info Button Row')], tooltip=False, zoom=None,
-                   header_font={'font-size': '7', 'color': INK3, 'font-family': 'Arial', 'font-weight': 'bold'},
-                   header_width={r: w for r, (_, _, w) in zip(heads, TABLE_COLS)}, row_height=(heads[0], 20),
-                   panes=label_pane(label=[run('STATUS', 7, INK3, SEMI)]))
+    """Table mode as a pixel canvas, one 909 x 28 px pane per row: row band, divider, platform and status pills and
+    every cell placed at its measured width (left- or right-aligned like the prototype). The table scrolls inside
+    its zone for graphs taller than the card (GB, 22 Oct)."""
+    key, nid = R('node_key (mart_lineage_layout.csv)'), R('node_id (mart_lineage_layout.csv)')
+    pane = TABLE_ROW
+    order = [R('layer_column'), R('Status Severity Sort'), R('display_name'), key]
+    tip = _node_tip()
+
+    def cell(title, point, runs, lod=()):
+        return _centre_text(title, point, runs, lod=[key, *lod], pane=pane)
+    layers = [
+        _poly('Band', 'Table Band Point', color=R('Table Row Key'), lod=[key, nid], inert=False, tooltip=tip, pane=pane),
+        _poly('Divider', 'Table Divider Point', mark_color=LINE_SOFT, lod=[key], pane=pane),
+        _poly('Platform border', 'Table Platform Border Point', mark_color=LINE, lod=[key], pane=pane),
+        _poly('Platform fill', 'Table Platform Fill Point', mark_color='#f5f5f3', lod=[key], pane=pane),
+        _poly('Status pill', 'Table Status Pill Point', color=R('Table Status Key'), lod=[key], pane=pane),
+        cell('Node', 'Table Node Point', [run(_a('Table Node Text'), 8, INK1)]),
+        cell('Layer', 'Table Layer Point', [run(_a('Table Layer Text'), 8, INK2)]),
+        cell('Platform', 'Table Platform Text Point', [run(_a('Table Platform Snowflake'), 7, PLAT_COL['Snowflake']),
+                                                       run(_a('Table Platform Databricks'), 7, PLAT_COL['Databricks']),
+                                                       run(_a('Table Platform Redshift'), 7, PLAT_COL['Redshift']),
+                                                       run(_a('Platform Name'), 7, INK2)]),
+        cell('Status', 'Table Status Text Point', [run(_a('Table Status Critical'), 7, CRIT_INK, SEMI), run(_a('Table Status Warning'), 7, WARN_INK, SEMI),
+                                                   run(_a('Table Status Healthy'), 7, GOOD_INK, SEMI), run(_a('Table Status No Data'), 7, INK2, SEMI)]),
+        cell('Hops', 'Table Hops Point', [run(_a('Table Hops Text'), 8, INK1)]),
+        cell('Last run', 'Table Last Run Point', [run(_a('Table Last Run Text'), 8, INK1)]),
+        cell('Runtime', 'Table Runtime Point', [run(_a('Table Runtime Text'), 8, INK1)]),
+        cell('Tests', 'Table Tests Point', [run(_a('Table Tests Pass Text'), 8, INK3), run(_a('Table Tests Fail Text'), 8, CRIT_INK, SEMI),
+                                            run(_a('Table Tests Warn Text'), 8, WARN_INK, SEMI)]),
+        cell('Owner', 'Table Owner Point', [run(_a('Table Owner Text'), 8, INK1)]),
+    ]
+    table = _grid(Sheet('LIN Lineage Table', rows=[Cross([Nest(order), LAT])], cols=[LON],
+                        filters=[R('Is Lineage Scope'), R('Is Table Row')], hide=order, layers=True, no_basemap=True,
+                        zoom=None, panes=[Pane('Automatic', lod=[key], pane_size=pane), *layers]), pane)
+    hp = (TABLE_W, 22)
+    header = _grid(Sheet('LIN Lineage Table Header', rows=[LAT], cols=[LON], filters=[R('Is Lineage Scope')], layers=True,
+                         no_basemap=True, zoom=None, tooltip=False,
+                         panes=[Pane('Automatic', pane_size=hp),
+                                _centre_text('Titles', 'Table Heading Point', [run(_a('Table Heading'), 7, INK3, SEMI)],
+                                             lod=[R('Table Heading Bucket')], pane=hp)]), hp)
     return [header, table]
 
 
@@ -519,17 +679,30 @@ def _line_trend(name, key, filt, colour=ACCENT, mark='Line'):
                         Pane(mark, axis=tout, label_show=False, mark_color=OUT_OF_WINDOW, size=1 if mark == 'Line' else 0.5)])
 
 
-def _lines(name, runs, filt, align='left', valign='center', formats=None):
+def _lines(name, runs, filt, align='left', valign='center', formats=None, lod=()):
     return Sheet(name, filters=[filt] if filt else [], tooltip=False, formats=formats or {},
-                 panes=label_pane(text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align, valign=valign))
+                 panes=label_pane(text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align, valign=valign, lod=list(lod)))
+
+
+# Dynamic zone visibility read a stale value in v16 (the pills, callout, sections and trust pill kept the first
+# node's state): each DZV calc now sits on Detail of a sheet on the dashboard, so Tableau re-queries it whenever
+# the parameters change.
+TRUST_DZV = ['Show Trust Do Not Use', 'Show Trust Use With Caution', 'Show Trust Trusted']
+PANEL_DZV = ['Show Panel Pill Critical', 'Show Panel Pill Warning', 'Show Panel Pill Healthy', 'Show Panel Pill No Data',
+             'Show Panel Trust Do Not Use', 'Show Panel Trust Use With Caution', 'Show Panel Trust Trusted',
+             'Show Panel Platform Snowflake', 'Show Panel Platform Databricks', 'Show Panel Platform Redshift',
+             'Show Panel Moved', 'Show Panel AI Built', 'Show Panel Not Registered', 'Show Panel Callout Critical',
+             'Show Panel Callout Warning', 'Show Panel Trace Button', 'Show Panel Model', 'Show Panel Source',
+             'Show Panel Semantic', 'Show Panel Exposure']
 
 
 def panel_sheets() -> list[Sheet]:
     node, daily, exd = R('Is Panel Node'), R('Is Panel Node Daily'), R('Is Panel Exposure Daily')
     out = [
-        _lines('LIN Exposure Header', [run(R('Exposure Access Line'), 8, INK3)], R('Is Selected Exposure')),
+        _lines('LIN Exposure Header', [run(R('Exposure Access Line'), 8, INK3)], R('Is Selected Exposure'),
+               lod=[R(n) for n in TRUST_DZV]),
         _lines('LIN Panel Header', [run(R('Panel Kind Line'), 8, INK3), run(NL, 8, INK3), run(R('Panel Name'), 11, INK1, SEMI)],
-               node, valign='top'),
+               node, valign='top', lod=[R(n) for n in PANEL_DZV]),
         _lines('LIN Panel Moved Tag', [run(R('Panel Moved Tag'), 7, INK2)], node, align='center'),
         _lines('LIN Panel Callout Critical', [run(R('Panel Callout Reason'), 8, CRIT_INK), run(NL, 6, CRIT_INK),
                                               run(R('Panel Callout Error'), 7, CRIT_INK)], node, valign='top'),
@@ -549,9 +722,9 @@ def panel_sheets() -> list[Sheet]:
         # model
         _lines('LIN Panel Last Run', [run('Last run ', 8, INK2), run(R('Panel Last Run Text'), 8, INK1, SEMI), run(' at ', 8, INK2),
                                       run(R('Last Event Label'), 8, INK2)], node),
-        _lines('LIN Panel Runtime Change', [run(R('Runtime Trend Up'), 8, CRIT_INK, SEMI), run(R('Runtime Trend Down'), 8, GOOD_INK, SEMI),
-                                            run(R('Runtime Trend Flat'), 8, INK1, SEMI), run(R('Runtime Change Text'), 8, INK3)],
-               daily, align='right', formats={R(k): '▲ 0%;▼ 0%' for k in ('Runtime Trend Up', 'Runtime Trend Down', 'Runtime Trend Flat')}),
+        _lines('LIN Panel Runtime Change', [run(R('Runtime Change Up Text'), 8, CRIT_INK, SEMI), run(R('Runtime Change Down Text'), 8, GOOD_INK, SEMI),
+                                            run(R('Runtime Change Flat Text'), 8, INK1, SEMI), run(R('Runtime Change Text'), 8, INK3)],
+               daily, align='right'),
         _line_trend('LIN Panel Runtime Trend', 'Runtime Minutes', daily),
         _lines('LIN Panel Runs Summary', [run(R('Runs In Period'), 8, INK1), run(' runs · ', 8, INK2),
                                           run(R('Failed Runs Bad Text'), 8, CRIT_INK, SEMI), run(R('Failed Runs Good Text'), 8, GOOD_INK, SEMI)],
@@ -742,8 +915,8 @@ def content() -> Z:
 ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     ('LIN Lineage Graph', lambda: R('node_id (mart_lineage_layout.csv)'), 'p_selected_node', 'LIN Select Node'),
     ('LIN Lineage Graph', lambda: R('node_key (mart_lineage_layout.csv)'), 'p_selected_node_key', 'LIN Select Node Key'),
-    ('LIN Lineage Table', lambda: R('node_id (mart_blast_radius.csv)'), 'p_selected_node', 'LIN Table Select Node'),
-    ('LIN Lineage Table', lambda: R('node_key'), 'p_selected_node_key', 'LIN Table Select Node Key'),
+    ('LIN Lineage Table', lambda: R('node_id (mart_lineage_layout.csv)'), 'p_selected_node', 'LIN Table Select Node'),
+    ('LIN Lineage Table', lambda: R('node_key (mart_lineage_layout.csv)'), 'p_selected_node_key', 'LIN Table Select Node Key'),
     ('LIN View Buttons', lambda: R('Lineage View Option'), 'p_lineage_view', 'LIN Set View'),
 ]
 

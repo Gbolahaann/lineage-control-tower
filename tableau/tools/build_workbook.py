@@ -39,6 +39,9 @@ VERSIONS = ROOT / 'tableau' / 'versions'
 
 CONTENT = {'HO': health.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
 TAB_ACTIONS = {'HO': health.ACTIONS, 'LIN': lineage.ACTIONS}
+# clickable sheets that clear their selection after a click (one dashboard each; the GL buttons are on all 11)
+DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
+               'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
 
 
 def dashboard(tab, window_ids):
@@ -92,6 +95,18 @@ def actions(dash_sheets) -> str:
 
     for tab in shell.TABS:
         dname = tab[1]
+        for ws in DEHIGHLIGHT.get(tab[0], []):
+            src = f'[{DS}].[{CALCS.cid("Dehighlight False")}]'
+            from urllib.parse import quote
+            expr = f"tsl:{quote(ws)}?{quote(src)}~s0=&lt;[{DS}].[{CALCS.cid('Dehighlight True')}]~na&gt;"
+            out.append(
+                f"    <action caption='{esc('Dehighlight ' + ws)}' name='{core.dehighlight_action_name(ws)}'>\n"
+                "      <activation auto-clear='true' type='on-select' />\n"
+                f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
+                f"      <link caption='{esc('Dehighlight ' + ws)}' delimiter=',' escape='\\' expression='{expr}' include-null='true' "
+                "multi-select='true' url-escape='true' />\n"
+                f"      <command command='tsc:tsl-filter'>\n        <param name='target' value='{esc(ws)}' />\n      </command>\n"
+                "    </action>\n")
         for ws, field, param, cap in shell.SHELL_ACTIONS:
             if ws in dash_sheets[dname]:
                 param_action(dname, ws, R(field), param, f'{cap} ({dname})')
@@ -189,13 +204,16 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     sheet_objs = shell.gl_sheets() + health.sheets() + lineage.sheets()
+    for so in sheet_objs:
+        so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
     dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})
-    names = [r.name for s in sheet_objs for r in s.all_refs() if r.is_calc] + ['Show Info Panel', 'Info Toggle Value'] + dzv_calcs
+    names = ([r.name for s in sheet_objs for r in s.all_refs() if r.is_calc] + ['Show Info Panel', 'Info Toggle Value'] + dzv_calcs
+             + ['Dehighlight True', 'Dehighlight False'])
     order, _p, _f = CALCS.closure(list(dict.fromkeys(names)))
     calc_xml = '\n'.join(CALCS.column(n) for n in order) + '\n'
     anchor = "      <layout dim-ordering='alphabetic'"
     assert t.count(anchor) == 1
-    t = t.replace(anchor, calc_xml + core.datasource_instances() + anchor, 1)
+    t = t.replace(anchor, calc_xml + core.datasource_instances() + core.dehighlight_group_xml() + anchor, 1)
     t = re.sub(r"(      <layout dim-ordering='alphabetic'[^>]*/>\n)", lambda m: m.group(1) + datasource_style(), t, count=1)
     # the data source declares the parameters its calcs read, after <semantic-values> (as Tableau writes it)
     used_params = set()

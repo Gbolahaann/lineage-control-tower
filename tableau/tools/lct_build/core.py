@@ -510,6 +510,7 @@ class Sheet:
         self.layers = layers            # marks layers: panes[0] is the base pane, the rest are layers, bottom to top
         self.no_basemap = no_basemap    # <mapsource name='' />: a map with no background map at all
         self.fixed_axes = []            # (Raw generated field, min, max, scope): fixed and hidden map axes
+        self.dehighlight = False        # clickable sheet: clear the selection after a click (see DEHIGHLIGHT_GROUP)
         self.axis_heights = {}          # {Ref: px} height of a (hidden) continuous axis band
 
     def _shelf_refs(self, items):
@@ -537,6 +538,11 @@ class Sheet:
         return 'rows' if r.inst in {x.inst for x in self._shelf_refs(self.rows)} else 'cols'
 
     def xml(self) -> str:
+        if self.dehighlight:
+            for p in self.panes:
+                for n in ('Dehighlight True', 'Dehighlight False'):
+                    if all(r.name != n for r in p.lod):
+                        p.lod.append(R(n))
         refs = self.all_refs()
         calc_names = [r.name for r in refs if r.is_calc]
         order, params, fields = CALCS.closure(calc_names)
@@ -558,8 +564,15 @@ class Sheet:
             f"            <groupfilter function='member' level='{r.inst}' member='true' "
             "user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />\n"
             "          </filter>\n" for r in self.filters)
-        slices = ('          <slices>\n' + ''.join(f'            <column>{r.ref}</column>\n' for r in self.filters)
-                  + '          </slices>\n') if self.filters else ''
+        slice_cols = [r.ref for r in self.filters]
+        if self.dehighlight:
+            filt += (f"          <filter class='categorical' column='[{DS}].{DEHIGHLIGHT_GROUP}'>\n"
+                     f"            <groupfilter function='level-members' level='[{CALCS.cid('Dehighlight False')}]' "
+                     f"user:ui-action-filter='{dehighlight_action_name(self.name)}' user:ui-enumeration='all' user:ui-marker='enumerate' />\n"
+                     "          </filter>\n")
+            slice_cols.append(f'[{DS}].{DEHIGHLIGHT_GROUP}')
+        slices = ('          <slices>\n' + ''.join(f'            <column>{c}</column>\n' for c in slice_cols)
+                  + '          </slices>\n') if slice_cols else ''
         ds_list = f"            <datasource caption='{DS_CAPTION}' name='{DS}' />\n"
         if params:
             ds_list += "            <datasource name='Parameters' />\n"
@@ -676,6 +689,28 @@ def datasource_style() -> str:
         rules.append('          </encoding>')
     return ("      <style>\n        <style-rule element='mark'>\n" + '\n'.join(rules)
             + "\n        </style-rule>\n      </style>\n")
+
+
+# ---------------------------------------------------------------- dehighlight (learned from the OKRs and IronViz references)
+# A click on a mark selects it and greys every other mark. A filter action from the sheet onto itself that maps a
+# TRUE calc to a FALSE calc clears the selection straight away, so parameter-action clicks leave the view as it was.
+CALCS.add(formulas={
+    'Dehighlight True': '// Dehighlight True\n// Source field of the dehighlight action (clicked marks are not left greyed out).\nTRUE',
+    'Dehighlight False': '// Dehighlight False\n// Target field of the dehighlight action: matches no mark, so the selection clears at once.\nFALSE',
+}, types={'Dehighlight True': ('boolean', 'dimension', 'nominal'), 'Dehighlight False': ('boolean', 'dimension', 'nominal')})
+DEHIGHLIGHT_GROUP = '[Action (Dehighlight False)]'
+
+
+def dehighlight_action_name(sheet: str) -> str:
+    import hashlib
+    return f'[Action9_{hashlib.md5(("dh:" + sheet).encode()).hexdigest().upper()}]'
+
+
+def dehighlight_group_xml() -> str:
+    return (f"      <group caption='Action (Dehighlight False)' hidden='true' name='{DEHIGHLIGHT_GROUP}' name-style='unqualified' "
+            "user:auto-column='sheet_link'>\n        <groupfilter function='crossjoin'>\n"
+            f"          <groupfilter function='level-members' level='[{CALCS.cid('Dehighlight False')}]' />\n"
+            "        </groupfilter>\n      </group>\n")
 
 
 def datasource_instances() -> str:

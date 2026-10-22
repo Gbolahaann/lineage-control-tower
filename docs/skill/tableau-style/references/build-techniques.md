@@ -147,6 +147,22 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - Trend bars in two colours (window vs rest): two measures (`IF ATTR([In Period]) THEN x END` and its opposite)
   on a synchronised dual axis, each pane with a fixed `mark-color`. No palette needed.
 
+## 8b. Interaction gotchas (Lineage, v16 to v17)
+
+- **ATTR shows "*"** when a mark's rows disagree. On a canvas a mark often holds several kinds of row (a node's
+  own row plus its edge rows). Make label calcs return NULL, not "", on the rows that should not speak.
+- **Dynamic zone visibility can read a stale value** when its calc sits on no sheet: pills, callouts and whole
+  panel sections kept the first node's state. Put every DZV calc on Detail of a sheet on the same dashboard.
+- **Dehighlight after a click** (OKRs and IronViz references): calcs `Dehighlight True` = TRUE and
+  `Dehighlight False` = FALSE on Detail, a hidden data source group `Action (Dehighlight False)`
+  (`user:auto-column='sheet_link'`, crossjoin of the FALSE calc), a sheet filter on that group with
+  `user:ui-action-filter='[action name]'`, and a `tsc:tsl-filter` action from the sheet onto itself with
+  expression `tsl:<sheet>?[ds].[false]~s0=<[ds].[true]~na>`. Clicks set parameters without greying the view.
+- **Tables with pills** are a canvas too: one fixed pane per row, rectangles and pills as polygons from the row's
+  own multi-point rows, and every text cell written and measured by the build (CASE on the key) and placed as a
+  centred label at half its width, left or right of its column edge. Rows taller than the zone scroll inside it.
+- A **custom number format** like `▲ 0%;▼ 0%` on a label field did not apply; build the text in a calc instead.
+
 ## 9. Things that did not work
 
 - **Custom shape images for cards.** Shape marks have no fixed pixel scale. A constant on Size makes Tableau
