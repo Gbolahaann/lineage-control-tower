@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import core, health, shell  # noqa: E402
+from lct_build import core, health, shapes, shell  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -216,7 +216,7 @@ def build(master: Path, out: Path) -> Path:
     t = re.sub(r'  <windows source-height=.*?  </windows>\n',
                lambda m: windows(dash_sheets, window_ids, sheet_objs), t, count=1, flags=re.S)
     t = re.sub(r'  <thumbnails>.*?  </thumbnails>\n', '', t, count=1, flags=re.S)
-    t = t.replace('</workbook>', datagraph(dzv) + '</workbook>')
+    t = t.replace('</workbook>', datagraph(dzv) + shapes.embedded_xml() + '</workbook>')  # custom shapes travel inside the .twb
 
     check(t)
     # the spatial connection (Exposure Tiles) must reach the build unchanged

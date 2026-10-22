@@ -365,7 +365,7 @@ class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
-                 transparency=None, pane_size=None):
+                 transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -374,9 +374,12 @@ class Pane:
         self.title, self.inert, self.path = title, inert, path  # map layer name, no interaction, polygon path
         self.transparency = transparency  # mark-transparency 0 (clear) to 255 (solid)
         self.pane_size = pane_size        # (w, h) px: a fixed map pane size, as a Tableau-saved reference writes it
+        self.shape, self.shape_field = shape, shape_field  # a fixed custom shape, or a field mapped to shapes
+        self.size_field = size_field      # a constant measure on Size, so big shapes are allowed (OKRs reference)
 
     def refs(self):
-        return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else [])
+        return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else []) \
+            + [r for r in (self.shape_field, self.size_field) if r is not None]
 
     def run_refs(self):
         return [r['_ref'] for r in (self.label or []) + (self.tooltip or []) if '_ref' in r]
@@ -387,6 +390,10 @@ class Pane:
         enc = []
         if self.color:
             enc.append(f"              <color column='{self.color.ref}' />")
+        if self.size_field is not None:
+            enc.append(f"              <size column='{self.size_field.ref}' />")
+        if self.shape_field is not None:
+            enc.append(f"              <shape column='{self.shape_field.ref}' />")
         enc += [f"              <lod column='{r.ref}' />" for r in self.lod]
         enc += [f"              <text column='{r.ref}' />" for r in self.text]
         enc += [f"              <tooltip column='{r.ref}' />" for r in self.tooltip_fields]
@@ -404,6 +411,8 @@ class Pane:
             mark_fmt.append(f"                <format attr='size' value='{self.size}' />")
         if self.mark_color:
             mark_fmt.append(f"                <format attr='mark-color' value='{self.mark_color}' />")
+        if self.shape:
+            mark_fmt.append(f"                <format attr='shape' value='{esc(self.shape)}' />")
         if self.transparency is not None:
             mark_fmt.append(f"                <format attr='mark-transparency' value='{self.transparency}' />")
         if self.stroke:
@@ -631,8 +640,22 @@ def color_map(ref: Ref, mapping: dict[str, str]) -> None:
         COLOR_MAPS.append((ref, mapping))
 
 
+# Shape maps written to the data source style: {Ref: {bucket literal: shape path}}
+SHAPE_MAPS: list[tuple[Ref, dict[str, str]]] = []
+
+
+def shape_map(ref: Ref, mapping: dict[str, str]) -> None:
+    if all(r.inst != ref.inst for r, _ in SHAPE_MAPS):
+        SHAPE_MAPS.append((ref, mapping))
+
+
 def datasource_style() -> str:
     rules = []
+    for ref, m in SHAPE_MAPS:
+        rules.append(f"          <encoding attr='shape' field='{ref.inst}' type='shape'>")
+        for b, sh in m.items():
+            rules.append(f"            <map to='{esc(sh)}'>\n              <bucket>{esc(b)}</bucket>\n            </map>")
+        rules.append('          </encoding>')
     for ref, m in COLOR_MAPS:
         rules.append(f"          <encoding attr='color' field='{ref.inst}' type='palette'>")
         for b, c in m.items():
@@ -645,7 +668,7 @@ def datasource_style() -> str:
 def datasource_instances() -> str:
     """Data-source-level column instances for every coloured field. Tableau only applies a palette whose field
     instance is declared here (seen in a Tableau-saved reference workbook: every palette key has one)."""
-    return ''.join(ref.instance_xml('      ') + '\n' for ref, _ in COLOR_MAPS)
+    return ''.join(ref.instance_xml('      ') + '\n' for ref, _ in COLOR_MAPS + SHAPE_MAPS)
 
 
 def datasource_param_deps(names) -> str:
