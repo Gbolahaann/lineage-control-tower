@@ -289,6 +289,10 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace('</workbook>', datagraph(dzv) + (shapes.embedded_xml() if used_shapes else '') + '</workbook>')  # custom shapes travel inside the .twb
 
     check(t)
+    # Tableau's own schema and manifest rules: a workbook Tableau would refuse to open stops here
+    import validate_twb
+    problems = [p for p in validate_twb.check_text(t) if not p.startswith('schema: lxml')]
+    assert not problems, 'the workbook would not open in Tableau:\n' + '\n'.join(problems)
     # the spatial connection (Exposure Tiles) must reach the build unchanged
     for conn in re.findall(r"<named-connection [^>]*>\s*<connection class='ogrdirect'[^>]*/>", raw.replace('\r\n', '\n')):
         assert conn in t, 'spatial connection lost or changed: ' + conn[:120]
