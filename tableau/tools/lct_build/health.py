@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import (LAT, LON, SP_MEA, Cross, Nest, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
+from .core import (PANEL_WRITES, LAT, LON, SP_MEA, Cross, Nest, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
                    GOOD, GOOD_INK, I_DIM, I_MEA, INK1, INK2, INK3, LINE, MEDIUM, NAVY, NL, NONE, NONE_TINT,
                    OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, WARN, WARN_INK, WARN_TINT, Pane, R, Sheet, Z, blank,
                    card, card_header, color_map, label_pane, legend, run, sheet, text)
@@ -284,5 +284,9 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
         (f'HO Tiles {suffix}', lambda: R('Clear Node Key Value', 'attr'), 'p_selected_node_key', f'HO Tile Clear Node Key {suffix}'))],
     ('HO Needs Attention List', lambda: R('node_id (dim_nodes.csv)'), 'p_selected_node', 'HO Alert Select Node'),
     ('HO Needs Attention List', lambda: R('node_key'), 'p_selected_node_key', 'HO Alert Select Node Key'),
+    # every click that picks a node also tells the Lineage panel what to show (core.PANEL_WRITES)
+    *[(f'HO Tiles {suffix}', (lambda f=f: R(f, 'attr')), param, f'HO Tile Set {param} {suffix}')
+      for _, suffix, _ in TILE_GROUPS for f, param in PANEL_WRITES],
+    *[('HO Needs Attention List', (lambda f=f: R(f)), param, f'HO Alert Set {param}') for f, param in PANEL_WRITES],
     ('HO Tile View Buttons', lambda: R('Tile View Option'), 'p_tile_view', 'HO Set Tile View'),
 ]

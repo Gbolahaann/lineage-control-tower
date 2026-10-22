@@ -151,8 +151,15 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 
 - **ATTR shows "*"** when a mark's rows disagree. On a canvas a mark often holds several kinds of row (a node's
   own row plus its edge rows). Make label calcs return NULL, not "", on the rows that should not speak.
-- **Dynamic zone visibility can read a stale value** when its calc sits on no sheet: pills, callouts and whole
-  panel sections kept the first node's state. Put every DZV calc on Detail of a sheet on the same dashboard.
+- **Dynamic zone visibility must read parameters only.** A DZV calc that read the data (even a FIXED LOD on
+  the selected node, even on Detail of a sheet on the same dashboard) kept its first value: pills, callouts and
+  whole panel sections stuck on the first node (v16, v17). Fix (v18): one parameter per thing the panel
+  switches on (`p_panel_status`, `p_panel_type`, `p_panel_platform`, `p_panel_tags` as `"|moved|ai|"`), written
+  by a parameter action from **every** sheet whose click picks a node, with those fields on Detail of the
+  clickable layers (ATTR on INDEX-based card grids so the table calc is not split). DZV calcs then compare
+  parameters only (`CONTAINS([p_panel_tags], "|ai|")`). Set the defaults to the default node's values.
+- **A status pill whose colour depends on the data** is easier as a tiny canvas sheet (polygon pill coloured by
+  a key, Gantt text) than as one DZV container per state.
 - **Dehighlight after a click** (OKRs and IronViz references): calcs `Dehighlight True` = TRUE and
   `Dehighlight False` = FALSE on Detail, a hidden data source group `Action (Dehighlight False)`
   (`user:auto-column='sheet_link'`, crossjoin of the FALSE calc), a sheet filter on that group with

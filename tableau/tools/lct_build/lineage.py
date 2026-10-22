@@ -25,7 +25,7 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 from . import cards, shapes as SH
-from .core import (Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, CRIT, CRIT_INK, CRIT_TINT, GOOD,
+from .core import (PANEL_WRITES, Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, CRIT, CRIT_INK, CRIT_TINT, GOOD,
                    GOOD_INK, I_DIM, I_MEA, IMAGES, INK1, INK2, INK3, INK4, LAT, LINE, LINE_SOFT, LON, NAVY, NL, NONE,
                    NONE_TINT, OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, WARN_INK, WARN_TINT, Nest, Pane, R,
                    Sheet, Z, blank, card, color_map, label_pane, run, sheet, text)
@@ -278,6 +278,10 @@ def calcs():
         'Lineage View Label Inactive': '// Lineage View Label Inactive\n// Button text when this view is not selected.\nIF NOT [Is Active Lineage View] THEN [Lineage View Option] ELSE "" END',
         # ---- header
         'Selected Exposure Trust': '// Selected Exposure Trust\n// Trust badge of the selected exposure, for the pill beside the picker (dynamic zone visibility).\n' + sel_exp('[trust_badge]'),
+        'Trust Pill Key': '// Trust Pill Key\n// Fill of the trust pill beside the picker (palette by trust badge).\n[Selected Exposure Trust]',
+        'Trust Pill Critical': '// Trust Pill Critical\n// Trust pill text, red.\nIF [Selected Exposure Trust] = "Do not use" THEN "✕  Do not use" END',
+        'Trust Pill Warning': '// Trust Pill Warning\n// Trust pill text, amber ink.\nIF [Selected Exposure Trust] = "Use with caution" THEN "▲  Use with caution" END',
+        'Trust Pill Healthy': '// Trust Pill Healthy\n// Trust pill text, green.\nIF [Selected Exposure Trust] = "Trusted" THEN "✓  Trusted" END',
         'Show Trust Do Not Use': '// Show Trust Do Not Use\n// DZV: red "Do not use" pill beside the picker.\n[Selected Exposure Trust] = "Do not use"',
         'Show Trust Use With Caution': '// Show Trust Use With Caution\n// DZV: amber "Use with caution" pill.\n[Selected Exposure Trust] = "Use with caution"',
         'Show Trust Trusted': '// Show Trust Trusted\n// DZV: green "Trusted" pill.\n[Selected Exposure Trust] = "Trusted"',
@@ -288,22 +292,30 @@ def calcs():
         'Panel Migrated From': '// Panel Migrated From\n// Platform the panel node moved from, if any.\n' + pan('[migrated_from_platform]'),
         'Panel Build Method': '// Panel Build Method\n// Build method of the panel node (AI-built pill).\n' + pan('[build_method]'),
         'Panel Is Declared': '// Panel Is Declared\n// FALSE for consumers found only in query history (Not registered pill).\n' + pan('IIF([is_declared], 1, 0)'),
-        'Show Panel Pill Critical': '// Show Panel Pill Critical\n// DZV: red status pill (not exposures).\n[Panel Status Code] = 3 AND [Panel Resource Type] <> "exposure"',
-        'Show Panel Pill Warning': '// Show Panel Pill Warning\n// DZV: amber status pill.\n[Panel Status Code] = 2 AND [Panel Resource Type] <> "exposure"',
-        'Show Panel Pill Healthy': '// Show Panel Pill Healthy\n// DZV: green status pill.\n[Panel Status Code] = 1 AND [Panel Resource Type] <> "exposure"',
-        'Show Panel Pill No Data': '// Show Panel Pill No Data\n// DZV: grey status pill.\n[Panel Status Code] = 0 AND [Panel Resource Type] <> "exposure"',
-        'Show Panel Trust Do Not Use': '// Show Panel Trust Do Not Use\n// DZV: exposures show their trust badge instead of a status.\n[Panel Resource Type] = "exposure" AND [Panel Status Code] = 3',
-        'Show Panel Trust Use With Caution': '// Show Panel Trust Use With Caution\n// DZV: amber trust pill.\n[Panel Resource Type] = "exposure" AND [Panel Status Code] = 2',
-        'Show Panel Trust Trusted': '// Show Panel Trust Trusted\n// DZV: green trust pill.\n[Panel Resource Type] = "exposure" AND [Panel Status Code] < 2',
-        'Show Panel Platform Snowflake': '// Show Panel Platform Snowflake\n// DZV: platform pill.\n[Panel Platform] = "snowflake"',
-        'Show Panel Platform Databricks': '// Show Panel Platform Databricks\n// DZV: platform pill.\n[Panel Platform] = "databricks"',
-        'Show Panel Platform Redshift': '// Show Panel Platform Redshift\n// DZV: platform pill.\n[Panel Platform] = "redshift"',
-        'Show Panel Moved': '// Show Panel Moved\n// DZV: "moved from ..." tag for migrated nodes.\nNOT ISNULL([Panel Migrated From])',
-        'Show Panel AI Built': '// Show Panel AI Built\n// DZV: AI-built tag.\n[Panel Build Method] = "ai_assisted"',
-        'Show Panel Not Registered': '// Show Panel Not Registered\n// DZV: Not registered tag.\n[Panel Is Declared] = 0',
-        'Show Panel Callout Critical': '// Show Panel Callout Critical\n// DZV: red callout with what is wrong.\n[Panel Status Code] = 3',
-        'Show Panel Callout Warning': '// Show Panel Callout Warning\n// DZV: amber callout.\n[Panel Status Code] = 2',
-        'Show Panel Trace Button': '// Show Panel Trace Button\n// DZV: "Trace downstream impact" for every node except exposures.\n[Panel Resource Type] <> "exposure"',
+        'Show Panel Pill Critical': '// Show Panel Pill Critical\n// DZV: red status pill (not exposures). Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 3 AND [p_panel_type] <> "exposure"',
+        'Show Panel Pill Warning': '// Show Panel Pill Warning\n// DZV: amber status pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 2 AND [p_panel_type] <> "exposure"',
+        'Show Panel Pill Healthy': '// Show Panel Pill Healthy\n// DZV: green status pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 1 AND [p_panel_type] <> "exposure"',
+        'Show Panel Pill No Data': '// Show Panel Pill No Data\n// DZV: grey status pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 0 AND [p_panel_type] <> "exposure"',
+        'Show Panel Trust Do Not Use': '// Show Panel Trust Do Not Use\n// DZV: exposures show their trust badge instead of a status. Reads parameters only (written by the click), so it updates at once.\n[p_panel_type] = "exposure" AND [p_panel_status] = 3',
+        'Show Panel Trust Use With Caution': '// Show Panel Trust Use With Caution\n// DZV: amber trust pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_type] = "exposure" AND [p_panel_status] = 2',
+        'Show Panel Trust Trusted': '// Show Panel Trust Trusted\n// DZV: green trust pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_type] = "exposure" AND [p_panel_status] < 2',
+        'Show Panel Platform Snowflake': '// Show Panel Platform Snowflake\n// DZV: platform pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_platform] = "snowflake"',
+        'Show Panel Platform Databricks': '// Show Panel Platform Databricks\n// DZV: platform pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_platform] = "databricks"',
+        'Show Panel Platform Redshift': '// Show Panel Platform Redshift\n// DZV: platform pill. Reads parameters only (written by the click), so it updates at once.\n[p_panel_platform] = "redshift"',
+        'Show Panel Moved': '// Show Panel Moved\n// DZV: "moved from ..." tag for migrated nodes. Reads parameters only (written by the click), so it updates at once.\nCONTAINS([p_panel_tags], "|moved|")',
+        'Show Panel AI Built': '// Show Panel AI Built\n// DZV: AI-built tag. Reads parameters only (written by the click), so it updates at once.\nCONTAINS([p_panel_tags], "|ai|")',
+        'Show Panel Not Registered': '// Show Panel Not Registered\n// DZV: Not registered tag. Reads parameters only (written by the click), so it updates at once.\nCONTAINS([p_panel_tags], "|unregistered|")',
+        'Show Panel Callout Critical': '// Show Panel Callout Critical\n// DZV: red callout with what is wrong. Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 3',
+        'Show Panel Callout Warning': '// Show Panel Callout Warning\n// DZV: amber callout. Reads parameters only (written by the click), so it updates at once.\n[p_panel_status] = 2',
+        'Show Panel Trace Button': '// Show Panel Trace Button\n// DZV: "Trace downstream impact" for every node except exposures. Reads parameters only (written by the click), so it updates at once.\n[p_panel_type] <> "exposure"',
+        'Show Panel Model': '// Show Panel Model\n// DZV: runtime, runs and test strip sections. Reads a parameter written by the click.\n[p_panel_type] = "model"',
+        'Show Panel Source': '// Show Panel Source\n// DZV: freshness bullet and lag trend.\n[p_panel_type] = "source"',
+        'Show Panel Semantic': '// Show Panel Semantic\n// DZV: refresh summary.\n[p_panel_type] = "semantic"',
+        'Show Panel Exposure': '// Show Panel Exposure\n// DZV: health score and usage, plus the "See usage and cost" button.\n[p_panel_type] = "exposure"',
+        'Panel Tags Value': ('// Panel Tags Value\n// What a click writes into p_panel_tags: "|moved|ai|unregistered|" for the tags this node carries.\n'
+                             '"|" + IF NOT ISNULL([migrated_from_platform]) THEN "moved|" ELSE "" END\n'
+                             '+ IF [build_method] = "ai_assisted" THEN "ai|" ELSE "" END\n'
+                             '+ IF NOT [is_declared] THEN "unregistered|" ELSE "" END'),
         'Panel Callout Reason': c_reason,
         'Panel Callout Error': c_error,
         'Panel Name': '// Panel Name\n// Title of the panel: the node\'s full name.\n[display_name]',
@@ -469,6 +481,38 @@ def _table_calcs():
     return f
 
 
+TRUST_PANE = (132, 22)
+TRUST_TEXT = {'Do not use': '✕  Do not use', 'Use with caution': '▲  Use with caution', 'Trusted': '✓  Trusted'}
+TRUST_W = {k: int(SH.text_width(v, 7, True) + 20) for k, v in TRUST_TEXT.items()}
+
+
+def _rect12(name, why, cond, x0, x1, y0, y1, r, pane):
+    """A rounded rectangle on a small canvas from 12 edge points (point_order); x0 / x1 may be expressions."""
+    pw, ph = pane
+    cx, cy, w, h = f'(({x0}) + ({x1})) / 2', (y0 + y1) / 2, f'(({x1}) - ({x0}))', y1 - y0
+    i = '(INT([point_order]) - 1)'
+    k = f'INT({i} / 3)'
+    th = f'RADIANS({k} * 90 + ({i} % 3 + 0.5) * 30)'
+    dx = f'((CASE {k} WHEN 1 THEN -1 WHEN 2 THEN -1 ELSE 1 END) * ({w} / 2 - {r}) + {r} * COS({th}))'
+    dy = f'((IF {k} < 2 THEN 1 ELSE -1 END) * ({h / 2 - r:g}) + {r} * SIN({th}))'
+    return (f'// {name}\n// {why}\nIF {cond} THEN MAKEPOINT(\n    ({ph / 2 - cy:g} + {dy}) / 100,\n'
+            f'    ({cx} + {dx} - {pw / 2:g}) / 100\n) END')
+
+
+def trust_calcs():
+    tw = 'CASE [Selected Exposure Trust] ' + ' '.join(f'WHEN "{k}" THEN {v}' for k, v in TRUST_W.items()) + ' ELSE 0 END'
+    into = '[row_type] = "edge" AND [child_node_id] = [layout_scope]'
+    f = {'Trust Pill Point': _rect12('Trust Pill Point', 'The trust pill beside the picker, drawn from the exposure\'s incoming edge rows.',
+                                     into, 0, tw, 2, 20, 9, TRUST_PANE),
+         'Trust Pill Text Point': (f'// Trust Pill Text Point\n// Middle of the trust pill.\n'
+                                   f'MAKEPOINT(0, (({tw}) / 2 - {TRUST_PANE[0] / 2:g}) / 100)')}
+    return f, {n: SP_MEA for n in f}
+
+
+_trf, _trt = trust_calcs()
+CALCS.add(formulas=_trf, types=_trt)
+
+
 def _table_point(name, why, x):
     return (f'// {name}\n// {why}\nIF [row_type] = "node" THEN MAKEPOINT(0, (({x}) - {TABLE_W / 2:g}) / 100) END')
 
@@ -565,6 +609,7 @@ def palettes():
     color_map(R('Panel Test Key'), {'"No run"': LINE_SOFT, '"All passed"': GOOD, '"Warning"': WARN, '"Failed"': CRIT})
     color_map(R('Status Label'), {'"Healthy"': GOOD, '"Warning"': WARN, '"Critical"': CRIT, '"No data"': NONE})
     color_map(R('Is Active Lineage View'), {'true': CARD, 'false': CANVAS})
+    color_map(R('Trust Pill Key'), {'"Do not use"': CRIT_TINT, '"Use with caution"': WARN_TINT, '"Trusted"': '#eaf6ef'})
     color_map(R('Table Row Key'), {'"Selected"': '#eef4fb', '"Default"': CARD})
     color_map(R('Table Status Key'), {'"Healthy"': '#eaf6ef', '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
 
@@ -602,6 +647,11 @@ def _node_tip():
             run('CLICK FOR DETAILS', 7, INK3, SEMI)]
 
 
+def _panel_lod(agg=None):
+    """The fields a node-picking click writes into p_panel_* (see core.PANEL_WRITES)."""
+    return [R(f, agg) if agg else R(f) for f, _ in PANEL_WRITES]
+
+
 def graph_sheet() -> Sheet:
     key, nid = R('node_key (mart_lineage_layout.csv)'), R('node_id (mart_lineage_layout.csv)')
     ckey = R('child_key')
@@ -613,8 +663,8 @@ def graph_sheet() -> Sheet:
         _centre_text('Headings', 'Lineage Heading Point', [run(_a('Lineage Heading'), 7, INK3, SEMI)], lod=[R('Lineage Heading Bucket')]),
         Pane('Line', title='Edges', inert=True, color=R('Edge Colour Key'), path=R('point_order', kind='ok'), size=1,
              label_show=False, lod=[R('Lineage Edge Point', 'clct'), R('edge_key')], pane_size=(W, H)),
-        _poly('Box border', 'Lineage Box Border Point', color=R('Lineage Box Border Key'), lod=[key, nid], inert=False, tooltip=tip),
-        _poly('Box fill', 'Lineage Box Fill Point', color=R('Lineage Box Fill Key'), lod=[key, nid], inert=False, tooltip=tip),
+        _poly('Box border', 'Lineage Box Border Point', color=R('Lineage Box Border Key'), lod=[key, nid, *_panel_lod()], inert=False, tooltip=tip),
+        _poly('Box fill', 'Lineage Box Fill Point', color=R('Lineage Box Fill Key'), lod=[key, nid, *_panel_lod()], inert=False, tooltip=tip),
         _poly('Exposure border', 'Lineage Exposure Border Point', color=R('Lineage Exposure Border Key'), lod=[ckey]),
         _poly('Exposure fill', 'Lineage Exposure Fill Point', color=R('Lineage Exposure Fill Key'), lod=[ckey]),
         _poly('Dot', 'Lineage Dot Point', color=R('Lineage Dot Key'), lod=[key]),
@@ -624,7 +674,7 @@ def graph_sheet() -> Sheet:
         _centre_text('Names', 'Lineage Label Point', [run(_a('Lineage Label On Path'), 8, INK1),
                                                       run(_a('Lineage Label Faded'), 8, INK4),
                                                       run(_a('Lineage Label Exposure'), 8, INK1, SEMI)],
-                     lod=[key, nid], inert=False, tooltip=tip),
+                     lod=[key, nid, *_panel_lod()], inert=False, tooltip=tip),
     ]
     return _grid(Sheet('LIN Lineage Graph', rows=[LAT], cols=[LON], filters=[R('Is Lineage Scope')], layers=True,
                        no_basemap=True, zoom=None, panes=[Pane('Automatic', pane_size=(W, H)), *layers]), (W, H))
@@ -642,7 +692,7 @@ def table_sheets() -> list[Sheet]:
     def cell(title, point, runs, lod=()):
         return _centre_text(title, point, runs, lod=[key, *lod], pane=pane)
     layers = [
-        _poly('Band', 'Table Band Point', color=R('Table Row Key'), lod=[key, nid], inert=False, tooltip=tip, pane=pane),
+        _poly('Band', 'Table Band Point', color=R('Table Row Key'), lod=[key, nid, *_panel_lod()], inert=False, tooltip=tip, pane=pane),
         _poly('Divider', 'Table Divider Point', mark_color=LINE_SOFT, lod=[key], pane=pane),
         _poly('Platform border', 'Table Platform Border Point', mark_color=LINE, lod=[key], pane=pane),
         _poly('Platform fill', 'Table Platform Fill Point', mark_color='#f5f5f3', lod=[key], pane=pane),
@@ -689,25 +739,14 @@ def _lines(name, runs, filt, align='left', valign='center', formats=None, lod=()
                  panes=label_pane(text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align, valign=valign, lod=list(lod)))
 
 
-# Dynamic zone visibility read a stale value in v16 (the pills, callout, sections and trust pill kept the first
-# node's state): each DZV calc now sits on Detail of a sheet on the dashboard, so Tableau re-queries it whenever
-# the parameters change.
-TRUST_DZV = ['Show Trust Do Not Use', 'Show Trust Use With Caution', 'Show Trust Trusted']
-PANEL_DZV = ['Show Panel Pill Critical', 'Show Panel Pill Warning', 'Show Panel Pill Healthy', 'Show Panel Pill No Data',
-             'Show Panel Trust Do Not Use', 'Show Panel Trust Use With Caution', 'Show Panel Trust Trusted',
-             'Show Panel Platform Snowflake', 'Show Panel Platform Databricks', 'Show Panel Platform Redshift',
-             'Show Panel Moved', 'Show Panel AI Built', 'Show Panel Not Registered', 'Show Panel Callout Critical',
-             'Show Panel Callout Warning', 'Show Panel Trace Button', 'Show Panel Model', 'Show Panel Source',
-             'Show Panel Semantic', 'Show Panel Exposure']
 
 
 def panel_sheets() -> list[Sheet]:
     node, daily, exd = R('Is Panel Node'), R('Is Panel Node Daily'), R('Is Panel Exposure Daily')
     out = [
-        _lines('LIN Exposure Header', [run(R('Exposure Access Line'), 8, INK3)], R('Is Selected Exposure'),
-               lod=[R(n) for n in TRUST_DZV]),
+        _lines('LIN Exposure Header', [run(R('Exposure Access Line'), 8, INK3)], R('Is Selected Exposure')),
         _lines('LIN Panel Header', [run(R('Panel Kind Line'), 8, INK3), run(NL, 8, INK3), run(R('Panel Name'), 11, INK1, SEMI)],
-               node, valign='top', lod=[R(n) for n in PANEL_DZV]),
+               node, valign='top'),
         _lines('LIN Panel Moved Tag', [run(R('Panel Moved Tag'), 7, INK2)], node, align='center'),
         _lines('LIN Panel Callout Critical', [run(R('Panel Callout Reason'), 8, CRIT_INK), run(NL, 6, CRIT_INK),
                                               run(R('Panel Callout Error'), 7, CRIT_INK)], node, valign='top'),
@@ -770,12 +809,23 @@ def panel_sheets() -> list[Sheet]:
     return out
 
 
+def trust_sheet() -> Sheet:
+    pane = TRUST_PANE
+    return _grid(Sheet('LIN Trust Pill', rows=[LAT], cols=[LON], filters=[R('Is Lineage Scope')], layers=True, no_basemap=True,
+                       zoom=None, tooltip=False,
+                       panes=[Pane('Automatic', pane_size=pane),
+                              _poly('Pill', 'Trust Pill Point', color=R('Trust Pill Key'), pane=pane),
+                              _centre_text('Text', 'Trust Pill Text Point', [run(_a('Trust Pill Critical'), 7, CRIT_INK, SEMI),
+                                                                             run(_a('Trust Pill Warning'), 7, WARN_INK, SEMI),
+                                                                             run(_a('Trust Pill Healthy'), 7, GOOD_INK, SEMI)], pane=pane)]), pane)
+
+
 def sheets() -> list[Sheet]:
     palettes()
     cards.palettes()
     buttons = segmented('LIN View Buttons', 'Lineage View Option', 'Lineage View Option', 'Is Active Lineage View',
                         'Lineage View Label Active', 'Lineage View Label Inactive', 'Is Lineage View Button Row')
-    return [graph_sheet(), buttons, *table_sheets(), *panel_sheets()]
+    return [graph_sheet(), buttons, trust_sheet(), *table_sheets(), *panel_sheets()]
 
 
 # ================================================================ buttons (image buttons, like the nav)
@@ -827,10 +877,8 @@ def content() -> Z:
     graph_header = Z('horz', friendly='LIN Graph Header', fixed=HEADER_H, kids=[
         Z('paramctrl', param='p_selected_exposure', fixed=290, style={'padding-top': '4', 'padding-bottom': '4'}),
         blank(10),
-        Z('horz', friendly='LIN Trust Pills', fixed=118, style={'padding-top': '8', 'padding-bottom': '8'}, kids=[
-            _pill('✕  Do not use', CRIT_INK, CRIT_TINT, '#f2cdca', 'Show Trust Do Not Use', True),
-            _pill('▲  Use with caution', WARN_INK, WARN_TINT, '#f3e0be', 'Show Trust Use With Caution'),
-            _pill('✓  Trusted', GOOD_INK, '#eaf6ef', '#cfe8da', 'Show Trust Trusted')]),
+        Z('horz', friendly='LIN Trust Pill Holder', fixed=TRUST_PANE[0] + 4, kids=[sheet('LIN Trust Pill')],
+          style={'padding-top': '7', 'padding-bottom': '7'}),
         sheet('LIN Exposure Header'),
         Z('horz', friendly='LIN View Track', fixed=130, kids=[sheet('LIN View Buttons')], style={
             'background-color': CANVAS, 'border-color': LINE, 'border-style': 'solid', 'border-width': '1',
@@ -923,6 +971,9 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     ('LIN Lineage Table', lambda: R('node_id (mart_lineage_layout.csv)'), 'p_selected_node', 'LIN Table Select Node'),
     ('LIN Lineage Table', lambda: R('node_key (mart_lineage_layout.csv)'), 'p_selected_node_key', 'LIN Table Select Node Key'),
     ('LIN View Buttons', lambda: R('Lineage View Option'), 'p_lineage_view', 'LIN Set View'),
+    *[(ws, (lambda f=f: R(f)), param, f'{cap} {param}') for ws, cap in (('LIN Lineage Graph', 'LIN Graph Set'),
+                                                                         ('LIN Lineage Table', 'LIN Table Set'))
+      for f, param in PANEL_WRITES],
 ]
 
 

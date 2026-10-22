@@ -93,9 +93,20 @@ PARAMS = [
          members=[('All', 'All'), ('Needs attention', 'Needs attention')]),
     dict(name='p_lineage_view', datatype='string', value='Graph', domain='list',
          members=[('Graph', 'Graph'), ('Table', 'Table')]),
+    # The Lineage panel's pills, callout and sections are shown by dynamic zone visibility. A DZV calc that reads the
+    # data kept its first value (v16, v17), while parameter-only calcs update at once, so every click that picks a
+    # node also writes its status, type, platform and tags here (defaults: stg_netsuite__journal_lines).
+    dict(name='p_panel_status', datatype='integer', value='3', domain='any'),
+    dict(name='p_panel_type', datatype='string', value='model', domain='any'),
+    dict(name='p_panel_platform', datatype='string', value='snowflake', domain='any'),
+    dict(name='p_panel_tags', datatype='string', value='|', domain='any'),
 ]
 PARAM_ID = {p['name']: f'[Parameter {i + 1}]' for i, p in enumerate(PARAMS)}
 PARAM_BY = {p['name']: p for p in PARAMS}
+# What each node-picking click writes into the p_panel_* parameters (field -> parameter). Every clickable layer
+# carries these fields on Detail so the parameter action has a value to send.
+PANEL_WRITES = [('current_status_code', 'p_panel_status'), ('resource_type', 'p_panel_type'),
+                ('platform_now', 'p_panel_platform'), ('Panel Tags Value', 'p_panel_tags')]
 
 
 def _lit(p: dict, v: str) -> str:

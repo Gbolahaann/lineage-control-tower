@@ -14,7 +14,7 @@ from __future__ import annotations
 import csv
 
 from . import shapes as SH
-from .core import (LAT, LON, AI_INK, B_DIM, CALCS, CARD, CRIT, CRIT_INK, CRIT_TINT, GOOD, GOOD_INK, I_MEA, INK1,
+from .core import (PANEL_WRITES, LAT, LON, AI_INK, B_DIM, CALCS, CARD, CRIT, CRIT_INK, CRIT_TINT, GOOD, GOOD_INK, I_MEA, INK1,
                    INK2, INK3, LINE, NAVY, NL, NONE, NONE_TINT, R_MEA, S_DIM, SEMI, SP_MEA, WARN, WARN_INK, WARN_TINT,
                    I_DIM, Cross, Nest, Pane, R, Sheet, color_map, label_pane, run)
 
@@ -256,7 +256,8 @@ def tile_sheets() -> list[Sheet]:
                run('OWNER   ', 7, INK3, SEMI), run(_a('owner_name'), 9, NAVY, SEMI), run(NL, 7, INK3),
                run('WHY   ', 7, INK3, SEMI), run(_a('Tile Tooltip Why'), 9, INK1), run(NL, 7, INK3),
                run('CLICK TO OPEN LINEAGE', 7, INK3, SEMI)]
-        ids = [key, _a('node_id (dim_nodes.csv)'), _a('Clear Node Value'), _a('Clear Node Key Value')]
+        ids = [key, _a('node_id (dim_nodes.csv)'), _a('Clear Node Value'), _a('Clear Node Key Value'),
+               *[_a(f) for f, _ in PANEL_WRITES]]  # ATTR: a plain dimension would split the INDEX() tile grid
         layers = [
             _poly('Border', 'Tile Border Point', date, pane, ids, color=R('Tile Border Key'), inert=False, tooltip=tip),
             _poly('Fill', 'Tile Fill Point', date, pane, ids, color=R('Tile Fill Key'), inert=False, tooltip=tip),
@@ -294,7 +295,7 @@ def attention_sheet() -> Sheet:
     pane = SH.ALERT_PANE
     # ATTR, as on the tiles: display_name as a plain dimension on a polygon layer's tooltip came up invalid in v11
     order, nkey, name, date = R('Attention Order'), R('node_key'), _a('display_name'), R('date', kind='ok')
-    ids = [R('node_id (dim_nodes.csv)'), nkey]
+    ids = [R('node_id (dim_nodes.csv)'), nkey, *[R(f) for f, _ in PANEL_WRITES]]
     tip = [run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]
     layers = [
         _poly('Border', 'Alert Border Point', date, pane, ids, color=R('Alert Border Key'), inert=False, tooltip=tip),
