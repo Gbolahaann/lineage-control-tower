@@ -100,6 +100,9 @@ PARAMS = [
     dict(name='p_panel_type', datatype='string', value='model', domain='any'),
     dict(name='p_panel_platform', datatype='string', value='snowflake', domain='any'),
     dict(name='p_panel_tags', datatype='string', value='|', domain='any'),
+    # Run & failures: the Gantt day as days before the as-of date + 0.5, the position of its bar on the daily
+    # chart's axis (the dashed selected-day line reads it). Written with p_gantt_date by every day click.
+    dict(name='p_gantt_back', datatype='real', value='0.5', domain='any'),
 ]
 PARAM_ID = {p['name']: f'[Parameter {i + 1}]' for i, p in enumerate(PARAMS)}
 PARAM_BY = {p['name']: p for p in PARAMS}
@@ -376,7 +379,7 @@ class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
-                 transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None):
+                 transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=()):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -387,6 +390,9 @@ class Pane:
         self.pane_size = pane_size        # (w, h) px: a fixed map pane size, as a Tableau-saved reference writes it
         self.shape, self.shape_field = shape, shape_field  # a fixed custom shape, or a field mapped to shapes
         self.size_field = size_field      # a constant measure on Size, so big shapes are allowed (OKRs reference)
+        # reference lines, as Tableau writes them inside the pane (IronViz reference): dicts with id, axis (Ref),
+        # param (a parameter name: the line follows it) and z (z-order). Their look goes in the sheet's refline rule.
+        self.reflines = list(reflines)
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else []) \
@@ -412,6 +418,10 @@ class Pane:
             enc.append(f"              <geometry column='[{DS}].[{self.geometry}]' />")
         if self.path:
             enc.append(f"              <path column='{self.path.ref}' />")
+        refl = ''.join(
+            f"            <reference-line axis-column='{rl['axis'].ref}' enable-instant-analytics='false' formula='constant' "
+            f"id='{rl['id']}' label-type='none' scope='per-table' value-column='[Parameters].{PARAM_ID[rl['param']]}' "
+            f"z-order='{rl.get('z', 1)}' />\n" for rl in self.reflines)
         tip = ('            <customized-tooltip>\n              <formatted-text>\n' + runs_xml(self.tooltip, '                ')
                + '\n              </formatted-text>\n            </customized-tooltip>\n') if self.tooltip else ''
         lab = ('            <customized-label>\n              <formatted-text>\n' + runs_xml(self.label, '                ')
@@ -435,7 +445,7 @@ class Pane:
                 f"            <mark class='{self.mark}' />\n"
                 + ("            <mark-sizing mark-sizing-setting='marks-scaling-off' />\n" if self.size is not None else '')
                 + ("            <encodings>\n" + '\n'.join(enc) + '\n            </encodings>\n' if enc else '')
-                + tip + lab
+                + refl + tip + lab
                 + "            <style>\n              <style-rule element='cell'>\n"
                 f"                <format attr='text-align' value='{self.align}' />\n"
                 f"                <format attr='vertical-align' value='{self.valign}' />\n              </style-rule>\n"
@@ -510,7 +520,7 @@ class Sheet:
 
     def __init__(self, name, *, rows=(), cols=(), panes=None, filters=(), formats=None, hide=(), fixed=None,
                  header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view',
-                 sync=(), map_washout=None, layers=False, no_basemap=False):
+                 sync=(), map_washout=None, layers=False, no_basemap=False, extra=None, sorts=(), bands=None):
         self.name, self.rows, self.cols = name, list(rows), list(cols)
         self.panes = panes if isinstance(panes, list) else [panes or Pane()]
         self.filters, self.formats, self.hide = list(filters), formats or {}, list(hide)
@@ -523,6 +533,11 @@ class Sheet:
         self.fixed_axes = []            # (Raw generated field, min, max, scope): fixed and hidden map axes
         self.dehighlight = False        # clickable sheet: clear the selection after a click (see DEHIGHLIGHT_GROUP)
         self.axis_heights = {}          # {Ref: px} height of a (hidden) continuous axis band
+        self.extra = {k: list(v) for k, v in (extra or {}).items()}  # {style element: [format lines]} added as written
+        self.sorts = list(sorts)        # (dimension Ref, 'ASC' / 'DESC', measure Ref): computed sorts
+        if bands:                       # banded rows in this colour (as Tableau writes it: pane colour, table size)
+            self.extra.setdefault('pane', []).append(f"            <format attr='band-color' scope='rows' value='{bands}' />")
+            self.extra.setdefault('table', []).append("            <format attr='band-size' scope='rows' value='1' />")
 
     def _shelf_refs(self, items):
         return [r for r in shelf_flat(items) if not isinstance(r, Raw)]
@@ -540,6 +555,7 @@ class Sheet:
         for p in self.panes:
             refs += p.refs()
         refs += list(self.formats)
+        refs += [u for _, _, u in self.sorts]
         uniq = {}
         for r in refs:
             uniq.setdefault(r.inst, r)
@@ -557,6 +573,7 @@ class Sheet:
         refs = self.all_refs()
         calc_names = [r.name for r in refs if r.is_calc]
         order, params, fields = CALCS.closure(calc_names)
+        params |= {rl['param'] for p in self.panes for rl in p.reflines}
         fields |= {r.name for r in refs if not r.is_calc}
         fields |= {p.geometry for p in self.panes if p.geometry}
         dep = []
@@ -582,6 +599,7 @@ class Sheet:
                      f"user:ui-action-filter='{dehighlight_action_name(self.name)}' user:ui-enumeration='all' user:ui-marker='enumerate' />\n"
                      "          </filter>\n")
             slice_cols.append(f'[{DS}].{DEHIGHLIGHT_GROUP}')
+        filt += ''.join(f"          <computed-sort column='{d.ref}' direction='{dr}' using='{u.ref}' />\n" for d, dr, u in self.sorts)
         slices = ('          <slices>\n' + ''.join(f'            <column>{c}</column>\n' for c in slice_cols)
                   + '          </slices>\n') if slice_cols else ''
         ds_list = f"            <datasource caption='{DS_CAPTION}' name='{DS}' />\n"
@@ -589,9 +607,11 @@ class Sheet:
             ds_list += "            <datasource name='Parameters' />\n"
 
         # ---- worksheet style
+        def space_extra(v):
+            return ''.join(f" {k}='{x}'" for k, x in sorted((v[2] if len(v) > 2 else {}).items()))
         axis = [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
-                f"max='{mx}' min='{mn}' range-type='fixed' scope='{self.scope(r)}' type='space' />"
-                for r, (mn, mx) in self.fixed.items()]
+                f"max='{v[1]}' min='{v[0]}' range-type='fixed'{space_extra(v)} scope='{self.scope(r)}' type='space' />"
+                for r, v in self.fixed.items()]
         for raw, mn, mx, sc in self.fixed_axes:
             axis.append(f"            <format attr='display' class='0' field='{raw.ref}' scope='{sc}' value='false' />")
             axis.append(f"            <encoding attr='space' class='0' field='{raw.ref}' field-type='quantitative' max='{mx}' "
@@ -617,6 +637,7 @@ class Sheet:
         rules = []
 
         def rule(el, lines):
+            lines = lines + self.extra.pop(el, [])
             if lines:
                 rules.append(f"          <style-rule element='{el}'>\n" + '\n'.join(lines) + '\n          </style-rule>\n')
         rulers = (["            <format attr='line-visibility' value='off' />", "            <format attr='stroke-size' value='0' />"]
@@ -640,6 +661,8 @@ class Sheet:
         rule('worksheet', ["            <format attr='display-field-labels' scope='cols' value='false' />",
                            "            <format attr='display-field-labels' scope='rows' value='false' />"])
         rule('zeroline', ["            <format attr='line-visibility' value='off' />"])
+        for el in list(self.extra):  # elements no default rule covers (refline, ...)
+            rule(el, [])
 
         # ---- panes: dual axis gets one pane per measure after the first
         dual = has_dual(self.rows + self.cols)

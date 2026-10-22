@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import core, health, lineage, shapes, shell  # noqa: E402
+from lct_build import core, health, lineage, run, shapes, shell  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -37,11 +37,12 @@ MASTER = ROOT / 'tableau' / 'Lineage_Control_Tower_Project_Dashboard.twb'
 OUT = ROOT / 'tableau' / 'build' / 'Lineage_Control_Tower.twb'
 VERSIONS = ROOT / 'tableau' / 'versions'
 
-CONTENT = {'HO': health.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
-TAB_ACTIONS = {'HO': health.ACTIONS, 'LIN': lineage.ACTIONS}
-TAB_NAV = {'HO': health.NAV_ACTIONS}
+CONTENT = {'HO': health.content, 'RUN': run.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
+TAB_ACTIONS = {'HO': health.ACTIONS, 'RUN': run.ACTIONS, 'LIN': lineage.ACTIONS}
+TAB_NAV = {'HO': health.NAV_ACTIONS, 'RUN': run.NAV_ACTIONS}
 # clickable sheets that clear their selection after a click (one dashboard each; the GL buttons are on all 11)
 DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
+               'RUN': run.DEHIGHLIGHT,
                'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
 
 
@@ -59,6 +60,8 @@ def dashboard(tab, window_ids):
         health.check_fit(zones)
     if p == 'LIN':
         lineage.check_fit(zones)
+    if p == 'RUN':
+        run.check_fit(zones)
     xml = (f"    <dashboard enable-sort-zone-taborder='true' name='{esc(name)}'>\n"
            "      <style>\n        <style-rule element='table'>\n"
            f"          <format attr='background-color' value='{core.CANVAS}' />\n        </style-rule>\n      </style>\n"
@@ -249,7 +252,7 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     check_spatial_tables(t)
-    sheet_objs = shell.gl_sheets() + health.sheets() + lineage.sheets()
+    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + lineage.sheets()
     for so in sheet_objs:
         so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
     dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})

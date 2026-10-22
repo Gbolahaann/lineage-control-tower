@@ -185,6 +185,26 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   Write such values at build time keyed on the canvas table's own fields; the builder now checks every point.
 - A **custom number format** like `▲ 0%;▼ 0%` on a label field did not apply; build the text in a calc instead.
 
+## 8c. Native charts that line up (Run & failures, v22)
+
+- **Validate before sending:** `tableau/tools/validate_twb.py` checks the build against Tableau's 2026.1 XSD and the
+  manifest flags. Wrong element order and missing flags are caught there instead of in Tableau.
+- **Shared reversed axis:** a 90-day chart on `days_before_as_of + 0.5`, fixed 0 to 90 with `reverse='true'`, puts
+  today on the right, and the selected window is "below p_period". A reference line straight on the parameter
+  (`value-column='[Parameters].[Parameter N]' formula='constant'`, inside the pane after `<encodings>`) with a
+  `fill-below` colour shades the window; another on a parameter marks the selected day.
+- **Strips that line up with a chart** (incident labels, date labels): same x axis and range, and a y axis with the
+  chart's fixed range and tick spacing but clear label colour, so the axis takes the same width.
+- **Stacked look without Measure Names:** overlay total (grey) and part (red) on a synchronised dual axis.
+- **Sort by a measure:** `<computed-sort column=... direction='DESC' using=...>` after the filters. Top N: a table-calc
+  filter `RANK_UNIQUE(...) <= 7` addressed along the dimension.
+- **Axis details:** blank title `<format attr='title' class='0' field scope value='' />`; ticks `major-origin` /
+  `major-spacing` on the space encoding; banded rows: pane `band-color` + table `band-size`; per-field header
+  font in the `label` rule. Number formats with a unit: `n#,##0"h";-#,##0"h"`, clock hours `n00":00";-00":00"`.
+- **A day in the position, not a filter**, keeps every row of a Gantt (all 9 jobs) like the prototype.
+- **`card_header` inside a horizontal row needs `fixed=None`:** its default 44 is a height in a column but a width
+  in a row.
+
 ## 9. Things that did not work
 
 - **Custom shape images for cards.** Shape marks have no fixed pixel scale. A constant on Size makes Tableau
