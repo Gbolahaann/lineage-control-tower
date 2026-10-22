@@ -20,6 +20,7 @@ from .core import (LAT, LON, AI_INK, B_DIM, CALCS, CARD, CRIT, CRIT_INK, CRIT_TI
 
 EXP_IDX, NODE_IDX = '[Exposure Path Index]', '[Node Path Index]'
 GAP = SH.LABEL_GAP
+TILE_PAD_SPACES, ALERT_PAD_SPACES = 3, 11  # from GB's v13 adjustments
 OFFWHITE = '#f5f5f3'
 AI_BG, AI_LINE = '#eef0fb', '#d9dcf4'
 
@@ -219,12 +220,15 @@ def _poly(title, point, path, pane, lod, *, color=None, mark_color=None, inert=T
                 lod=[R(point, 'clct'), *lod], pane_size=pane, tooltip=tooltip)
 
 
-def _line(title, point, runs, pane, lod=(), align='start'):
+def _line(title, point, runs, pane, lod=(), align='start', pad=0):
     """One line of text on a hairline Gantt at a point. align: start = the text starts at the point, end = it ends
     there, center = centred on it. On a map pane a Gantt label goes on the opposite side to its text-align
     (v12 screenshot: text-align right put the text left of its point, clamped to the pane edge), so start is
     written as left and end as right."""
     tableau_align = {'start': 'left', 'end': 'right', 'center': 'center'}[align]
+    if pad:
+        # leading spaces push the line in from the pane edge, as GB set it in Tableau on v13 (3 on tiles, 11 on alerts)
+        runs = [run(' ' * pad, 9, INK1, SEMI)] + runs
     return label_pane(title=title, inert=True, text=[r['_ref'] for r in runs if '_ref' in r], label=runs,
                       align=tableau_align, valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane)
 
@@ -259,14 +263,14 @@ def tile_sheets() -> list[Sheet]:
             _poly('Dot', 'Tile Dot Point', date, pane, [key], color=R('Status Label')),
             _poly('AI pill border', 'Tile AI Border Point', date, pane, [key], mark_color=AI_LINE),
             _poly('AI pill fill', 'Tile AI Fill Point', date, pane, [key], mark_color=AI_BG),
-            _line('Name', 'Tile Name Point', [run(_a('Tile Name Short'), 9, INK1, SEMI)], pane, [key]),
+            _line('Name', 'Tile Name Point', [run(_a('Tile Name Short'), 9, INK1, SEMI)], pane, [key], pad=TILE_PAD_SPACES),
             _line('Meta', 'Tile Meta Point', [run(_a('Tile Meta Text'), 8, INK3),
-                                              run(_a('Tile Owner Missing Text'), 8, CRIT_INK, SEMI)], pane, [key]),
+                                              run(_a('Tile Owner Missing Text'), 8, CRIT_INK, SEMI)], pane, [key], pad=TILE_PAD_SPACES),
             _line('Trust', 'Tile Trust Point', [run(_a('Tile Trust Critical'), 7, CRIT_INK, SEMI),
                                                 run(_a('Tile Trust Warning'), 7, WARN_INK, SEMI),
-                                                run(_a('Tile Trust Healthy'), 7, GOOD_INK, SEMI)], pane, [key]),
+                                                run(_a('Tile Trust Healthy'), 7, GOOD_INK, SEMI)], pane, [key], pad=TILE_PAD_SPACES),
             _line('AI text', 'Tile AI Text Point', [run(_a('Tile AI Tag'), 7, AI_INK)], pane, [key], align='center'),
-            _line('Score', 'Tile Score Point', [run(_a('Tile Score Text'), 8, INK2, SEMI)], pane, [key], align='end'),
+            _line('Score', 'Tile Score Point', [run(_a('Tile Score Text'), 8, INK2, SEMI, align=1)], pane, [key], align='end'),
         ]
         out.append(_grid(Sheet(
             f'HO Tiles {suffix}', rows=[Cross([trow, LAT])], cols=[Cross([tcol, LON])], filters=filters,
@@ -301,11 +305,11 @@ def attention_sheet() -> Sheet:
                                              run(R('Attention Glyph Warning'), 8, WARN_INK, SEMI)], pane, ids, align='center'),
         _line('Chevron', 'Alert Chevron Point', [run(R('Alert Chevron'), 12, INK3)], pane, ids, align='center'),
         _line('Tag text', 'Alert Tag Text Point', [run(R('Attention Incident Tag'), 8, INK2)], pane, ids, align='center'),
-        _line('Name', 'Alert Name Point', [run(name, 9, INK1, SEMI)], pane, ids),
-        _line('Reason', 'Alert Reason Point', [run(R('Attention Reason'), 8, INK2)], pane, ids),
-        _line('Time', 'Alert Time Point', [run(R('Attention Reason Time'), 8, INK2)], pane, ids),
+        _line('Name', 'Alert Name Point', [run(name, 9, INK1, SEMI)], pane, ids, pad=ALERT_PAD_SPACES),
+        _line('Reason', 'Alert Reason Point', [run(R('Attention Reason'), 8, INK2)], pane, ids, pad=ALERT_PAD_SPACES),
+        _line('Time', 'Alert Time Point', [run(R('Attention Reason Time'), 8, INK2)], pane, ids, pad=ALERT_PAD_SPACES),
         _line('Meta', 'Alert Meta Point', [run(R('Attention Where'), 8, INK2), run(R('Attention Affects'), 8, INK1, SEMI),
-                                           run(R('Attention Open Since'), 8, INK2)], pane, ids),
+                                           run(R('Attention Open Since'), 8, INK2)], pane, ids, pad=ALERT_PAD_SPACES),
     ]
     return _grid(Sheet(
         'HO Needs Attention List', rows=[Cross([Nest([order, nkey]), LAT])], cols=[LON],

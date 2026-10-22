@@ -57,6 +57,11 @@ right of the point (it starts there) and `right` puts it to the left (it ends th
 and a label whose point sat exactly on the pane edge was dropped. On ordinary axes (buttons, bar-end counts)
 Gantt labels follow the table above. Keep the point at least a few px inside the pane, never on its edge.
 
+**Indenting text on a map pane (GB's fix, v13):** keep the text-align as above and push each line in with a
+leading run of spaces, written with Tableau's literal marker: `<run bold='true' fontcolor='#16212e'>Æ   </run>`
+before the field run. 3 spaces on a tile line (about 10px), 11 on an alert line (past the icon). A right-hand
+value (the tile score) gets `fontalignment='1'` on its run. Simple and reliable; prefer it to moving points.
+
 Map canvases also draw faint axis rulers and pane borders unless turned off: `<style-rule element='axis'>` with
 `line-visibility off` and `stroke-size 0`, and `<style-rule element='pane'>` with `border-style none`.
 

@@ -10023,6 +10023,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -10065,6 +10066,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_9469610853407196222:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]&gt;</run>
               </formatted-text>
@@ -10109,6 +10111,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
@@ -10193,7 +10196,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
+                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true' fontalignment='1'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -11146,6 +11149,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -11188,6 +11192,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_9469610853407196222:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]&gt;</run>
               </formatted-text>
@@ -11232,6 +11237,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
@@ -11316,7 +11322,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
+                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true' fontalignment='1'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -12269,6 +12275,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -12311,6 +12318,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_9469610853407196222:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]&gt;</run>
               </formatted-text>
@@ -12355,6 +12363,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
@@ -12439,7 +12448,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
+                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true' fontalignment='1'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -13392,6 +13401,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_8990803335852813669:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -13434,6 +13444,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_9469610853407196222:nk]&gt;</run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2565169924538089914:nk]&gt;</run>
               </formatted-text>
@@ -13478,6 +13489,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ   </run>
                 <run fontcolor='#a92e29' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_2803746157308900676:nk]&gt;</run>
                 <run fontcolor='#93600f' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1833995497923574551:nk]&gt;</run>
                 <run fontcolor='#1e7450' fontname='Arial' fontsize='7' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1522121282636949905:nk]&gt;</run>
@@ -13562,7 +13574,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
+                <run fontcolor='#4a5563' fontname='Arial' fontsize='8' bold='true' fontalignment='1'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:Calculation_1659843968626155727:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -14705,6 +14717,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ           </run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[attr:display_name:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -14747,6 +14760,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ           </run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2745413474489980072:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -14789,6 +14803,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ           </run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_6666030497926233935:nk]&gt;</run>
               </formatted-text>
             </customized-label>
@@ -14833,6 +14848,7 @@
             </encodings>
             <customized-label>
               <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>Æ           </run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_7237364071094172266:nk]&gt;</run>
                 <run fontcolor='#16212e' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3193701186045745359:nk]&gt;</run>
                 <run fontcolor='#4a5563' fontname='Arial' fontsize='8'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1700778924915878744:nk]&gt;</run>
