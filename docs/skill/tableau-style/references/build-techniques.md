@@ -164,6 +164,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - **Tables with pills** are a canvas too: one fixed pane per row, rectangles and pills as polygons from the row's
   own multi-point rows, and every text cell written and measured by the build (CASE on the key) and placed as a
   centred label at half its width, left or right of its column edge. Rows taller than the zone scroll inside it.
+- **A map point may read only one table besides the hub** (Nodes, which every table relates through). A point
+  calc that reached Lineage Layout and Blast Radius failed with "Column can have only one upstream base table".
+  Write such values at build time keyed on the canvas table's own fields; the builder now checks every point.
 - A **custom number format** like `▲ 0%;▼ 0%` on a label field did not apply; build the text in a calc instead.
 
 ## 9. Things that did not work

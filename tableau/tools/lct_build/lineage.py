@@ -35,6 +35,8 @@ P = 'LIN'
 DATE = 'date (dim_date.csv)'
 ROOT = SH.ROOT
 NODES = list(csv.DictReader(open(ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8')))
+BLAST = sorted(csv.DictReader(open(ROOT / 'data' / 'marts' / 'mart_blast_radius.csv', encoding='utf-8')),
+               key=lambda b: (b['exposure_id'], b['node_id']))
 OWNERS = {r['owner_name']: r for r in csv.DictReader(open(ROOT / 'data' / 'marts' / 'dim_owners.csv', encoding='utf-8'))}
 PLAT_COL = {'Snowflake': '#005fae', 'Databricks': '#4baee3', 'Redshift': '#5b5fc7'}
 
@@ -490,9 +492,12 @@ def table_calcs():
     sw = 'CASE [Status Label] ' + ' '.join(f'WHEN "{k}" THEN {v}' for k, v in STATUS_PILL.items()) + ' ELSE 0 END'
     digit = SH.text_width('0', 8)
     f.update({
-        'Table Hops': ('// Table Hops\n// Hops from this node to the selected exposure (Blast Radius), on every row of the node.\n'
-                       '{ FIXED [node_id (dim_nodes.csv)] : MIN(IF [exposure_id (mart_blast_radius.csv)] = [p_selected_exposure] THEN [hops] END) }'),
-        'Table Hops Text': '// Table Hops Text\n// Hops as text for the right-aligned column.\nIF ISNULL([Table Hops]) THEN "" ELSE STR([Table Hops]) END',
+        'Table Hops Text': ('// Table Hops Text\n// Hops from the node to the graph\'s exposure, written by the build from Blast Radius and keyed on\n'
+                            '// Lineage Layout\'s own fields: a map point may read only one table besides Nodes (v17: "Column can have\n'
+                            '// only one upstream base table" when hops came from Blast Radius).\n'
+                            'CASE [layout_scope] + "|" + [node_id (mart_lineage_layout.csv)]\n'
+                            + '\n'.join(f'WHEN {_q(b["exposure_id"] + "|" + b["node_id"])} THEN "{int(float(b["hops"]))}"' for b in BLAST)
+                            + '\nELSE ""\nEND'),
         'Table Row Key': ('// Table Row Key\n// Highlights the selected node\'s row (light accent), as in the prototype.\n'
                           'IF [Is Selected Node Box] THEN "Selected" ELSE "Default" END'),
         'Table Platform Snowflake': '// Table Platform Snowflake\n// Coloured square in the platform pill.\nIF [platform_now] = "snowflake" THEN "■ " END',
@@ -539,7 +544,7 @@ def table_calcs():
                                 f'IF NOT ISNULL([Table Heading Bucket]) THEN MAKEPOINT(0, (({hx}) - {TABLE_W / 2:g}) / 100) END')
     types = {n: SP_MEA for n in f if n.endswith('Point')}
     types.update({n: R_MEA for n in f if n.endswith('Width')})
-    types.update({'Table Hops': R_MEA, 'Is Table Row': B_DIM, 'Table Heading Bucket': I_DIM})
+    types.update({'Is Table Row': B_DIM, 'Table Heading Bucket': I_DIM})
     types.update({n: S_DIM for n in f if n not in types})
     return f, types
 

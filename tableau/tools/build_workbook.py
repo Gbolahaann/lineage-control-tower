@@ -188,6 +188,32 @@ def datagraph(dzv_by_dash) -> str:
             "      <edges>\n" + '\n'.join(edges) + "\n      </edges>\n      <pin-values />\n    </graph>\n  </datagraph>\n")
 
 
+def check_spatial_tables(t: str) -> None:
+    """A map point (MAKEPOINT, used as COLLECT) may read only one table besides Nodes, the hub every table relates
+    through. v17 broke with "Column can have only one upstream base table" when a point read Lineage Layout and Blast
+    Radius. Stop the build instead."""
+    tab = {}
+    for m in re.finditer(r"<metadata-record class='column'>(.*?)</metadata-record>", t, re.S):
+        ln = re.search(r'<local-name>\[(.*?)\]</local-name>', m.group(1))
+        pn = re.search(r'<parent-name>\[(.*?)\]</parent-name>', m.group(1))
+        if ln and pn:
+            tab[ln.group(1)] = pn.group(1)
+
+    def tables(n, seen):
+        if n in seen:
+            return set()
+        seen.add(n)
+        calcs, _p, fields = CALCS.refs(n)
+        out = {tab.get(f, f) for f in fields}
+        for c in calcs:
+            out |= tables(c, seen)
+        return out
+    for n, ty in CALCS.types.items():
+        if ty == core.SP_MEA and n in CALCS.src:
+            other = tables(n, set()) - {'dim_nodes.csv'}
+            assert len(other) <= 1, f'map point {n!r} reads {sorted(other)}: only one table besides Nodes is allowed'
+
+
 MANIFEST_FLAGS = ['AccessibleZoneTabOrder', 'Layers', 'BasicButtonObject', 'BasicButtonObjectTextSupport', 'DatagraphCoreV1',
                   'DatagraphNodeDashboardZoneVisibilityV1', 'DatagraphNodeSingleValueFieldV1', 'ParameterAction',
                   'ParameterActionClearSelection', 'WorksheetBackgroundTransparency', 'ZoneBackgroundTransparency',
@@ -211,6 +237,7 @@ def build(master: Path, out: Path) -> Path:
     # workbook font: Arial family (the master was saved with Tableau Book)
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
+    check_spatial_tables(t)
     sheet_objs = shell.gl_sheets() + health.sheets() + lineage.sheets()
     for so in sheet_objs:
         so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
