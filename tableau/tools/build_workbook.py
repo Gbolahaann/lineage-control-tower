@@ -51,6 +51,8 @@ def dashboard(tab, window_ids):
     panel = shell.info_panel(tab)
     panel.layout(1172, 130, 400, 420)
     zones = list(root.walk()) + list(panel.walk())
+    if p == 'HO':
+        health.check_fit(zones)
     xml = (f"    <dashboard enable-sort-zone-taborder='true' name='{esc(name)}'>\n"
            "      <style>\n        <style-rule element='table'>\n"
            f"          <format attr='background-color' value='{core.CANVAS}' />\n        </style-rule>\n      </style>\n"
@@ -216,7 +218,8 @@ def build(master: Path, out: Path) -> Path:
     t = re.sub(r'  <windows source-height=.*?  </windows>\n',
                lambda m: windows(dash_sheets, window_ids, sheet_objs), t, count=1, flags=re.S)
     t = re.sub(r'  <thumbnails>.*?  </thumbnails>\n', '', t, count=1, flags=re.S)
-    t = t.replace('</workbook>', datagraph(dzv) + shapes.embedded_xml() + '</workbook>')  # custom shapes travel inside the .twb
+    used_shapes = f"value='{shapes.FOLDER}/" in t or f"to='{shapes.FOLDER}/" in t
+    t = t.replace('</workbook>', datagraph(dzv) + (shapes.embedded_xml() if used_shapes else '') + '</workbook>')  # custom shapes travel inside the .twb
 
     check(t)
     # the spatial connection (Exposure Tiles) must reach the build unchanged

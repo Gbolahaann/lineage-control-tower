@@ -444,6 +444,15 @@ class Pane:
                 "                <format attr='aspect' value='0' />\n              </style-rule>\n")
 
 
+HAIRLINE = 0.0099999997764825821  # the thinnest mark size Tableau stores
+
+
+def label_pane(**kw) -> 'Pane':
+    """A mark that only carries a label: a hairline Gantt bar, white at transparency 0 (GB's standard for every
+    label-only mark, as set in Tableau on the v08 buttons). Label alignment places the label beside the mark."""
+    return Pane('GanttBar', size=HAIRLINE, mark_color='#ffffff', transparency=0, **kw)
+
+
 class Cross(list):
     """Fields crossed on one shelf, written (a * b * c): a grid of map panes is (row index * Latitude)."""
 
@@ -712,13 +721,17 @@ class Z:
         cw = w - m('margin-left') - m('margin-right') - 2 * bw - p('padding-left') - p('padding-right')
         ch = h - m('margin-top') - m('margin-bottom') - 2 * bw - p('padding-top') - p('padding-bottom')
         main = cw if self.kind == 'horz' else ch
-        fixed = sum(k.fixed for k in self.kids if k.fixed is not None)
+        # Tableau's fixed size excludes the zone's own outer margin on that axis (a v11 save showed a fixed 417 column
+        # with margin-left 7 laid out 424 wide, and 38px nav buttons with margin-bottom 4 laid out 42 tall)
+        sides = ('margin-left', 'margin-right') if self.kind == 'horz' else ('margin-top', 'margin-bottom')
+        outer = lambda k: k.fixed + sum(int(k.style.get(sd, k.style.get('margin', 0))) for sd in sides)
+        fixed = sum(outer(k) for k in self.kids if k.fixed is not None)
         flex = [k for k in self.kids if k.fixed is None]
         free = max(main - fixed, 0)
         tw = sum(k.weight for k in flex) or 1
         pos = cx if self.kind == 'horz' else cy
         for k in self.kids:
-            size = k.fixed if k.fixed is not None else free * k.weight / tw
+            size = outer(k) if k.fixed is not None else free * k.weight / tw
             if self.kind == 'horz':
                 k.layout(pos, cy, size, ch)
             else:

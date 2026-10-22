@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from .core import (R_MEA, ACCENT, BOLD, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, INK1, INK2, INK3, INK4, LIME, LINE,
                    LINE_SOFT, MEDIUM, NAVY, NL, PLAT, SEMI, B_DIM, I_DIM, S_DIM, Cross, Pane, R, Sheet, Z, blank,
-                   color_map, run, sheet, text)
-from .shapes import TRANSPARENT
+                   color_map, label_pane, run, sheet, text)
 
 TABS = [  # prefix, dashboard name, nav group, question, nav icon (None = not in the nav)
     ('HO', 'Health overview', 'Monitor', 'Is anything on fire right now?', 'health'),
@@ -66,14 +65,13 @@ def segmented(name, order_field, option_field, active_field, act_label, inact_la
                                                                       run(R(inact_label), 9, INK2, BOOK)]
     lod = [R(option_field)] if option_field != order_field else []
     bar, anchor = R('Full Bar'), R('Text Anchor Centre')
-    # As adjusted in Tableau on v08 and v09: the bar at full size fills the button, and the label rides on a
-    # clear custom shape (a Text mark's own box would sit on top of the bar and shrink the white area)
+    # As adjusted in Tableau on v08: the bar at full size fills the button, and the label rides on a clear,
+    # hairline Gantt bar (a Text mark's own box would sit on top of the bar and shrink the white area)
     return Sheet(name, cols=[Cross([R(order_field), (bar, anchor)])], hide=[R(order_field), bar, anchor],
                  filters=[R(row_filter)], fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
                  panes=[Pane(),
                         Pane('Bar', axis=bar, color=R(active_field), lod=lod, size=1.9890055656433105, label_show=False),
-                        Pane('Shape', axis=anchor, text=texts, lod=lod, label=label, align='center',
-                             size=0.0099999997764825821, shape=TRANSPARENT)])
+                        label_pane(axis=anchor, text=texts, lod=lod, label=label, align='center')])
 
 
 def gl_sheets() -> list[Sheet]:
@@ -85,15 +83,15 @@ def gl_sheets() -> list[Sheet]:
                   extra_runs=[('Platform Dot Snowflake', 8, PLAT['snowflake']),
                               ('Platform Dot Databricks', 8, PLAT['databricks']),
                               ('Platform Dot Redshift', 8, PLAT['redshift'])]),
-        Sheet('GL Period Hint', tooltip=False, panes=Pane('Text', text=[R('Period Hint Label')],
+        Sheet('GL Period Hint', tooltip=False, panes=label_pane(text=[R('Period Hint Label')],
               label=[run(R('Period Hint Label'), 8, INK3, BOOK, italic='true')])),
-        Sheet('GL Data Updated', tooltip=False, panes=Pane('Text', text=[R('Data Updated Date Text'), R('History Label')],
+        Sheet('GL Data Updated', tooltip=False, panes=label_pane(text=[R('Data Updated Date Text'), R('History Label')],
               align='right', label=[run('Data updated on ', 8, INK3), run(R('Data Updated Date Text'), 8, INK1, SEMI),
                                     run(NL, 8, INK3), run(R('History Label'), 8, INK3)])),
-        Sheet('GL Nav Data Updated', tooltip=False, panes=Pane('Text', text=[R('Data Updated Date Text')], label=[
+        Sheet('GL Nav Data Updated', tooltip=False, panes=label_pane(text=[R('Data Updated Date Text')], label=[
             run('Data updated on ', 8, INK3), run(R('Data Updated Date Text'), 8, INK1, SEMI)])),
         Sheet('GL Info Button', tooltip=False, filters=[R('Is Info Button Row')],
-              panes=Pane('Text', text=[R('Info Button Glyph')], lod=[R('Info Toggle Value')], align='center',
+              panes=label_pane(text=[R('Info Button Glyph')], lod=[R('Info Toggle Value')], align='center',
                          label=[run(R('Info Button Glyph'), 12, INK2, BOOK)])),
     ]
 

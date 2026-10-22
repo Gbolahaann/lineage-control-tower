@@ -16,7 +16,7 @@ import csv
 from . import shapes as SH
 from .core import (LAT, LON, AI_INK, B_DIM, CALCS, CARD, CRIT, CRIT_INK, CRIT_TINT, GOOD, GOOD_INK, I_MEA, INK1,
                    INK2, INK3, LINE, NAVY, NL, NONE, NONE_TINT, R_MEA, S_DIM, SEMI, SP_MEA, WARN, WARN_INK, WARN_TINT,
-                   I_DIM, Cross, Nest, Pane, R, Sheet, color_map, run)
+                   I_DIM, Cross, Nest, Pane, R, Sheet, color_map, label_pane, run)
 
 EXP_IDX, NODE_IDX = '[Exposure Path Index]', '[Node Path Index]'
 GAP = SH.LABEL_GAP
@@ -196,12 +196,16 @@ def calcs():
 _f, _t = calcs()
 CALCS.add(formulas=_f, types=_t)
 
-# palettes for the polygons (data source style)
-color_map(R('Tile Border Key'), {'"Healthy"': LINE, '"Warning"': '#f1ddb8', '"Critical"': '#edc3c0', '"No data"': LINE})
-color_map(R('Tile Fill Key'), {'"Healthy"': CARD, '"Warning"': CARD, '"Critical"': CRIT_TINT, '"No data"': CARD})
-color_map(R('Tile Edge Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT, '"No data"': CARD})
-color_map(R('Alert Border Key'), {'"Critical"': '#f2cdca', '"Warning"': '#f3e0be', '"Healthy"': LINE, '"No data"': LINE})
-color_map(R('Alert Icon Key'), {'"Critical"': '#f4ccca', '"Warning"': '#e8d6b7', '"Healthy"': NONE_TINT, '"No data"': NONE_TINT})
+def palettes():
+    """Palettes for the polygons (data source style). Called when the sheets are built, once Health has typed
+    the shared status fields."""
+    color_map(R('Status Label'), {'"Healthy"': GOOD, '"Warning"': WARN, '"Critical"': CRIT, '"No data"': NONE})
+    color_map(R('Status Tint Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT_TINT, '"No data"': NONE_TINT})
+    color_map(R('Tile Border Key'), {'"Healthy"': LINE, '"Warning"': '#f1ddb8', '"Critical"': '#edc3c0', '"No data"': LINE})
+    color_map(R('Tile Fill Key'), {'"Healthy"': CARD, '"Warning"': CARD, '"Critical"': CRIT_TINT, '"No data"': CARD})
+    color_map(R('Tile Edge Key'), {'"Healthy"': CARD, '"Warning"': WARN_TINT, '"Critical"': CRIT, '"No data"': CARD})
+    color_map(R('Alert Border Key'), {'"Critical"': '#f2cdca', '"Warning"': '#f3e0be', '"Healthy"': LINE, '"No data"': LINE})
+    color_map(R('Alert Icon Key'), {'"Critical"': '#f4ccca', '"Warning"': '#e8d6b7', '"Healthy"': NONE_TINT, '"No data"': NONE_TINT})
 
 
 # ================================================================ layers
@@ -216,10 +220,9 @@ def _poly(title, point, path, pane, lod, *, color=None, mark_color=None, inert=T
 
 
 def _line(title, point, runs, pane, lod=(), align='right'):
-    """One line of text on a clear shape: right = starts at the point, left = ends there, center = centred."""
-    return Pane('Shape', title=title, inert=True, shape=SH.TRANSPARENT, size=0.0099999997764825821,
-                text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align, valign='center',
-                lod=[R(point, 'clct'), *lod], pane_size=pane)
+    """One line of text on a hairline Gantt: right = starts at the point, left = ends there, center = centred."""
+    return label_pane(title=title, inert=True, text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align=align,
+                      valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane)
 
 
 def _grid(sheet_obj, pane):
@@ -229,6 +232,7 @@ def _grid(sheet_obj, pane):
 
 
 def tile_sheets() -> list[Sheet]:
+    palettes()
     pane, hp = SH.TILE_PANE, SH.HEADER_PANE
     key, date = R('Tile Sort Key'), R('date (mart_exposure_daily.csv)', kind='ok')
     out = []
@@ -277,8 +281,10 @@ def tile_sheets() -> list[Sheet]:
 
 
 def attention_sheet() -> Sheet:
+    palettes()
     pane = SH.ALERT_PANE
-    order, nkey, name, date = R('Attention Order'), R('node_key'), R('display_name'), R('date', kind='ok')
+    # ATTR, as on the tiles: display_name as a plain dimension on a polygon layer's tooltip came up invalid in v11
+    order, nkey, name, date = R('Attention Order'), R('node_key'), _a('display_name'), R('date', kind='ok')
     ids = [R('node_id (dim_nodes.csv)'), nkey]
     tip = [run(name, 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO SEE WHO IS AFFECTED', 7, INK3, SEMI)]
     layers = [

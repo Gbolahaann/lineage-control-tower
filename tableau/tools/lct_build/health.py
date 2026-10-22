@@ -5,7 +5,7 @@ from __future__ import annotations
 from .core import (LAT, LON, SP_MEA, Cross, Nest, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CARD, CANVAS, CRIT, CRIT_INK, CRIT_TINT, FMT_PCT2, FMT_USD,
                    GOOD, GOOD_INK, I_DIM, I_MEA, INK1, INK2, INK3, LINE, MEDIUM, NAVY, NL, NONE, NONE_TINT,
                    OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, WARN, WARN_INK, WARN_TINT, Pane, R, Sheet, Z, blank,
-                   card, card_header, color_map, legend, run, sheet, text)
+                   card, card_header, color_map, label_pane, legend, run, sheet, text)
 from . import cards, shapes as SH
 from .cards import TILE_GROUPS, TILE_ROWS
 from .shell import CONTENT_PAD, segmented
@@ -69,7 +69,7 @@ NEW = {
     'Attention Icon Critical': '// Attention Icon Critical\n// "✕" in red before a Critical node. Split by status so each icon gets its own colour.\nIF [current_status_code] = 3 THEN "✕" ELSE "" END',
     'Attention Icon Warning': '// Attention Icon Warning\n// "▲" in the warning text colour before a Warning node.\nIF [current_status_code] = 2 THEN "▲" ELSE "" END',
     'Layer Stack Key': '// Layer Stack Key\n// Stack order for the layer bar, left to right: Healthy, Warning, Critical, No data.\n// Tableau stacks the highest value first, so Healthy gets the highest key.\n5 - [Status Stack Order]',
-    'Layer Label Position': '// Layer Label Position\n// Where the "1 / 27" count sits on the layer bar: just past the end of the full bar (axis fixed 0 to 1.15).\nMIN(1.08)',
+    'Layer Label Position': '// Layer Label Position\n// Where the "1 / 27" count starts: just past the end of the full bar (axis fixed 0 to 1.3).\n// The label sits to the right of this hairline Gantt mark.\nMIN(1.02)',
 }
 
 TYPES = {
@@ -141,7 +141,7 @@ def kpi_sheets() -> list[Sheet]:
         good, bad, comp = R(f'{key} - Change Good Text'), R(f'{key} - Change Bad Text'), R('Compare Label', 'attr')
         formats = {R(ban): fmt} if fmt else {}
         out.append(Sheet(f'HO {SHEET_NAME[key]} KPI', filters=[R(plat)], formats=formats,
-                         panes=Pane('Shape', shape=SH.TRANSPARENT, text=[R(ban), good, bad, comp], valign='top', label=[
+                         panes=label_pane(text=[R(ban), good, bad, comp], valign='top', label=[
                              run(title + '  ⓘ', 8, INK3, SEMI), run(NL, 8, INK3),
                              run(R(ban), 18, NAVY, SEMI), run(NL, 8, INK3),
                              run(good, 8, GOOD_INK, SEMI), run(bad, 8, CRIT_INK, SEMI), run('  ', 8, INK3),
@@ -151,7 +151,7 @@ def kpi_sheets() -> list[Sheet]:
         out.append(trend_sheet(f'HO {SHEET_NAME[key]} KPI Trend', key, R(plat), ACCENT, cap, tfmt))
     # Exposures at risk (calc pack 3.5): Nodes for the BAN, Exposure Daily for the trend
     out.insert(6, Sheet('HO Exposures At Risk KPI', filters=[R('Is Platform Match Node')],
-                        panes=Pane('Shape', shape=SH.TRANSPARENT, valign='top', text=[R('Exposures At Risk Now'), R('Exposures At Risk Of Label'),
+                        panes=label_pane(valign='top', text=[R('Exposures At Risk Now'), R('Exposures At Risk Of Label'),
                                                               R('Exposures Critical Now'), R('Exposures Warning Now')], label=[
                             run('EXPOSURES AT RISK  ⓘ', 8, INK3, SEMI), run(NL, 8, INK3),
                             run(R('Exposures At Risk Now'), 18, NAVY, SEMI), run(' ', 9, INK3),
@@ -206,7 +206,7 @@ def layer_sheet() -> Sheet:
                     tooltip=[run(a('Layer Name'), 9, INK1, SEMI), run(NL, 7, INK3),
                              run(a('Status Label'), 7, INK3, SEMI), run('   ', 7, INK3), run(R('Node Count'), 9, NAVY, SEMI),
                              run(' of ', 9, INK3), run(a('Layer Total Text'), 9, INK3)]),
-               Pane('Text', axis=pos, text=[a('Layer Issues Critical Text'), a('Layer Issues Warning Text'), a('Layer Total Text')],
+               label_pane(axis=pos, align='right', text=[a('Layer Issues Critical Text'), a('Layer Issues Warning Text'), a('Layer Total Text')],
                     label=[run(a('Layer Issues Critical Text'), 8, CRIT_INK, SEMI),
                            run(a('Layer Issues Warning Text'), 8, WARN_INK, SEMI),
                            run(a('Layer Total Text'), 8, INK3)])])
@@ -225,7 +225,7 @@ def _track(friendly, sheet_name, width):
 
 
 def content() -> Z:
-    widths = [215, 221, 221, 221, 220, 214]  # 6 cards of ~209 + 12px gaps = 1312
+    widths = [209, 208, 209, 209, 208, 209]  # card widths; the 6px margins (12px gaps) sit outside: 1252 + 60 = 1312
     names = ['Run Success', 'Test Pass', 'Freshness SLA', 'Exposures At Risk', 'MTTR', 'Warehouse Cost']
     kpis = []
     for i, (n, w) in enumerate(zip(names, widths)):
@@ -241,7 +241,7 @@ def content() -> Z:
         # a little slack under each grid so Tableau never adds a scroll bar
         groups += [sheet(f'HO Tiles {suffix} Header', SH.HEADER_PANE[1]),
                    sheet(f'HO Tiles {suffix}', SH.TILE_PANE[1] * TILE_ROWS[g] + 6)]
-    exposure = card('HO Exposure Card', margins={'right': 7}, kids=[
+    exposure = card('HO Exposure Card', fixed=SH.EXPOSURE_CARD_W, margins={'right': 7}, kids=[
         Z('horz', friendly='HO Exposure Card Header', fixed=58, kids=[
             card_header('Exposure status', 'Every data product, traced through its full upstream chain. Score is the '
                         '7-day health score (0 to 100). Click a tile to open its lineage.', None),
@@ -250,7 +250,7 @@ def content() -> Z:
         Z('vert', friendly='HO Tile Groups', kids=groups),
         legend([('Trusted', GOOD), ('Use with caution', WARN), ('Do not use', CRIT)],
                right='Trust badges can be surfaced inside each dashboard for business users')])
-    right = Z('vert', friendly='HO Right Column', fixed=417, style={'margin-left': '7'}, kids=[
+    right = Z('vert', friendly='HO Right Column', fixed=SH.RIGHT_COLUMN_W, style={'margin-left': '7'}, kids=[
         card('HO Attention Card', margins={'bottom': 7}, kids=[
             card_header('Needs attention now', 'Upstream nodes that are failing, late or warning. Click one to see who '
                         'is affected.', 58),
@@ -261,6 +261,20 @@ def content() -> Z:
     return Z('vert', friendly='HO Content', style=CONTENT_PAD, kids=[
         Z('horz', friendly='HO KPI Row', fixed=128, kids=kpis),
         Z('horz', friendly='HO Body', style={'margin-top': '14'}, kids=[exposure, right])])
+
+
+def check_fit(zones) -> None:
+    """Stop the build if a card grid would not fit its zone (Tableau would add a scroll bar)."""
+    import csv
+    by = {z.name: z.rect for z in zones if z.kind == 'sheet'}
+    alerts = sum(1 for r in csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8'))
+                 if r['resource_type'] != 'exposure' and r['current_status_code'] in ('2', '3'))
+    need = {f'HO Tiles {suffix}': (SH.TILE_PANE[0] * 5, SH.TILE_PANE[1] * TILE_ROWS[g]) for g, suffix, _ in TILE_GROUPS}
+    need.update({f'HO Tiles {suffix} Header': SH.HEADER_PANE for _, suffix, _ in TILE_GROUPS})
+    need['HO Needs Attention List'] = (SH.ALERT_PANE[0], SH.ALERT_PANE[1] * alerts)
+    for name, (w, h) in need.items():
+        _, _, zw, zh = by[name]
+        assert w <= zw and h <= zh, f'{name}: needs {w} x {h} px, zone is {zw:.0f} x {zh:.0f} (scroll bar)'
 
 
 ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
