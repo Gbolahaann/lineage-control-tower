@@ -110,13 +110,13 @@ def actions(dash_sheets) -> str:
                 "multi-select='true' url-escape='true' />\n"
                 f"      <command command='tsc:tsl-filter'>\n        <param name='target' value='{esc(ws)}' />\n      </command>\n"
                 "    </action>\n")
-        # Go to Sheet, written as in GB's example (Go_to_Sheet_Action_Example.twbx): a <nav-action> on the
-        # worksheet with no dashboard on its source, after the data source block
+        # Go to Sheet, as in GB's example (Go_to_Sheet_Action_Example.twbx), but with the dashboard on its source
+        # like every other click action here: without it the v19 jump never fired from the Health dashboard
         for ws, target, cap in TAB_NAV.get(tab[0], []):
             navs.append(
                 f"    <nav-action caption='{esc(cap)}' name='[Action2_{hashlib.md5(cap.encode()).hexdigest().upper()}]'>\n"
                 "      <activation type='on-select' />\n"
-                f"      <source type='sheet' worksheet='{esc(ws)}' />\n"
+                f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
                 f"      <params>\n        <param name='sheet' value='{esc(target)}' />\n      </params>\n"
                 "    </nav-action>\n")
         for ws, field, param, cap in shell.SHELL_ACTIONS:

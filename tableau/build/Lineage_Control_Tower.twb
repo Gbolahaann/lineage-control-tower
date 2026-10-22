@@ -7124,35 +7124,35 @@
     </datasource-dependencies>
     <nav-action caption='Go to Lineage from HO Tiles BI Dashboards' name='[Action2_A3CA7B631C265C6A16A075D34357D46C]'>
       <activation type='on-select' />
-      <source type='sheet' worksheet='HO Tiles BI Dashboards' />
+      <source dashboard='Health overview' type='sheet' worksheet='HO Tiles BI Dashboards' />
       <params>
         <param name='sheet' value='Lineage explorer' />
       </params>
     </nav-action>
     <nav-action caption='Go to Lineage from HO Tiles Apps ML Notebooks' name='[Action2_BE2D73DAD2692D445E8DCF62455392C4]'>
       <activation type='on-select' />
-      <source type='sheet' worksheet='HO Tiles Apps ML Notebooks' />
+      <source dashboard='Health overview' type='sheet' worksheet='HO Tiles Apps ML Notebooks' />
       <params>
         <param name='sheet' value='Lineage explorer' />
       </params>
     </nav-action>
     <nav-action caption='Go to Lineage from HO Tiles AI Agents Data Hubs' name='[Action2_78988B4C9AFB303AB92749C070A5634F]'>
       <activation type='on-select' />
-      <source type='sheet' worksheet='HO Tiles AI Agents Data Hubs' />
+      <source dashboard='Health overview' type='sheet' worksheet='HO Tiles AI Agents Data Hubs' />
       <params>
         <param name='sheet' value='Lineage explorer' />
       </params>
     </nav-action>
     <nav-action caption='Go to Lineage from HO Tiles Unregistered' name='[Action2_5EAD24AF3AFA7ADFA71688810791C491]'>
       <activation type='on-select' />
-      <source type='sheet' worksheet='HO Tiles Unregistered' />
+      <source dashboard='Health overview' type='sheet' worksheet='HO Tiles Unregistered' />
       <params>
         <param name='sheet' value='Lineage explorer' />
       </params>
     </nav-action>
     <nav-action caption='Go to Lineage from HO Needs Attention List' name='[Action2_2F4D7993E5245E1C65457CE9A25DC25C]'>
       <activation type='on-select' />
-      <source type='sheet' worksheet='HO Needs Attention List' />
+      <source dashboard='Health overview' type='sheet' worksheet='HO Needs Attention List' />
       <params>
         <param name='sheet' value='Lineage explorer' />
       </params>

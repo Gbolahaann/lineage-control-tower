@@ -159,7 +159,8 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   clickable layers (ATTR on INDEX-based card grids so the table calc is not split). DZV calcs then compare
   parameters only (`CONTAINS([p_panel_tags], "|ai|")`). Set the defaults to the default node's values.
 - **Go to Sheet** (from GB's example): `<nav-action caption name='[Action2_<hex>]'>` with
-  `<activation type='on-select' />`, `<source type='sheet' worksheet='...' />` (no dashboard attribute) and
+  `<activation type='on-select' />`, `<source dashboard='<dashboard>' type='sheet' worksheet='...' />` (v19 left out the dashboard, as GB's
+  example did: the workbook loaded and parameters updated, but the jump never fired from the dashboard) and
   `<params><param name='sheet' value='<target dashboard>' /></params>`. Full order inside `<actions>`, as
   Tableau states it: `action*`, `datasources`, `datasource-dependencies*`, `nav-action*`, `edit-parameter-action*`. The same click still runs the sheet's parameter actions, so the
   target opens on the selection.
