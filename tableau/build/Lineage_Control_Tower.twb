@@ -25,6 +25,7 @@
     <ZoneBackgroundTransparency />
     <ZoneFriendlyName />
     <ZoneVisibilityControl />
+    <NavigationAction />
     <_.fcp.DashboardRoundedCorners.true...DashboardRoundedCorners />
   </document-format-change-manifest>
   <preferences>

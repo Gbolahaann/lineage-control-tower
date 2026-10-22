@@ -163,6 +163,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   `<params><param name='sheet' value='<target dashboard>' /></params>`. Keep every nav-action together, after all
   filter `<action>`s and before `<datasources>`. The same click still runs the sheet's parameter actions, so the
   target opens on the selection.
+  **The manifest must declare `<NavigationAction />`**, or Tableau stops with "no declaration found for element
+  'nav-action'". General rule: when an element is "not declared", compare the reference's
+  `<document-format-change-manifest>` with yours first.
 - **A status pill whose colour depends on the data** is easier as a tiny canvas sheet (polygon pill coloured by
   a key, Gantt text) than as one DZV container per state.
 - **Dehighlight after a click** (OKRs and IronViz references): calcs `Dehighlight True` = TRUE and

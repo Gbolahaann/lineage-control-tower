@@ -227,7 +227,8 @@ def check_spatial_tables(t: str) -> None:
 MANIFEST_FLAGS = ['AccessibleZoneTabOrder', 'Layers', 'BasicButtonObject', 'BasicButtonObjectTextSupport', 'DatagraphCoreV1',
                   'DatagraphNodeDashboardZoneVisibilityV1', 'DatagraphNodeSingleValueFieldV1', 'ParameterAction',
                   'ParameterActionClearSelection', 'WorksheetBackgroundTransparency', 'ZoneBackgroundTransparency',
-                  'ZoneFriendlyName', 'ZoneVisibilityControl']
+                  'ZoneFriendlyName', 'ZoneVisibilityControl',
+                  'NavigationAction']  # Go to Sheet: without it Tableau rejects <nav-action> ("no declaration found", v19)
 
 
 def build(master: Path, out: Path) -> Path:
