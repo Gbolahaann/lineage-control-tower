@@ -347,8 +347,12 @@ def calcs():
         'Panel Tests Latest Text': ('// Panel Tests Latest Text\n// "Latest: 2 passing, 1 warning" under the strip.\n'
                                     '"Latest: " + STR(ZN([tests_passing])) + " passing"\n+ IF [tests_warning] > 0 THEN ", " + STR([tests_warning]) + " warning" ELSE "" END'),
         'Panel Tests Failing Text': '// Panel Tests Failing Text\n// ", 1 failing" in red.\nIF [tests_failing] > 0 THEN ", " + STR([tests_failing]) + " failing" ELSE "" END',
-        'Panel Warn After Label': ('// Panel Warn After Label\n// "warn after 3.0 h · error after 6.0 h" under the freshness bullet.\n'
-                                   '"warn after " + STR(ROUND([warn_after_minutes] / 60, 1)) + " h · error after " + STR(ROUND([error_after_minutes] / 60, 1)) + " h"'),
+        'Panel Warn After Label': ('// Panel Warn After Label\n// "warn 12.0 h · error 24.0 h" under the freshness bullet, as in the mock (always one decimal).\n'
+                                   '"warn " + [Warn Hours Text] + " h · error " + [Error Hours Text] + " h"'),
+        'Warn Hours Text': ('// Warn Hours Text\n// Hours with one decimal, always ("12.0", "2.5"): tenths as a whole number, then the point.\n'
+            'STR(INT(ROUND([warn_after_minutes] / 6) / 10)) + "." + STR(INT(INT(ROUND([warn_after_minutes] / 6)) % 10))'),
+        'Error Hours Text': ('// Error Hours Text\n// Hours with one decimal, always ("12.0", "2.5"): tenths as a whole number, then the point.\n'
+            'STR(INT(ROUND([error_after_minutes] / 6) / 10)) + "." + STR(INT(INT(ROUND([error_after_minutes] / 6)) % 10))'),
         'Panel Refresh Ok Text': '// Panel Refresh Ok Text\n// Refresh summary line, start.\nSTR([Refreshes OK In Period]) + " succeeded · "',
         'Panel Refresh Failed Text': '// Panel Refresh Failed Text\n// Failed refreshes, red when above 0.\nSTR([Refreshes Failed In Period]) + " failed"',
         'Panel Refresh Rest Text': ('// Panel Refresh Rest Text\n// " · 2 skipped · extract connection".\n'

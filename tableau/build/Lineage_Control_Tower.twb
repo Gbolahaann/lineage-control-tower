@@ -5630,8 +5630,14 @@
       <column caption='Panel Tests Failing Text' datatype='string' name='[Calculation_2185241538257827997]' role='dimension' type='nominal'>
         <calculation class='tableau' formula='// Panel Tests Failing Text&#13;&#10;// &quot;, 1 failing&quot; in red.&#13;&#10;IF [tests_failing] &gt; 0 THEN &quot;, &quot; + STR([tests_failing]) + &quot; failing&quot; ELSE &quot;&quot; END' />
       </column>
+      <column caption='Error Hours Text' datatype='string' name='[Calculation_2509854475239831940]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Error Hours Text&#13;&#10;// Hours with one decimal, always (&quot;12.0&quot;, &quot;2.5&quot;): tenths as a whole number, then the point.&#13;&#10;STR(INT(ROUND([error_after_minutes] / 6) / 10)) + &quot;.&quot; + STR(INT(INT(ROUND([error_after_minutes] / 6)) % 10))' />
+      </column>
+      <column caption='Warn Hours Text' datatype='string' name='[Calculation_3184828284847424735]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Warn Hours Text&#13;&#10;// Hours with one decimal, always (&quot;12.0&quot;, &quot;2.5&quot;): tenths as a whole number, then the point.&#13;&#10;STR(INT(ROUND([warn_after_minutes] / 6) / 10)) + &quot;.&quot; + STR(INT(INT(ROUND([warn_after_minutes] / 6)) % 10))' />
+      </column>
       <column caption='Panel Warn After Label' datatype='string' name='[Calculation_1281532667660790701]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='// Panel Warn After Label&#13;&#10;// &quot;warn after 3.0 h · error after 6.0 h&quot; under the freshness bullet.&#13;&#10;&quot;warn after &quot; + STR(ROUND([warn_after_minutes] / 60, 1)) + &quot; h · error after &quot; + STR(ROUND([error_after_minutes] / 60, 1)) + &quot; h&quot;' />
+        <calculation class='tableau' formula='// Panel Warn After Label&#13;&#10;// &quot;warn 12.0 h · error 24.0 h&quot; under the freshness bullet, as in the mock (always one decimal).&#13;&#10;&quot;warn &quot; + [Calculation_3184828284847424735] + &quot; h · error &quot; + [Calculation_2509854475239831940] + &quot; h&quot;' />
       </column>
       <column caption='Worst Lag Hours (Daily)' datatype='real' name='[Calculation_1501859043302415176]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Worst Lag Hours (Daily)&#13;&#10;// Source panel line: worst lag of the day, in hours.&#13;&#10;MAX([max_lag_min]) / 60' />
@@ -26091,8 +26097,14 @@
             <column caption='Is Panel Node' datatype='boolean' name='[Calculation_2972930213303912559]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Panel Node&#13;&#10;// Filter for every Nodes-based panel sheet.&#13;&#10;[node_id (dim_nodes.csv)] = [Calculation_1386184292960313328]' />
             </column>
+            <column caption='Error Hours Text' datatype='string' name='[Calculation_2509854475239831940]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Error Hours Text&#13;&#10;// Hours with one decimal, always (&quot;12.0&quot;, &quot;2.5&quot;): tenths as a whole number, then the point.&#13;&#10;STR(INT(ROUND([error_after_minutes] / 6) / 10)) + &quot;.&quot; + STR(INT(INT(ROUND([error_after_minutes] / 6)) % 10))' />
+            </column>
+            <column caption='Warn Hours Text' datatype='string' name='[Calculation_3184828284847424735]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Warn Hours Text&#13;&#10;// Hours with one decimal, always (&quot;12.0&quot;, &quot;2.5&quot;): tenths as a whole number, then the point.&#13;&#10;STR(INT(ROUND([warn_after_minutes] / 6) / 10)) + &quot;.&quot; + STR(INT(INT(ROUND([warn_after_minutes] / 6)) % 10))' />
+            </column>
             <column caption='Panel Warn After Label' datatype='string' name='[Calculation_1281532667660790701]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Panel Warn After Label&#13;&#10;// &quot;warn after 3.0 h · error after 6.0 h&quot; under the freshness bullet.&#13;&#10;&quot;warn after &quot; + STR(ROUND([warn_after_minutes] / 60, 1)) + &quot; h · error after &quot; + STR(ROUND([error_after_minutes] / 60, 1)) + &quot; h&quot;' />
+              <calculation class='tableau' formula='// Panel Warn After Label&#13;&#10;// &quot;warn 12.0 h · error 24.0 h&quot; under the freshness bullet, as in the mock (always one decimal).&#13;&#10;&quot;warn &quot; + [Calculation_3184828284847424735] + &quot; h · error &quot; + [Calculation_2509854475239831940] + &quot; h&quot;' />
             </column>
             <column caption='Error After Minutes' datatype='real' name='[error_after_minutes]' role='measure' type='quantitative' />
             <column caption='Node Id (Nodes)' datatype='string' name='[node_id (dim_nodes.csv)]' role='dimension' type='nominal' />
