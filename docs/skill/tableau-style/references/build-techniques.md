@@ -198,6 +198,10 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   it. Put the number on a clear hairline mark on the second axis instead (align left ends it at the point, valign top
   lifts it above the bar).
 - **Buttons:** label on a clear custom shape (Shape mark, embedded `LCT/Transparent.png`), GB's preference since v22b.
+- **Quote text palette buckets** (`'"Selected"'`); booleans stay `true` / `false`. Unquoted text buckets silently
+  fall back to Tableau's default colours (v24: an orange outline and a red band). `color_map` now asserts it.
+- **Take colours from the prototype's code**, not the screenshot: opacities on white become exact hex
+  (55 % red = #e69995, 5 % accent band = #f2f7fb).
 - **Border round a selected bar** (GB's example workbook): a wider bar on the back axis, coloured only for the
   selected item; the normal bar in front. Three layers (border, two stacked colours) fit a dual axis by stacking the
   front as Measure Values: rows `(back + [Multiple Values])`, a `[:Measure Names]` member filter and `manual-sort`

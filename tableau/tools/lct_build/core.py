@@ -726,6 +726,10 @@ COLOR_MAPS: list[tuple[Ref, dict[str, str]]] = []
 
 
 def color_map(ref: Ref, mapping: dict[str, str]) -> None:
+    # text values are written quoted ("Selected"); unquoted, Tableau falls back to its default colours (v24)
+    if ref.dt == 'string':
+        bad = [k for k in mapping if not (k.startswith('"') and k.endswith('"'))]
+        assert not bad, f'{ref.name}: quote the text buckets {bad}'
     if all(r.inst != ref.inst for r, _ in COLOR_MAPS):
         COLOR_MAPS.append((ref, mapping))
 

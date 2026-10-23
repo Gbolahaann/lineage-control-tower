@@ -33,17 +33,20 @@ NODE_NAME = {r['node_id']: r['display_name'] for r in csv.DictReader(open(ROOT /
 SIDE_W = 380                                   # Why runs failed and MTTR cards; 7 px margin-left outside
 MAIN_W = 1312 - SIDE_W - 7 - 7                 # 918: Gantt and errors cards, 7 px margin-right outside
 DAILY_H, MID_H, BOTTOM_H = 220, 352, 236       # card heights; the two lower rows sit 14 px below the one above
-TABLE_W = MAIN_W - 2 * 16 - 2 - 18 - SH.SLACK  # 862: errors canvas, room for its own scroll bar
+TABLE_W = MAIN_W - 7 - 2 * 16 - 2 - 18 - SH.SLACK  # 855: errors canvas in its 877 px zone, room for its scroll bar
 TABLE_ROW = (TABLE_W, 27)                      # one pane per error, prototype row height
 TCOL = {'when': 8, 'model': 104, 'category': 296, 'message': 416}
 MSG_W = TABLE_W - TCOL['message'] - 8          # 438 px of message, cut with "…" by the build
 
 DAYS = 90
 BACK_AXIS = (0, DAYS, {'reverse': 'true'})    # Days Back Mid: today on the right
-BAR_Y = (0, 52, {'major-origin': '0', 'major-spacing': '25'})     # busiest day: 47 failed + skipped
+BAR_Y = (0, 54, {'major-origin': '0', 'major-spacing': '25'})     # busiest day: 47 failed + skipped; outline to 53.2
 MTTR_Y = (0, 25, {'major-origin': '0', 'major-spacing': '10'})    # rolling MTTR peaks at 24 h (Databricks)
 CLEAR = '#00000000'
 SKIP_GREY, SUCCESS_BLUE, CANCEL_GREY = '#c3c9cf', '#9db9d6', '#c3c9cf'
+# the prototype's chart colours on white: other days' bars at 55 % opacity, the window band accent at 5 %,
+# the MTTR area accent at 8 % (mockup/src/core.js timeChart)
+PALE_FAILED, PALE_SKIPPED, BAND, MTTR_AREA = '#e69995', '#dee1e5', '#f2f7fb', '#ebf2f8'
 
 
 # ================================================================ calcs
@@ -130,21 +133,34 @@ def calcs():
                               'CASE [platform (mart_job_runs.csv)] WHEN "snowflake" THEN "Snowflake" WHEN "databricks" THEN "Databricks"\n'
                               'WHEN "redshift" THEN "Redshift" ELSE [platform (mart_job_runs.csv)] END'),
         # the back layer of the daily chart: the clicked day's border, else the selected window's band
-        'Daily Back Height': ('// Daily Back Height\n// Back bars of the daily chart: the clicked day a little taller than its stack (its navy border shows\n'
-                              '// round the red and grey), every other day in the window full height (light blue, the bars touch: a band).\n'
-                              'IF MAX(IIF([Is Gantt Day], 1, 0)) = 1 THEN [Daily Failed And Skipped] + 1.5\n'
-                              'ELSEIF MAX(IIF([In Period], 1, 0)) = 1 THEN 52\nEND'),
-        'Daily Back Key': ('// Daily Back Key\n// Colour of the back bars: Selected (navy border) or Window (light blue band).\n'
-                           'IF MAX(IIF([Is Gantt Day], 1, 0)) = 1 THEN "Selected"\nELSEIF MAX(IIF([In Period], 1, 0)) = 1 THEN "Window"\nEND'),
+        'Daily Is Selected': ('// Daily Is Selected\n// The day loaded in the Gantt (clicked, or stepped to with ‹ ›).\n'
+                              'MAX(IIF([Is Gantt Day], 1, 0)) = 1'),
+        'Daily Is In Window': '// Daily Is In Window\n// The day is inside the selected 7/30/90-day window.\nMAX(IIF([In Period], 1, 0)) = 1',
+        # back axis: the clicked day's outline, else the window band (as GB's border-highlight example)
+        'Daily Back Height': ('// Daily Back Height\n// Back bars: the clicked day navy to near the top (its edge shows round the bars and the filler as\n'
+                              '// the prototype\'s outline), every other day in the window full height (the bars touch: the band).\n'
+                              'IF [Daily Is Selected] THEN 53.2\nELSEIF [Daily Is In Window] THEN 54\nEND'),
+        'Daily Back Key': ('// Daily Back Key\n// Colour of the back bars: Selected (navy outline) or Window (the band).\n'
+                           'IF [Daily Is Selected] THEN "Selected"\nELSEIF [Daily Is In Window] THEN "Window"\nEND'),
+        # front axis, stacked as Measure Values: full colour on the clicked day, pale (55 %) on the others
+        'Daily Failed Selected': '// Daily Failed Selected\n// Failed runs on the clicked day (full red).\nIF [Daily Is Selected] THEN SUM([runs_failed]) END',
+        'Daily Failed Other': '// Daily Failed Other\n// Failed runs on every other day (pale red).\nIF NOT [Daily Is Selected] THEN SUM([runs_failed]) END',
+        'Daily Skipped Selected': '// Daily Skipped Selected\n// Skipped runs on the clicked day (full grey).\nIF [Daily Is Selected] THEN SUM([runs_skipped]) END',
+        'Daily Skipped Other': '// Daily Skipped Other\n// Skipped runs on every other day (pale grey).\nIF NOT [Daily Is Selected] THEN SUM([runs_skipped]) END',
+        'Daily Fill Window': ('// Daily Fill Window\n// Above the clicked day\'s stack, up to the outline\'s top edge, in the band colour: the outline\n'
+                              '// stays hollow, as in the prototype.\nIF [Daily Is Selected] AND [Daily Is In Window] THEN 52.6 - [Daily Failed And Skipped] END'),
+        'Daily Fill Plain': ('// Daily Fill Plain\n// The same filler in white when the clicked day is outside the window.\n'
+                             'IF [Daily Is Selected] AND NOT [Daily Is In Window] THEN 52.6 - [Daily Failed And Skipped] END'),
         'Tooltip Day Text': ('// Tooltip Day Text\n// "Mon 12 Oct" in a 90-day chart\'s tooltip, as an aggregate so it never splits a line or area.\n'
                              'LEFT(DATENAME(\'weekday\', MIN([date (dim_date.csv)])), 3) + " " + STR(DAY(MIN([date (dim_date.csv)]))) + " "\n'
                              '+ LEFT(DATENAME(\'month\', MIN([date (dim_date.csv)])), 3)'),
         'Gantt Prev Glyph': '// Gantt Prev Glyph\n// ‹ on the previous-day button.\nMIN("‹")',
         'Gantt Next Glyph': '// Gantt Next Glyph\n// › on the next-day button.\nMIN("›")',
         # why runs failed and top models (Run Errors)
-        'Why Track': ('// Why Track\n// Where each count label ends: the longest bar\'s end, so the counts line up on the right as in\n'
-                      '// the mock. Table calc along Error Category Label.\nWINDOW_MAX([Failed Model Runs])'),
-        'Top Model Track': ('// Top Model Track\n// Same for the top-models bars. Table calc along display_name.\nWINDOW_MAX([Failed Model Runs])'),
+        'Why Track': ('// Why Track\n// Where each count label ends, right-aligned as in the mock: a little past the longest bar, so no\n'
+                      '// bar runs through a number (v24 had them on the bar end). Table calc along Error Category Label.\n'
+                      'WINDOW_MAX([Failed Model Runs]) * 1.14'),
+        'Top Model Track': ('// Top Model Track\n// Same for the top-models bars. Table calc along display_name.\nWINDOW_MAX([Failed Model Runs]) * 1.14'),
         'Is Top Failing Model': ('// Is Top Failing Model\n// The 7 models that failed most. Table calc filter (True), along display_name.\n'
                                  'RANK_UNIQUE([Failed Model Runs]) <= 7'),
         # errors table
@@ -172,7 +188,9 @@ TYPES = {
     'Axis Label Anchor MTTR': R_MEA,
     'Gantt Start Hour': R_MEA, 'Gantt Duration Hours': R_MEA, 'Tests Failed Marker Hour': R_MEA,
     'Gantt Started Text': S_DIM, 'Gantt Duration Text': S_DIM, 'Job Platform Name': S_DIM,
-    'Daily Back Height': R_MEA, 'Daily Back Key': S_MEA, 'Is Gantt Day': B_DIM, 'Gantt Prev Glyph': S_MEA, 'Gantt Next Glyph': S_MEA,
+    'Daily Back Height': R_MEA, 'Daily Back Key': S_MEA, 'Daily Is Selected': ('boolean', 'measure', 'nominal'),
+    'Daily Is In Window': ('boolean', 'measure', 'nominal'), 'Daily Failed Selected': R_MEA, 'Daily Failed Other': R_MEA,
+    'Daily Skipped Selected': R_MEA, 'Daily Skipped Other': R_MEA, 'Daily Fill Window': R_MEA, 'Daily Fill Plain': R_MEA, 'Is Gantt Day': B_DIM, 'Gantt Prev Glyph': S_MEA, 'Gantt Next Glyph': S_MEA,
     'Tooltip Day Text': S_MEA, 'Why Track': R_MEA, 'Top Model Track': R_MEA, 'Is Top Failing Model': ('boolean', 'measure', 'nominal'),
     'Error Key': S_DIM, 'Error Order': I_DIM,
     'MTTR Rolling 7 Day Line': R_MEA, 'MTTR Rolling 7 Day Area': R_MEA,
@@ -216,7 +234,7 @@ def _window_lines(axis):
     style = ["            <format attr='stroke-size' id='refline0' value='0' />",
              f"            <format attr='stroke-color' id='refline0' value='{CLEAR}' />",
              f"            <format attr='fill-above' id='refline0' value='{CLEAR}' />",
-             f"            <format attr='fill-below' id='refline0' value='{ACCENT_TINT}' />"]
+             f"            <format attr='fill-below' id='refline0' value='{BAND}' />"]
     return rl, style
 
 
@@ -225,7 +243,10 @@ def daily_sheet() -> Sheet:
     (grey) stacked as Measure Values, narrower, so the back bar shows round the clicked day's stack."""
     x, date = R('Days Back Mid'), R(DATE)
     back, key, failed, skipped = R('Daily Back Height'), R('Daily Back Key'), R('Daily Failed Runs'), R('Daily Skipped Runs')
-    color_map(key, {'Selected': NAVY, 'Window': ACCENT_TINT})
+    color_map(key, {'"Selected"': NAVY, '"Window"': BAND})
+    stack = [(R('Daily Failed Selected'), CRIT), (R('Daily Failed Other'), PALE_FAILED),
+             (R('Daily Skipped Selected'), SKIP_GREY), (R('Daily Skipped Other'), PALE_SKIPPED),
+             (R('Daily Fill Window'), BAND), (R('Daily Fill Plain'), '#ffffff')]
     tip = [run(R(DATE), 9, INK1, SEMI), run(NL, 7, INK3),
            run('FAILED   ', 7, INK3, SEMI), run(failed, 9, CRIT_INK, SEMI), run(NL, 7, INK3),
            run('SKIPPED   ', 7, INK3, SEMI), run(R('Daily Skipped Runs'), 9, NAVY, SEMI), run(NL, 7, INK3),
@@ -235,11 +256,12 @@ def daily_sheet() -> Sheet:
         f"            <encoding attr='space' class='0' field='{mv}' field-type='quantitative' fold='true' scope='rows' synchronized='true' type='space' />",
         f"            <format attr='display' class='0' field='{mv}' scope='rows' value='false' />"]
     return Sheet('RUN Daily Failures Bar', cols=[x], rows=[(back, MEASURE_VALUES)], filters=[R('Is Platform Match Day')],
-                 hide=[x], fixed={x: BACK_AXIS, back: BAR_Y}, measure_values=[(failed, CRIT), (skipped, SKIP_GREY)],
+                 hide=[x], fixed={x: BACK_AXIS, back: BAR_Y}, measure_values=stack,
                  formats={R(DATE): '*d mmm yyyy', back: 'n#,##0;-#,##0'}, extra={'axis': axis},
                  panes=[Pane('Bar', size=1.2, label_show=False, lod=[date]),
                         Pane('Bar', axis=back, color=key, size=1.9890055656433105, label_show=False, lod=[date], tooltip=tip),
-                        Pane('Bar', axis=MEASURE_VALUES, color=MEASURE_NAMES, size=1.2, label_show=False, lod=[date], tooltip=tip)])
+                        Pane('Bar', axis=MEASURE_VALUES, color=MEASURE_NAMES, size=1.65, label_show=False, lod=[date],
+                             tooltip=tip, tooltip_fields=[failed, skipped])])
 
 
 def incident_sheet() -> Sheet:
@@ -268,7 +290,7 @@ def gantt_sheet() -> Sheet:
     job, sched = R('job_name'), R('Job Schedule Label')
     start, mark = R('Gantt Start Hour', 'min'), R('Tests Failed Marker Hour', 'min')
     outcome, rid = R('Job Run Outcome'), R('job_run_id (mart_job_runs.csv)')
-    color_map(outcome, {'Succeeded': SUCCESS_BLUE, 'Failed': CRIT, 'Cancelled': CANCEL_GREY})
+    color_map(outcome, {'"Succeeded"': SUCCESS_BLUE, '"Failed"': CRIT, '"Cancelled"': CANCEL_GREY})
     a = lambda n: R(n, 'attr')
     tip = [run(a('job_name'), 9, INK1, SEMI), run(' · ', 9, INK3), run(a('Job Platform Name'), 9, INK3), run(NL, 7, INK3),
            run('STARTED   ', 7, INK3, SEMI), run(a('Gantt Started Text'), 9, NAVY, SEMI), run(NL, 7, INK3),
@@ -327,14 +349,14 @@ def why_sheets() -> list[Sheet]:
                  f"            <format attr='text-align' field='{dim.ref}' value='left' />"]  # GB, v22b
         tip = [run(R(dim.name, 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run('FAILED RUNS   ', 7, INK3, SEMI),
                run(count, 9, CRIT_INK, SEMI)]
-        # the count rides on a clear hairline mark at the longest bar's end: text-align left ends the text at that
-        # point and vertical-align top lifts it above the bar, so no bar runs through it (GB, v22b)
+        # the count rides on a clear hairline mark just past the longest bar: text-align left ends the text at that
+        # point, so the counts are right-aligned and no bar runs through them (GB, v22b and v24)
         return Sheet(name, rows=[dim], cols=[(count, track)], filters=[period, plat, *extra_filters], hide=[track, count],
                      sync=[track], header_width={dim: header_w}, sorts=[(dim, 'DESC', count)], extra={'label': label},
                      panes=[Pane('Bar', label_show=False),
                             Pane('Bar', axis=count, mark_color=CRIT, size=0.3, label_show=False, tooltip=tip),
                             label_pane(axis=track, text=[count], label=[run(count, 8, INK1, SEMI)], align='left',
-                                       valign='top', tooltip=tip)])
+                                       tooltip=tip)])
     return [
         Sheet('RUN Failed Count Label', filters=[period, plat], tooltip=False,
               panes=label_pane(text=[R('Failed Runs Label')], valign='top', label=[run(R('Failed Runs Label'), 8, INK3)])),
@@ -359,13 +381,13 @@ def errors_sheets() -> list[Sheet]:
                           tooltip=None if inert else tip)
     table = _grid(Sheet('RUN Recent Errors Table', rows=[Cross([Nest([order, key]), LAT])], cols=[LON],
                         filters=[R('In Period'), R('Is Platform Match Error')], hide=[order, key], layers=True,
-                        no_basemap=True, zoom=None,
+                        no_basemap=True, zoom='fit-width',
                         panes=[Pane('Automatic', lod=[key], pane_size=pane),
                                cell('When', INK1), cell('Model', INK1), cell('Category', INK1),
                                cell('Message', INK2, inert=False)]), pane)
     hp = (TABLE_W, 22)
     header = _grid(Sheet('RUN Recent Errors Header', rows=[LAT], cols=[LON], filters=[R('Is Error Heading Row')], layers=True,
-                         no_basemap=True, zoom=None, tooltip=False,
+                         no_basemap=True, zoom='entire-view', tooltip=False,
                          panes=[Pane('Automatic', pane_size=hp),
                                 label_pane(title='Titles', inert=True, text=[R('Error Heading')],
                                            label=[run(R('Error Heading'), 7, INK3, SEMI)], align='center',
@@ -386,8 +408,8 @@ def mttr_sheet() -> Sheet:
                  formats={area: 'n#,##0.0"h";-#,##0.0"h"', line: 'n#,##0.0"h";-#,##0.0"h"'},
                  extra={'axis': _axis_style(area, fmt=fmt), 'refline': rstyle},
                  panes=[Pane('Area', label_show=False),
-                        Pane('Area', axis=area, mark_color=ACCENT, transparency=40, label_show=False, tooltip=tip, reflines=rl),
-                        Pane('Line', axis=line, mark_color=ACCENT, size=1, label_show=False, tooltip=tip)])
+                        Pane('Area', axis=area, mark_color=MTTR_AREA, label_show=False, tooltip=tip, reflines=rl),
+                        Pane('Line', axis=line, mark_color=ACCENT, size=0.4, label_show=False, tooltip=tip)])
 
 
 def sheets() -> list[Sheet]:
