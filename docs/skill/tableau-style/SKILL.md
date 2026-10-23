@@ -84,7 +84,8 @@ When you build, prototype or review, use the measured values in `references/spec
   Dashboards get plain, user-facing names (`Overview`, `Channel KPI Overview`, `Landing Pages`).
 - **Highlight with parameters.** For "selected item" behaviour, use a parameter plus `[Param] = [Field]` T/F calc, with highlight or parameter actions. In corporate mode, prefer quick filters when users just need to slice.
 - **Name every container** in the Item Hierarchy, including floating and hidden ones.
-- **Label-only marks are hairline Gantt bars** (size 0.01, white, transparency 0), never Text marks. No scroll bars on any dashboard: size every grid inside its zone. See `references/build-techniques.md`.
+- **Label-only marks are hairline Gantt bars** (size 0.01, white, transparency 0), never Text marks; **button labels are a clear custom shape** (embedded Transparent.png). No scroll bars on any dashboard: size every grid inside its zone, and leave no unneeded space under the last row (14 px, the card gap). See `references/build-techniques.md`.
+- **Colours come from the prototype's code**, not a screenshot (opacities on white turned into exact hex).
 - **Tooltips:** ALL CAPS labels, the key metric in semibold, one layer deeper than the view. Turn tooltips off on text and BAN sheets unless they add value. Always turn off command buttons.
 - **Number formats** are in `references/layout-and-format.md`.
 - Every dashboard has a "Data updated on" line, and signposts for how to use it, data notes and contact. Corporate work also gets a Documentation page.
@@ -124,7 +125,12 @@ Keep the prototype's intent. Suggest, don't redesign.
 - **The parameter and action plan.**
 - **Sheet-by-sheet build steps:** marks, shelves, formatting, tooltips.
 
-Write `.twb` XML only if asked, and always work from a copy.
+Write `.twb` XML only if asked, and always work from a copy. When building in XML (as on Lineage Control Tower):
+- Validate every build before sending it (schema, manifest flags, fit checks; `references/build-techniques.md` section 2).
+- Give every rebuild a new version name and log it in the versions changelog with what changed and why.
+- When Gbolahan sends an adjusted copy, diff it completely (sheets, dashboards, calc formulas), ignore Tableau's re-save noise, fold every real change into the builder and say what you took.
+- If unsure how Tableau writes a feature, ask for a one-sheet Tableau-saved example instead of guessing twice.
+- Add every new finding to `references/build-techniques.md` as it is made.
 
 ### Other asks
 
@@ -150,7 +156,7 @@ Write `.twb` XML only if asked, and always work from a copy.
 - `references/calc-patterns.md`: naming standard, period comparison pairs, switches, show/hide, highlighting, ranking, pagination and advanced techniques. Read it when writing or reviewing calcs.
 - `references/layout-and-format.md`: container skeleton, padding, type scale, number formats, colour rules, tooltips, buttons, chart titles and the documentation template. Read it when designing, prototyping or reviewing layout.
 - `references/spec-measured.md`: **exact measured values**. Pixel templates for the work, product and editorial layouts; padding, margins, borders, corner radius, dividers, nav and button sizes, fonts and sizes, sheet formatting, line styles, controls, tooltips, actions, hygiene benchmarks and how the style changed from 2022 to 2026. Read it before any build, prototype or review.
-- `references/build-techniques.md`: proven build patterns from Lineage Control Tower: hairline Gantt label marks (the standard for every label-only mark), label alignment beside a mark, cards on a pixel canvas of map panes, rounded rectangles as polygons, sizing cards to their zone with no scroll bars, segmented buttons, palettes and parameters in XML, and what did not work. Read it before building cards, buttons, tiles or other web-app-style components.
+- `references/build-techniques.md`: proven build patterns from Lineage Control Tower: how to work with Gbolahan's adjusted files, validation and manifest flags, label marks and button labels, label alignment, pixel canvases of map panes, rounded polygons, zone sizing and content height, native and canvas tables, time charts that line up, the selected-bar border and window band, palettes, parameter-driven DZV, dehighlight and Go to Sheet actions, axis and number formats, and what did not work. Read it before building anything in Tableau XML.
 - `references/xml-anatomy.md`: everything a `.twb` / `.twbx` contains, where every setting lives in the XML, coordinate maths, safe editing rules, and how the anatomy differs by mode. Read it when parsing, reviewing or editing workbook XML.
 - `scripts/profile_twb.py`: measures one or more workbooks (or groups) against the spec. It prints every formatting value with frequencies, layout pixel measures and hygiene checks.
 - `references/work-brand.md`: private work brand palette and logo rules. Read it only for work (corporate mode). Never copy its contents into public repos, Tableau Public or anything shared outside work.

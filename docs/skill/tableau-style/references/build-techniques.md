@@ -1,30 +1,75 @@
 # Build techniques (learned on Lineage Control Tower, Oct 2026)
 
-Proven patterns for building product-style dashboards in Tableau, most of them written straight into `.twb`
-XML. Each one was confirmed by opening the build in Tableau, or learned from a workbook Gbolahan adjusted and
-re-saved. Read this before building cards, buttons, tiles or any web-app-style component.
+Proven patterns for building product-style dashboards in Tableau, most of them written straight into `.twb` XML.
+Each one was confirmed by opening the build in Tableau, or learned from a workbook Gbolahan (GB) adjusted and
+re-saved, or from a Tableau-saved example GB shared. Version numbers (v12, v22b ...) point at the build where it was
+learned; `tableau/versions/CHANGELOG.md` in the Lineage Control Tower repo has the full story. Read this before
+building cards, buttons, tiles, tables, time charts or anything written into XML.
 
 ## Contents
 
-1. Label marks: hairline Gantt bars, not Text
-2. Label alignment beside a mark
-3. Cards on a pixel canvas (map layers)
-4. Rounded rectangles as polygons
-5. Sizing cards to their zone (no scroll bars)
-6. Segmented buttons
-7. Colours, palettes and parameters in XML
-8. Headers, axes, nulls and spacing
-9. Things that did not work
-10. Working with Gbolahan's adjustments
+1. Working with Gbolahan (process rules)
+2. Before sending a build: validation and manifest flags
+3. Label marks and button labels
+4. Label alignment beside a mark
+5. Cards on a pixel canvas (map layers)
+6. Rounded rectangles as polygons
+7. Sizing: zones, margins, content height, no scroll bars
+8. Tables
+9. Native time charts (bars, lines, Gantt) that line up
+10. Selection: border highlight, window band, clicked-day colours
+11. Colours and palettes
+12. Interactivity: parameters, DZV, dehighlight, Go to Sheet
+13. Headers, axes, number formats, nulls, spacing
+14. Things that did not work
 
-## 1. Label marks: hairline Gantt bars, not Text
+## 1. Working with Gbolahan (process rules)
 
-Every mark whose only job is to carry a label (BANs, button text, stamps, counts, card text) is a **GanttBar**:
+- **The prototype is the spec, and its code beats its screenshot.** Read colours, opacities, paddings and stroke
+  widths from the prototype source (`mockup/src/*.js`, `*.css`). Opacity on white becomes an exact hex, for
+  example 55 % of #d2453f = #e69995, 5 % of #005fae = #f2f7fb, 8 % = #ebf2f8.
+- **Ask, then build.** Before a new tab, list the prototype's parts and ask the few choices that change the build
+  (canvas vs native, table scroll vs fit, where a click goes while its target tab does not exist).
+- **Every rebuild gets a new version name** (`v22b`, `v23` ...). Reusing a name made GB reopen the old file and
+  report its errors again (the line numbers gave it away: the fix had moved them by 3).
+- **Fold in GB's adjusted files completely.** GB often fixes a build in Tableau and re-saves it. Diff the re-saved
+  `.twb` against what was sent (`tableau/tools/twbdiff.py`): every worksheet, every dashboard, **and every calc
+  formula** (a nudged MAKEPOINT lives in the data source, missed once on v13). Ignore Tableau's re-save noise:
+  style-rule and filter order, floats written long (0.34000000000000002), `Æ` markers dropped from runs,
+  `layout-cache`, `fold`, the fixed side of a two-zone row swapping, tooltip fields added to panes, DZV hidden
+  states, parameter current values. Then fold every real change into the builder and say what you took.
+- **When unsure how Tableau writes something, ask GB for a one-minute example** (one sheet, saved, sent back)
+  rather than guessing twice. Go to Sheet, the selected-bar border and the computed sort all came right this way.
+- **Report honestly:** what was checked (schema, formulas evaluated in Python, layout preview) and what was not
+  (it has not been opened in Tableau).
+- **Keep the skill current:** add every finding here when it is made, with the version it came from.
+
+## 2. Before sending a build: validation and manifest flags
+
+- `tableau/tools/validate_twb.py` (run by the builder on every build) validates against Tableau's 2026.1 XSD
+  (`tableau/tools/xsd/`, MIT, from tableau-dashboard-creator-skill) and checks manifest flags. It catches wrong
+  element order (both broken v19 builds) and missing flags it knows about.
+- **Manifest flags gate elements.** Tableau rejects an element whose flag is missing from
+  `<document-format-change-manifest>` with "no declaration found for element ...":
+  - `<Layers />` for `customization-axis='layer'`, `generated-title`, `inert` (v07)
+  - `<NavigationAction />` for `<nav-action>` (v19)
+  - `<SortTagCleanup />`, `<IntuitiveSorting />`, `<IntuitiveSorting_SP2 />` for `<computed-sort>` (v22)
+  Rule: before using an element for the first time, find it in a Tableau-saved file and copy that file's flags.
+- **The XSD is 2026.1, GB runs a later version:** the user's error message lists the real content model, for example
+  `(datasources?, mapsources?, datasource-dependencies*, filter, sort, perspectives, slices?, aggregation)`. Trust it
+  over the XSD.
+- **Order inside `<actions>`:** every filter `<action>`, then `<datasources>`, `<datasource-dependencies>`, then
+  every `<nav-action>`, then every `<edit-parameter-action>`. Interleaving stops the workbook opening (v17, v19).
+- Also checked before writing: one upstream table per map point, sheets placed, zone ids unique, every field a
+  sheet shows declared on it, every grid inside its zone, the content rows ending at the content edge.
+
+## 3. Label marks and button labels
+
+Every mark whose only job is to carry a label (BANs, stamps, counts, card text) is a **hairline GanttBar**:
 
 ```xml
 <mark class='GanttBar' />
 <mark-sizing mark-sizing-setting='marks-scaling-off' />
-...
 <style-rule element='mark'>
   <format attr='mark-labels-show' value='true' />
   <format attr='mark-labels-cull' value='false' />
@@ -34,13 +79,16 @@ Every mark whose only job is to carry a label (BANs, button text, stamps, counts
 </style-rule>
 ```
 
-Why: a Text mark draws its own box, which sits over a background bar and shrinks it, and centres itself on its
-anchor so left-aligned text gets cut off. A hairline clear Gantt carries the label without taking space.
+A Text mark draws its own box, which sits over a background bar and shrinks it, and centres itself on its anchor
+so left-aligned text gets cut off. A hairline clear Gantt carries the label without taking space.
 
-## 2. Label alignment beside a mark
+**Button labels are a clear custom shape** (GB's preference since v22b): the same pane with `<mark class='Shape' />`
+and `<format attr='shape' value='LCT/Transparent.png' />`, the transparent PNG embedded in the workbook so it does
+not depend on anyone's shape folder. The button's action fields go on every pane, the base pane included.
 
-For a point-like mark (Gantt, shape, circle) at a position on an axis or map, the label's `text-align` places
-the label **beside** the mark, it does not justify it inside a box:
+## 4. Label alignment beside a mark
+
+For a point-like mark (Gantt, shape, circle) on an ordinary axis, `text-align` places the label **beside** it:
 
 | text-align | Where the label goes |
 |---|---|
@@ -48,197 +96,166 @@ the label **beside** the mark, it does not justify it inside a box:
 | `left` | to the left: the text **ends** at the point |
 | `center` | centred on the point |
 
-Vertical alignment works the same way (`bottom` = the label hangs below the point). Tableau leaves about 4px
-between the point and the label.
+Tableau leaves about 4 px between the point and the label. Vertical alignment `top` is not reliable for lifting a
+label above a thin bar (v23, v24): move the point instead.
 
-**Exception: Gantt label marks on a map pane go the other way.** There `text-align='left'` puts the text to the
-right of the point (it starts there) and `right` puts it to the left (it ends there). Learned the hard way: with
-`right`, every tile name was pushed left of its point and clamped to the pane edge, scores ran past the card,
-and a label whose point sat exactly on the pane edge was dropped. On ordinary axes (buttons, bar-end counts)
-Gantt labels follow the table above. Keep the point at least a few px inside the pane, never on its edge.
+- **Bar labels** with `text-align left` sit inside the start of the bar, so the bar runs through the number. Put
+  counts on a clear hairline mark on the second axis, just past the longest bar
+  (`WINDOW_MAX([count]) * 1.14`, text-align left), so they line up right-aligned and nothing crosses them.
+- **On a map pane Gantt labels go the other way:** `left` puts the text to the right of the point, `right` to
+  the left. Keep the point a few px inside the pane, never on its edge (it gets dropped).
+- **Indenting on a map pane (GB's v13 fix):** a leading run of spaces with Tableau's literal marker,
+  `<run bold='true' fontcolor='#16212e'>Æ   </run>`, before the field run. 3 spaces on a tile line, 11 on an alert
+  line. A right-hand value gets `fontalignment='1'` on its run.
+- **One line per mark** on a canvas: with left or right alignment a multi-line label goes ragged.
 
-**Indenting text on a map pane (GB's fix, v13):** keep the text-align as above and push each line in with a
-leading run of spaces, written with Tableau's literal marker: `<run bold='true' fontcolor='#16212e'>Æ   </run>`
-before the field run. 3 spaces on a tile line (about 10px), 11 on an alert line (past the icon). A right-hand
-value (the tile score) gets `fontalignment='1'` on its run. Simple and reliable; prefer it to moving points.
+## 5. Cards on a pixel canvas (map layers)
 
-Map canvases also draw faint axis rulers and pane borders unless turned off: `<style-rule element='axis'>` with
-`line-visibility off` and `stroke-size 0`, and `<style-rule element='pane'>` with `border-style none`.
-
-**One line per mark.** With `right` or `left`, a multi-line label is also justified that way, so lines go
-ragged. Put each line of a card on its own layer.
-
-## 3. Cards on a pixel canvas (map layers)
-
-For cards with many parts (tiles, alert rows, headers), use a grid of map panes as a pixel canvas, as the OKRs
-reference does:
+For cards with many parts (tiles, alert rows, headers, a lineage graph), use map panes as a pixel canvas, as the
+OKRs reference does:
 
 - Rows `(Row index * Latitude (generated))`, columns `(Column index * Longitude (generated))`. Row and column
-  indexes are discrete INDEX table calcs (`(INDEX()-1) % 5 + 1`, `INT((INDEX()-1)/5) + 1`), addressed along the
-  card key with `ordering-type='Field'`.
-- No base map: `<mapsources><mapsource name='' /></mapsources>` and washout 0. Hide both axes and fix them to
-  **px / 100 around the pane centre** (a 168 x 68 pane: Longitude -0.84 to 0.84, Latitude -0.34 to 0.34).
-  Every MAKEPOINT is then written in pixels: `MAKEPOINT((34 - y) / 100, (x - 84) / 100)`.
-- Fix every pane's size and turn off aspect:
-  `<style-rule element='pane'>` minwidth = maxwidth, minheight = maxheight, `aspect 0`.
-- Each part is a marks layer (`<panes customization-axis='layer'>`, `generated-title`, `inert='true'` for
-  layers that should not take clicks). Point calcs are spatial measures (`datatype='spatial' role='measure'`)
-  used as `[clct:...]` on Detail.
-- The manifest must declare `<Layers />`, or Tableau rejects `customization-axis`, `generated-title` and
-  `inert`.
-- Keep the view at **Standard** (no `<zoom>` in the dashboard viewpoint) so panes keep their pixel size.
+  indexes are discrete INDEX table calcs addressed along the card key with `ordering-type='Field'`.
+- No base map: `<mapsources><mapsource name='' /></mapsources>`, washout 0. Hide both axes and fix them to
+  **px / 100 around the pane centre** (a 168 x 68 pane: Longitude -0.84 to 0.84, Latitude -0.34 to 0.34). Every
+  MAKEPOINT is then in pixels: `MAKEPOINT((34 - y) / 100, (x - 84) / 100)`.
+- Fix every pane's size (`minwidth = maxwidth`, `minheight = maxheight`, `aspect 0`) and keep the view at
+  **Standard**. Fit width or Entire view scales the positions but not the text, so labels slide into each other
+  (the v25 errors table).
+- Each part is a marks layer (`<panes customization-axis='layer'>`, `generated-title`, `inert='true'` for layers
+  that should not take clicks). Point calcs are spatial measures used as `[clct:...]` on Detail.
+- Turn off axis rulers and pane borders (`axis`: `line-visibility off`, `stroke-size 0`; `pane`: `border-style none`).
+- **A map point may read only one table besides the hub** (Nodes): "Column can have only one upstream base
+  table". Write such values at build time keyed on the canvas table's own fields; the builder checks every point.
+- **ATTR shows "*"** when a mark's rows disagree: make label calcs return NULL, not "", on rows that should not
+  speak.
 
-## 4. Rounded rectangles as polygons
+## 6. Rounded rectangles as polygons
 
 Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons**, not custom shapes:
 
-- Path: a date that gives each node at least 88 rows (Exposure Daily, Node Daily: 90 days each).
-  `Path Index = MIN(DATEDIFF('day', {MIN([date])}, [date]), 87)`.
-- Points 0 to 87 walk the four corner arcs, 22 points each. With `k = INT(i / 22)` and
-  `θ = RADIANS(k * 90 + (i % 22 + 0.5) * 90 / 22)`:
-  `x = cx + sx(k) * (w/2 - r) + r * COS(θ)`, `y = cy + sy(k) * (h/2 - r) + r * SIN(θ)`, with `sx = 1, -1, -1, 1`
-  and `sy = 1, 1, -1, -1` for `k = 0..3`.
-- Border = a full-size polygon in the border colour under a fill polygon 1px smaller. A coloured top edge is the
-  fill polygon with its Latitude clamped to the top 3px: `MAX(lat, top_lat - 0.03)`.
-- To show a part only for some rows (AI pill, incident tag), multiply its offsets by `IIF(condition, 1, 0)`: at 0
-  it shrinks to a point and disappears.
-- A circle is the same calc with `w = h = 2r`. A triangle: `INT(i / 30)` picks one of three vertices.
-- Colour each polygon with its own key field (a copy of the status field) so each gets its own palette.
+- Path from rows the mark already has: 88 daily rows (`Path Index = MIN(DATEDIFF('day', {MIN([date])}, [date]), 87)`,
+  22 points per corner arc) or 12 edge rows (`point_order`, 3 points per corner).
+- Corner k (0 to 3), angle `θ = RADIANS(k * 90 + (i % n + 0.5) * 90 / n)`:
+  `x = cx + sx(k) * (w/2 - r) + r * COS(θ)`, `y = cy + sy(k) * (h/2 - r) + r * SIN(θ)`, `sx = 1, -1, -1, 1`,
+  `sy = 1, 1, -1, -1`.
+- Border = a full-size polygon in the border colour under a fill polygon 1 px smaller. A coloured top edge: the fill
+  with its Latitude clamped to the top 3 px. Hide a part for some rows by multiplying its offsets by
+  `IIF(condition, 1, 0)`.
+- Colour each polygon with its own key field so each gets its own palette.
 
-## 5. Sizing cards to their zone (no scroll bars)
+## 7. Sizing: zones, margins, content height, no scroll bars
 
-- **A zone's fixed size excludes its own margin on that axis.** A fixed 417 column with margin-left 7 takes 424;
-  a 38px nav button with margin-bottom 4 takes 42.
-- Compute each grid zone's real width, then size panes a few px inside it: `pane = (zone - 4) // columns`.
-  Never let a grid exceed its zone, or Tableau adds scroll bars (Gbolahan does not want scroll bars).
-- Do not use Entire View for card grids: panes stretch, so a group with 2 tiles gets 2 very wide cards, a full
-  group gets squashed cards, circles become ovals, and text stops lining up with the card. Fixed cards that are
-  left-aligned when a row is short is how the prototype behaves.
-- Measure text with Liberation Sans (metric-compatible with Arial): Tableau draws Arial at 96 dpi, so 9pt is
-  12px. Use it to place things after variable text (a tag after a name): generate a `CASE [name] WHEN ... THEN
-  <px>` width calc at build time.
+- **A zone's fixed size excludes its own margin on that axis.** A fixed 417 column with margin-left 7 takes 424.
+  Do not add the margin into the fixed size as well: v22 to v25 gave RUN's rows `352 + 14` *and* `margin-top 14`,
+  864 px in 836, and Tableau rebalanced the rows and left space at the bottom.
+- **Content height comes from one place:** 1000 - header 70 - filter band 52 - padding 20 top - 14 bottom = 844.
+  The bottom padding is 14 (the card gap) since v26, not the prototype's 22 (GB: no unneeded space at the
+  bottom). Tabs size their last row as "the rest", and the builder asserts the rows end at the content edge.
+- **Matching columns across rows:** fix the wide card (918 including its 7 px margin, so fixed 911) and let the
+  narrow card take the rest, in every row, so the right-hand cards (394) line up.
+- **`card_header` in a horizontal row needs `fixed=None`:** its default 44 is a height in a column but a width in
+  a row.
+- **No scroll bars:** size every grid a few px inside its zone (`pane = (zone - 4) // columns`) and leave 18 px for
+  a vertical scroll bar where a table scrolls. A canvas 7 px too wide gave horizontal scroll bars (v24).
+- **No Entire view on card grids:** panes stretch, circles become ovals, text stops lining up with its card.
+- **Measure text with Liberation Sans** (metric-compatible with Arial; 9 pt = 12 px at 96 dpi) and write width or
+  truncation calcs at build time (`CASE [key] WHEN ... THEN <px>`, `_fit(text, px, pt)` with "…").
 
-## 6. Segmented buttons
+## 8. Tables
 
-- Columns `(Option order * (Full Bar + Text Anchor))`, Full Bar `MIN(1.0)` and Text Anchor `MIN(0.5)` on
-  axes fixed 0 to 1 and hidden.
-- Bar pane: size `1.9890055656433105` (full), colour by `Is Active Option` (white `#ffffff` true, `#f5f5f3`
-  false).
-- Text pane: the hairline Gantt label (section 1), centred.
+- **Plain text tables are native** (v26): hidden order and key headers, then fixed-width row headers (When 96,
+  Model 192, Category 120) and the last column as the Text mark filling the rest, row height set on the last header
+  (`cell` rule `height`). Columns can never run into each other. Texts that must fit are cut by the build.
+- **Title row:** the same structure on a one-row scaffold (constant calcs "WHEN", "MODEL" ...), same header widths,
+  7 pt grey bold via the `label` rule, so it lines up with the table.
+- **Tables with pills** are a canvas (section 5): one fixed pane per row, pills as polygons from the row's own
+  multi-point rows, every cell placed as a centred label at half its measured width. Standard view only.
+- No borders: cell `border-style none` on every sheet (GB: "cell line is none"), no `table-div` lines around a
+  table (GB found the border disturbing).
 
-## 7. Colours, palettes and parameters in XML
+## 9. Native time charts (bars, lines, Gantt) that line up
 
-- A palette in the data source `<style>` only applies if the coloured field **also** has a data-source-level
-  `<column-instance>`. Without it Tableau falls back to Tableau 10. Register every coloured key field.
-- Same for custom shape maps (`<encoding attr='shape' type='shape'>`).
-- The data source must declare the parameters its calcs read in `<datasource-dependencies
-  datasource='Parameters'>` after `</semantic-values>`, or calcs fail with "Invalid formula".
-- Use ATTR() for a text field used in a tooltip or label on a polygon or map layer. A plain dimension there can
-  come up as an invalid (red) pill.
+- **Shared reversed day axis:** `Days Back Mid = days_before_as_of + 0.5`, fixed 0 to 90 with `reverse='true'`:
+  today on the right, day d fills [d, d + 1], the selected window is "below p_period".
+- **Strips that line up with a chart** (incident labels above, dates below): same x field and range, and a y axis
+  with the chart's fixed range, tick spacing **and number format** but clear label colour, so the clear axis takes
+  the same width as the chart's.
+- **Date labels:** first day and every 1st of the month on a wide chart; only the 1sts on a narrow one ("22 Jul"
+  ran into "1 Aug" on MTTR).
+- **Lines and areas:** never put a date dimension on Detail for the tooltip; it splits the line into dots and the
+  area into strips. Use an aggregate text (`MIN([date])` formatted). Thin line: size 0.4.
+- **Gantt:** start in hours on an axis fixed 0 to 24, `major-spacing 3`, format `n00":00";-00":00"`. Put the
+  selected day in the position calc (`IF [run_date] = [p_gantt_date] THEN ...`), not a filter, so every job keeps its
+  row. Banded rows: pane `band-color` + table `band-size`.
+- **Stacked look on a dual axis without Measure Names:** overlay total (grey) and part (red), synchronised.
+- **Sort by a measure:** `<computed-sort>` after the filters (flags in section 2). Top N: a table-calc filter
+  `RANK_UNIQUE(...) <= 7` addressed along the dimension.
+- **Reference lines on a parameter: unsolved.** `value-column='[Parameters].[Parameter N]' formula='constant'` loads,
+  but Tableau re-saves it as `value='%null%'`. Draw bands with bars instead (section 10) until GB sends a
+  Tableau-saved parameter reference line.
 
-## 8. Headers, axes, nulls and spacing
+## 10. Selection: border highlight, window band, clicked-day colours
 
-- Hide discrete headers with `<style-rule element='label'><format attr='display' field='...' value='false' />`.
-- Hide axes with `<style-rule element='axis'><format attr='display' class='0' field scope value='false'>`; fix
-  ranges with `<encoding attr='space' ... range-type='fixed' min max>`.
-- Hide the "N nulls" badge: `<style-rule element='table'><format attr='show-null-value-warning' value='false' />`.
-- A text run that starts with whitespace needs Tableau's literal marker: `Æ` + the text (`Æ  `). `Æ&#10;` is a
-  line break.
-- Trend bars in two colours (window vs rest): two measures (`IF ATTR([In Period]) THEN x END` and its opposite)
-  on a synchronised dual axis, each pane with a fixed `mark-color`. No palette needed.
+From GB's example (How to Use a Border to Highlight Selections in Tableau) and the prototype's chart code:
 
-## 8b. Interaction gotchas (Lineage, v16 to v17)
+- **Border round a selected bar:** a wider bar behind (back axis), coloured only for the selected item; the normal
+  bar in front. The edge that shows is the border.
+- **Three or more layers on a dual axis:** stack the front as Measure Values: rows `(back + [Multiple Values])`,
+  a `[:Measure Names]` member filter and `manual-sort` (stack order, first at the bottom), `<color
+  column='[:Measure Names]'>`, palette in the data source style with buckets `"[ds].[usr:Calc:qk]"`.
+- **Clicked day like the prototype:** front stack Failed Selected (full red), Failed Other (pale), Skipped Selected,
+  Skipped Other, then a filler up to the outline top in the band colour (white outside the window), so the navy back
+  bar shows only as a hollow outline. Back bar: the clicked day navy to near the top, every other window day full
+  height and full width in the band colour (the bars touch: the window band).
 
-- **ATTR shows "*"** when a mark's rows disagree. On a canvas a mark often holds several kinds of row (a node's
-  own row plus its edge rows). Make label calcs return NULL, not "", on the rows that should not speak.
-- **Dynamic zone visibility must read parameters only.** A DZV calc that read the data (even a FIXED LOD on
-  the selected node, even on Detail of a sheet on the same dashboard) kept its first value: pills, callouts and
-  whole panel sections stuck on the first node (v16, v17). Fix (v18): one parameter per thing the panel
-  switches on (`p_panel_status`, `p_panel_type`, `p_panel_platform`, `p_panel_tags` as `"|moved|ai|"`), written
-  by a parameter action from **every** sheet whose click picks a node, with those fields on Detail of the
-  clickable layers (ATTR on INDEX-based card grids so the table calc is not split). DZV calcs then compare
-  parameters only (`CONTAINS([p_panel_tags], "|ai|")`). Set the defaults to the default node's values.
-- **Go to Sheet** (from GB's example): `<nav-action caption name='[Action2_<hex>]'>` with
-  `<activation type='on-select' />`, `<source dashboard='<dashboard>' type='sheet' worksheet='...' />` (v19 left out the dashboard, as GB's
-  example did: the workbook loaded and parameters updated, but the jump never fired from the dashboard) and
-  `<params><param name='sheet' value='<target dashboard>' /></params>`. Full order inside `<actions>`, as
-  Tableau states it: `action*`, `datasources`, `datasource-dependencies*`, `nav-action*`, `edit-parameter-action*`. The same click still runs the sheet's parameter actions, so the
-  target opens on the selection.
-  **The manifest must declare `<NavigationAction />`**, or Tableau stops with "no declaration found for element
-  'nav-action'". General rule: when an element is "not declared", compare the reference's
-  `<document-format-change-manifest>` with yours first.
-- **A status pill whose colour depends on the data** is easier as a tiny canvas sheet (polygon pill coloured by
-  a key, Gantt text) than as one DZV container per state.
-- **Dehighlight after a click** (OKRs and IronViz references): calcs `Dehighlight True` = TRUE and
-  `Dehighlight False` = FALSE on Detail, a hidden data source group `Action (Dehighlight False)`
-  (`user:auto-column='sheet_link'`, crossjoin of the FALSE calc), a sheet filter on that group with
-  `user:ui-action-filter='[action name]'`, and a `tsc:tsl-filter` action from the sheet onto itself with
-  expression `tsl:<sheet>?[ds].[false]~s0=<[ds].[true]~na>`. Clicks set parameters without greying the view.
-  **Order inside `<actions>` is fixed by the schema:** every `<action>` first, then `<datasources>` and
-  `<datasource-dependencies>` (the TRUE / FALSE calcs), then every `<nav-action>`, then every `<edit-parameter-action>`. Interleaving them
-  stops the workbook opening.
-- **Tables with pills** are a canvas too: one fixed pane per row, rectangles and pills as polygons from the row's
-  own multi-point rows, and every text cell written and measured by the build (CASE on the key) and placed as a
-  centred label at half its width, left or right of its column edge. Rows taller than the zone scroll inside it.
-- **A map point may read only one table besides the hub** (Nodes, which every table relates through). A point
-  calc that reached Lineage Layout and Blast Radius failed with "Column can have only one upstream base table".
-  Write such values at build time keyed on the canvas table's own fields; the builder now checks every point.
-- A **custom number format** like `▲ 0%;▼ 0%` on a label field did not apply; build the text in a calc instead.
+## 11. Colours and palettes
 
-## 8c. Native charts that line up (Run & failures, v22)
+- A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau
+  falls back to its defaults. Same for shape maps.
+- **Quote text buckets** (`'"Selected"'`); booleans stay `true` / `false`. Unquoted text buckets silently fall back
+  to defaults (v24: an orange outline and a red band). The builder's `color_map` asserts it.
+- Two-colour trend bars (window vs rest): two measures on a synchronised dual axis, each pane a fixed
+  `mark-color`; no palette needed.
 
-- **Validate before sending:** `tableau/tools/validate_twb.py` checks the build against Tableau's 2026.1 XSD and the
-  manifest flags. Wrong element order and missing flags are caught there instead of in Tableau.
-- **Parameter reference lines: unsolved.** `value-column='[Parameters].[Parameter N]' formula='constant'` loads, but
-  Tableau re-saves it as `value='%null%'` on the axis field, so the line has no value (v22). Get one saved by Tableau
-  before trying again.
-- **Never put a date dimension on Detail of a line or area** for a tooltip: it splits the line into dots and the area
-  into strips. Use an aggregate text calc (`MIN([date])` formatted) instead.
-- **Labels next to thin bars:** a Bar label with text-align left sits inside the bar start and the bar runs through
-  it. Put the number on a clear hairline mark on the second axis instead (align left ends it at the point, valign top
-  lifts it above the bar).
-- **Buttons:** label on a clear custom shape (Shape mark, embedded `LCT/Transparent.png`), GB's preference since v22b.
-- **Quote text palette buckets** (`'"Selected"'`); booleans stay `true` / `false`. Unquoted text buckets silently
-  fall back to Tableau's default colours (v24: an orange outline and a red band). `color_map` now asserts it.
-- **Take colours from the prototype's code**, not the screenshot: opacities on white become exact hex
-  (55 % red = #e69995, 5 % accent band = #f2f7fb).
-- **Border round a selected bar** (GB's example workbook): a wider bar on the back axis, coloured only for the
-  selected item; the normal bar in front. Three layers (border, two stacked colours) fit a dual axis by stacking the
-  front as Measure Values: rows `(back + [Multiple Values])`, a `[:Measure Names]` member filter and `manual-sort`
-  for the stack order, `<color column='[:Measure Names]'>`, and the palette in the data source style with buckets
-  `"[ds].[usr:Calc:qk]"`. The same back axis can draw a window band: full-height, full-width bars on in-window days.
-- **Shared reversed axis:** a 90-day chart on `days_before_as_of + 0.5`, fixed 0 to 90 with `reverse='true'`, puts
-  today on the right, and the selected window is "below p_period". A reference line straight on the parameter
-  (`value-column='[Parameters].[Parameter N]' formula='constant'`, inside the pane after `<encodings>`) with a
-  `fill-below` colour shades the window; another on a parameter marks the selected day.
-- **Strips that line up with a chart** (incident labels, date labels): same x axis and range, and a y axis with the
-  chart's fixed range and tick spacing but clear label colour, so the axis takes the same width.
-- **Stacked look without Measure Names:** overlay total (grey) and part (red) on a synchronised dual axis.
-- **Sort by a measure:** `<computed-sort column=... direction='DESC' using=...>` after the filters. Needs `<SortTagCleanup />`,
-  `<IntuitiveSorting />` and `<IntuitiveSorting_SP2 />` in the manifest (v22 would not open without them). Before using
-  an element for the first time, find it in a Tableau-saved file and copy that file's manifest flags. Top N: a table-calc
-  filter `RANK_UNIQUE(...) <= 7` addressed along the dimension.
-- **Axis details:** blank title `<format attr='title' class='0' field scope value='' />`; ticks `major-origin` /
-  `major-spacing` on the space encoding; banded rows: pane `band-color` + table `band-size`; per-field header
-  font in the `label` rule. Number formats with a unit: `n#,##0"h";-#,##0"h"`, clock hours `n00":00";-00":00"`.
-- **A day in the position, not a filter**, keeps every row of a Gantt (all 9 jobs) like the prototype.
-- **`card_header` inside a horizontal row needs `fixed=None`:** its default 44 is a height in a column but a width
-  in a row.
+## 12. Interactivity: parameters, DZV, dehighlight, Go to Sheet
 
-## 9. Things that did not work
+- The data source declares the parameters its calcs read (`<datasource-dependencies datasource='Parameters'>`
+  after `</semantic-values>`), or calcs fail with "Invalid formula".
+- **Dynamic zone visibility reads parameters only.** A DZV calc that read the data kept its first value (v16, v17).
+  Write one parameter per thing a panel switches on (`p_panel_status`, `p_panel_type`, `p_panel_platform`,
+  `p_panel_tags` as `"|moved|ai|"`) from every sheet whose click picks a node, those fields on Detail of the clickable
+  layers (ATTR on INDEX-based grids), defaults set to the default node's values.
+- **A status pill whose colour depends on the data** is easier as a tiny canvas sheet than one DZV container per state.
+- **Dehighlight after a click** (OKRs and IronViz): `Dehighlight True` / `Dehighlight False` calcs on Detail, a hidden
+  group `Action (Dehighlight False)` (`user:auto-column='sheet_link'`), a sheet filter on it with
+  `user:ui-action-filter`, and a `tsc:tsl-filter` action onto itself
+  (`tsl:<sheet>?[ds].[false]~s0=<[ds].[true]~na>`).
+- **Go to Sheet:** `<nav-action>` with `<activation type='on-select' />`,
+  `<source dashboard='<dashboard>' type='sheet' worksheet='...' />` (without the dashboard it never fires from the
+  dashboard, v19) and `<params><param name='sheet' value='<target>' /></params>`. The same click runs the
+  parameter actions first, so the target opens on the selection.
 
-- **Custom shape images for cards.** Shape marks have no fixed pixel scale. A constant on Size makes Tableau
-  scale every shape to the pane, so cards come out huge and clipped. Use polygons for anything that must be an
-  exact size; keep custom shapes for small icons only.
-- **Text marks centred on an anchor** for left-aligned text: the box centres on the point and gets cut off.
-- **Entire View** on fixed-geometry card grids (see section 5).
-- **A geojson table added to the master** corrupted the logical-table object graph ("Logical Query missing field
-  ... from relationOp"); repairing the XML did not fix it. Draw shapes from existing rows instead.
+## 13. Headers, axes, number formats, nulls, spacing
 
-## 10. Working with Gbolahan's adjustments
+- Hide discrete headers through the `label` rule (`display false`); per-field header font, colour and alignment go
+  in the `label` rule too, widths in the `header` rule, row heights in the `cell` rule.
+- Hide axes with `display false` (class 0); fix ranges on `<encoding attr='space' range-type='fixed' min max>`,
+  ticks with `major-origin` / `major-spacing`; blank an axis title with `<format attr='title' class='0' field
+  scope value='' />`.
+- **A dual axis's visible axis takes the first measure's cell format:** give that measure the axis format ("20h")
+  and the second the tooltip's ("20.4h").
+- Number formats with a unit: `n#,##0"h";-#,##0"h"`; custom dates `*d mmm yyyy`. A format like `▲ 0%;▼ 0%` on a
+  label did not apply: build the text in a calc.
+- Hide the "N nulls" badge: `table` rule `show-null-value-warning false`.
+- A text run that starts with whitespace needs the literal marker `Æ` (`Æ  `); `Æ&#10;` is a line break.
 
-Gbolahan often fixes a build in Tableau and re-saves it. Diff the re-saved `.twb` against the build, sheet by
-sheet (ignore `datasource-dependencies` and run attribute order) and dashboard by dashboard (zone rects, fit,
-viewpoints), **and every calculation formula in the data source** (a nudged MAKEPOINT position lives there, not
-on the sheet: missed once on the v13 tile score), then fold every change into the builder so the next build keeps it. Tableau's re-save also shows
-the real laid-out zone sizes, which are the ground truth for card sizing.
+## 14. Things that did not work
+
+- **Custom shape images for cards:** Shape marks have no fixed pixel scale; a constant on Size scales every shape to
+  the pane. Use polygons for exact sizes; shapes only for small icons and clear button labels.
+- **Text marks centred on an anchor** for left-aligned text: cut off.
+- **Entire view / Fit width on a pixel canvas:** positions scale, text does not.
+- **A geojson table added to the master** corrupted the logical-table graph; draw shapes from existing rows.
+- **Parameter reference lines** written by hand (section 9).
+- **DZV calcs that read data** (section 12).

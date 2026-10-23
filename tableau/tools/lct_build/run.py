@@ -21,7 +21,7 @@ from .core import (PANEL_WRITES, ACCENT, ACCENT_TINT, B_DIM, CALCS, CRIT, CRIT_I
                    INK4, LAT, MEASURE_NAMES, MEASURE_VALUES, LINE, LON, NAVY, NL, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, Cross, Nest, Pane, R, Sheet, Z, blank,
                    button_label_pane, card, card_header, color_map, label_pane, run, sheet, text)
 from .lineage import _fit, _grid, _q
-from .shell import CONTENT_PAD
+from .shell import CONTENT_H, CONTENT_PAD
 
 P = 'RUN'
 DATE = 'date (dim_date.csv)'
@@ -29,14 +29,17 @@ ROOT = SH.ROOT
 ERRORS = list(csv.DictReader(open(ROOT / 'data' / 'marts' / 'mart_run_errors.csv', encoding='utf-8')))
 NODE_NAME = {r['node_id']: r['display_name'] for r in csv.DictReader(open(ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8'))}
 
-# ---------------------------------------------------------------- geometry (content 1312 x 836)
+# ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 SIDE_W = 380                                   # Why runs failed and MTTR cards; 7 px margin-left outside
 MAIN_W = 1312 - SIDE_W - 7 - 7                 # 918: Gantt and errors cards, 7 px margin-right outside
-DAILY_H, MID_H, BOTTOM_H = 220, 352, 236       # card heights; the two lower rows sit 14 px below the one above
-TABLE_W = MAIN_W - 7 - 2 * 16 - 2 - 18 - SH.SLACK  # 855: errors canvas in its 877 px zone, room for its scroll bar
-TABLE_ROW = (TABLE_W, 27)                      # one pane per error, prototype row height
-TCOL = {'when': 8, 'model': 104, 'category': 296, 'message': 416}
-MSG_W = TABLE_W - TCOL['message'] - 8          # 438 px of message, cut with "…" by the build
+DAILY_H, MID_H = 220, 352                       # card heights; the two lower rows sit 14 px below the one above
+BOTTOM_H = CONTENT_H - DAILY_H - 14 - MID_H - 14  # 244: the bottom row takes the rest, so nothing is left below
+TABLE_W = MAIN_W - 7 - 2 * 16 - 2 - 18 - SH.SLACK  # 855: the errors table inside its 877 px zone and scroll bar
+ROW_H = 27                                     # prototype row height
+# a native text table (v26): When, Model and Category are row headers of fixed width, the message is the text mark
+# filling the rest, so the columns can never run into each other (the v25 canvas did under Fit width)
+COL_W = {'When': 96, 'Model': 192, 'Category': 120}
+MSG_W = TABLE_W - sum(COL_W.values())           # 447 px of message, cut with "…" by the build
 
 DAYS = 90
 BACK_AXIS = (0, DAYS, {'reverse': 'true'})    # Days Back Mid: today on the right
@@ -67,31 +70,20 @@ CAT_NAME = {'database': 'Database error', 'compilation': 'Compilation error', 'p
 
 
 def _table_calcs():
-    """Every cell's text and width, measured at build time (Liberation Sans = Arial metrics), so each label can be
-    centred at half its width from its column's left edge: map-pane label alignment is not reliable."""
+    """Every cell's text, written by the build (Liberation Sans = Arial metrics), so the model and message are cut
+    with "…" to fit their column."""
     f = {}
     keys = {r['job_run_id'] + '|' + r['node_id']: r for r in ERRORS}
     cols = {
         'When': {k: _when(r['run_started_at']) for k, r in keys.items()},
-        'Model': {k: _fit(NODE_NAME.get(r['node_id'], r['node_id']), TCOL['category'] - TCOL['model'] - 12, 8) for k, r in keys.items()},
+        'Model': {k: _fit(NODE_NAME.get(r['node_id'], r['node_id']), COL_W['Model'] - 16, 8) for k, r in keys.items()},
         'Category': {k: CAT_NAME.get(r['error_category'], r['error_category']) for k, r in keys.items()},
-        'Message': {k: _fit(r['error_message'], MSG_W, 8) for k, r in keys.items()},
+        'Message': {k: _fit(r['error_message'], MSG_W - 16, 8) for k, r in keys.items()},
     }
     for c, vals in cols.items():
         f[f'Error {c} Text'] = _key_case(f'Error {c} Text', f'{c} cell of the Recent errors table, as the build wrote it.', vals)
-        f[f'Error {c} Width'] = _key_case(f'Error {c} Width', f'Width of the {c} cell text in px (8 pt Arial), for centring.',
-                                          {k: f'{SH.text_width(v, 8):.1f}' for k, v in vals.items()}, '0', numeric=True)
-        x = TCOL[c.lower()]
-        f[f'Error {c} Point'] = (f'// Error {c} Point\n// {c} cell: the label is centred, so the point sits half the text width '
-                                 f'right of the column edge ({x} px).\n'
-                                 f'MAKEPOINT(0, ({x} + [Error {c} Width] / 2 - {TABLE_W / 2:g}) / 100)')
-    heads = ['WHEN', 'MODEL', 'CATEGORY', 'MESSAGE']
-    xs = [TCOL[k] for k in ('when', 'model', 'category', 'message')]
-    f['Error Heading'] = ('// Error Heading\n// Column titles of the Recent errors table, one per scaffold day (day_index 0 to 3).\n'
-                          'CASE [day_index] ' + ' '.join(f'WHEN {i} THEN {_q(h)}' for i, h in enumerate(heads)) + ' END')
-    mid = ' '.join(f'WHEN {i} THEN {x + SH.text_width(h, 7, True) / 2:.1f}' for i, (h, x) in enumerate(zip(heads, xs)))
-    f['Error Heading Point'] = ('// Error Heading Point\n// Column title, centred at half its width from the column edge.\n'
-                                f'MAKEPOINT(0, ((CASE [day_index] {mid} END) - {TABLE_W / 2:g}) / 100)')
+    for c in ('When', 'Model', 'Category', 'Message'):
+        f[f'Error Head {c}'] = f'// Error Head {c}\n// Column title over the Recent errors table.\n{_q(c.upper())}'
     return f
 
 
@@ -103,7 +95,6 @@ def calcs():
                           '// 0 to 90 and reversed, so day d fills [d, d + 1] and the window is everything below p_period.\n'
                           '[days_before_as_of] + 0.5'),
         'Is First Date Row': '// Is First Date Row\n// One-row scaffold (the first day) for the Gantt day buttons and label. Put on Filters (True).\n[day_index] = 0',
-        'Is Error Heading Row': '// Is Error Heading Row\n// The four scaffold days that carry the error table\'s column titles. Put on Filters (True).\n[day_index] < 4',
         # daily bars (Node Daily)
         'Daily Failed Runs': '// Daily Failed Runs\n// Red bars: failed model runs that day.\nSUM([runs_failed])',
         'Daily Skipped Runs': '// Daily Skipped Runs\n// Skipped because an upstream model failed (tooltip).\nSUM([runs_skipped])',
@@ -116,7 +107,10 @@ def calcs():
                             'IF [day_index] = 0 OR DAY([date (dim_date.csv)]) = 1\n'
                             'THEN STR(DAY([date (dim_date.csv)])) + " " + LEFT(DATENAME(\'month\', [date (dim_date.csv)]), 3)\nEND'),
         'Axis Label Anchor': '// Axis Label Anchor\n// Point the date label is centred on (axis 0 to 52, the bars\' scale).\nIF NOT ISNULL(MIN([Axis Date Label])) THEN 26 END',
-        'Axis Label Anchor MTTR': '// Axis Label Anchor MTTR\n// Same, on the MTTR chart\'s 0 to 25 scale.\nIF NOT ISNULL(MIN([Axis Date Label])) THEN 12.5 END',
+        'Axis Month Label': ('// Axis Month Label\n// "1 Aug", "1 Sep", "1 Oct" under the narrow MTTR chart (no "22 Jul": it ran into "1 Aug").\n'
+                             'IF DAY([date (dim_date.csv)]) = 1\n'
+                             'THEN "1 " + LEFT(DATENAME(\'month\', [date (dim_date.csv)]), 3)\nEND'),
+        'Axis Label Anchor MTTR': '// Axis Label Anchor MTTR\n// Same, on the MTTR chart\'s 0 to 25 scale.\nIF NOT ISNULL(MIN([Axis Month Label])) THEN 12.5 END',
         # Gantt (Job Runs): the selected day is in the position, not a filter, so all 9 jobs keep their rows
         'Gantt Start Hour': ('// Gantt Start Hour\n// Bar start in hours (axis 00:00 to 24:00) for runs on the selected day; other days have no mark.\n'
                              f'IF [run_date] = [p_gantt_date] THEN {hours("[start_minute_of_day]")} END'),
@@ -182,10 +176,10 @@ def calcs():
 
 R_DIM_Q = ('real', 'dimension', 'quantitative')   # continuous dimension (an axis, not a header)
 TYPES = {
-    'Days Back Mid': R_DIM_Q, 'Is First Date Row': B_DIM, 'Is Error Heading Row': B_DIM,
+    'Days Back Mid': R_DIM_Q, 'Is First Date Row': B_DIM,
     'Daily Failed Runs': R_MEA, 'Daily Skipped Runs': R_MEA, 'Daily Failed And Skipped': R_MEA,
     'Incident Tick': R_MEA, 'Incident Label Anchor': R_MEA, 'Axis Date Label': S_DIM, 'Axis Label Anchor': R_MEA,
-    'Axis Label Anchor MTTR': R_MEA,
+    'Axis Label Anchor MTTR': R_MEA, 'Axis Month Label': S_DIM,
     'Gantt Start Hour': R_MEA, 'Gantt Duration Hours': R_MEA, 'Tests Failed Marker Hour': R_MEA,
     'Gantt Started Text': S_DIM, 'Gantt Duration Text': S_DIM, 'Job Platform Name': S_DIM,
     'Daily Back Height': R_MEA, 'Daily Back Key': S_MEA, 'Daily Is Selected': ('boolean', 'measure', 'nominal'),
@@ -194,7 +188,7 @@ TYPES = {
     'Tooltip Day Text': S_MEA, 'Why Track': R_MEA, 'Top Model Track': R_MEA, 'Is Top Failing Model': ('boolean', 'measure', 'nominal'),
     'Error Key': S_DIM, 'Error Order': I_DIM,
     'MTTR Rolling 7 Day Line': R_MEA, 'MTTR Rolling 7 Day Area': R_MEA,
-    'Error Heading': S_DIM, 'Error Heading Point': SP_MEA,
+
     # calc pack section 6 (and 2) calcs this tab reads
     'Is Platform Match Job': B_DIM, 'Is Platform Match Error': B_DIM, 'Job Run Outcome': S_DIM,
     'Job Schedule Label': S_DIM, 'Gantt Day Label': S_DIM, 'Gantt Prev Date': ('date', 'dimension', 'ordinal'),
@@ -204,8 +198,7 @@ TYPES = {
 }
 for c in ('When', 'Model', 'Category', 'Message'):
     TYPES[f'Error {c} Text'] = S_DIM
-    TYPES[f'Error {c} Width'] = R_MEA
-    TYPES[f'Error {c} Point'] = SP_MEA
+    TYPES[f'Error Head {c}'] = S_DIM
 
 CALCS.add(formulas=calcs(), types=TYPES, table_calc={
     'Why Track': 'Error Category Label', 'Top Model Track': 'display_name', 'Is Top Failing Model': 'display_name',
@@ -276,12 +269,13 @@ def incident_sheet() -> Sheet:
                                    valign='top', tooltip=tip)])
 
 
-def axis_strip(name, y_fixed, anchor_name) -> Sheet:
-    """Date labels under a 90-day chart, on the same reversed axis, with the chart's y axis in clear text."""
+def axis_strip(name, y_fixed, anchor_name, label='Axis Date Label', fmt=None) -> Sheet:
+    """Date labels under a 90-day chart, on the same reversed axis, with the chart's y axis in clear text (same range
+    and format, so the clear axis is exactly as wide and the plots line up)."""
     x, anchor = R('Days Back Mid'), R(anchor_name)
-    lab = R('Axis Date Label')
+    lab = R(label)
     return Sheet(name, cols=[x], rows=[anchor], hide=[x], fixed={x: BACK_AXIS, anchor: y_fixed}, tooltip=False,
-                 extra={'axis': _axis_style(anchor, False)},
+                 formats={anchor: fmt} if fmt else {}, extra={'axis': _axis_style(anchor, False, fmt)},
                  panes=label_pane(text=[lab], label=[run(lab, 8, INK3)], align='center'))
 
 
@@ -366,32 +360,35 @@ def why_sheets() -> list[Sheet]:
 
 
 def errors_sheets() -> list[Sheet]:
+    """A native text table: hidden order and key, then When / Model / Category as fixed-width row headers and the
+    message as the text mark. The title row is the same structure on a one-row scaffold, so its columns line up."""
     key, order = R('Error Key'), R('Error Order')
-    pane = TABLE_ROW
+    when, model, cat, msg = (R(f'Error {c} Text') for c in ('When', 'Model', 'Category', 'Message'))
     a = lambda n: R(n, 'attr')
     tip = [run(a('display_name'), 9, INK1, SEMI), run(NL, 7, INK3), run(a('error_message'), 8, INK1), run(NL, 7, INK3),
            run('JOB RUN   ', 7, INK3, SEMI), run(a('job_run_id'), 8, NAVY, SEMI), run(NL, 7, INK3),
            run('CLICK TO OPEN ITS LINEAGE', 7, INK3, SEMI)]
     clicks = [R('node_id (mart_run_errors.csv)'), R('node_key'), *[R(f) for f, _ in PANEL_WRITES]]
 
-    def cell(c, colour, inert=True):
-        t = R(f'Error {c} Text')
-        return label_pane(title=c, inert=inert, text=[t], label=[run(t, 8, colour)], align='center', valign='center',
-                          lod=[R(f'Error {c} Point', 'clct'), key, *([] if inert else clicks)], pane_size=pane,
-                          tooltip=None if inert else tip)
-    table = _grid(Sheet('RUN Recent Errors Table', rows=[Cross([Nest([order, key]), LAT])], cols=[LON],
-                        filters=[R('In Period'), R('Is Platform Match Error')], hide=[order, key], layers=True,
-                        no_basemap=True, zoom='fit-width',
-                        panes=[Pane('Automatic', lod=[key], pane_size=pane),
-                               cell('When', INK1), cell('Model', INK1), cell('Category', INK1),
-                               cell('Message', INK2, inert=False)]), pane)
-    hp = (TABLE_W, 22)
-    header = _grid(Sheet('RUN Recent Errors Header', rows=[LAT], cols=[LON], filters=[R('Is Error Heading Row')], layers=True,
-                         no_basemap=True, zoom='entire-view', tooltip=False,
-                         panes=[Pane('Automatic', pane_size=hp),
-                                label_pane(title='Titles', inert=True, text=[R('Error Heading')],
-                                           label=[run(R('Error Heading'), 7, INK3, SEMI)], align='center',
-                                           lod=[R('Error Heading Point', 'clct'), R('day_index')], pane_size=hp)]), hp)
+    def styles(fields, size, colour, bold=False):
+        out = []
+        for f in fields:
+            out += [f"            <format attr='font-size' field='{f.ref}' value='{size}' />",
+                    f"            <format attr='color' field='{f.ref}' value='{colour}' />",
+                    f"            <format attr='text-align' field='{f.ref}' value='left' />",
+                    f"            <format attr='vertical-align' field='{f.ref}' value='center' />"]
+            if bold:
+                out.append(f"            <format attr='font-weight' field='{f.ref}' value='bold' />")
+        return out
+    table = Sheet('RUN Recent Errors Table', rows=[order, key, when, model, cat], filters=[R('In Period'), R('Is Platform Match Error')],
+                  hide=[order, key], header_width={when: COL_W['When'], model: COL_W['Model'], cat: COL_W['Category']},
+                  row_height=(cat, ROW_H), zoom='fit-width', extra={'label': styles([when, model, cat], 8, INK1)},
+                  panes=Pane('Text', text=[msg], label=[run(msg, 8, INK2)], lod=clicks, tooltip=tip, align='left'))
+    heads = [R(f'Error Head {c}') for c in ('When', 'Model', 'Category', 'Message')]
+    header = Sheet('RUN Recent Errors Header', rows=heads[:3], filters=[R('Is First Date Row')], tooltip=False,
+                   header_width={heads[0]: COL_W['When'], heads[1]: COL_W['Model'], heads[2]: COL_W['Category']},
+                   row_height=(heads[2], 22), zoom='fit-width', extra={'label': styles(heads[:3], 7, INK3, True)},
+                   panes=Pane('Text', text=[heads[3]], label=[run(heads[3], 7, INK3, SEMI)], align='left'))
     return [header, table]
 
 
@@ -405,7 +402,7 @@ def mttr_sheet() -> Sheet:
            run(line, 9, NAVY, SEMI)]
     return Sheet('RUN MTTR Rolling Line', cols=[x], rows=[(area, line)], filters=[R('Is Platform Match Day (Episodes)')],
                  hide=[x, line], sync=[line], fixed={x: BACK_AXIS, area: MTTR_Y},
-                 formats={area: 'n#,##0.0"h";-#,##0.0"h"', line: 'n#,##0.0"h";-#,##0.0"h"'},
+                 formats={area: fmt, line: 'n#,##0.0"h";-#,##0.0"h"'},  # the axis follows the first measure: whole hours
                  extra={'axis': _axis_style(area, fmt=fmt), 'refline': rstyle},
                  panes=[Pane('Area', label_show=False),
                         Pane('Area', axis=area, mark_color=MTTR_AREA, label_show=False, tooltip=tip, reflines=rl),
@@ -415,7 +412,8 @@ def mttr_sheet() -> Sheet:
 def sheets() -> list[Sheet]:
     return ([daily_sheet(), incident_sheet(), axis_strip('RUN Daily Axis', BAR_Y, 'Axis Label Anchor'), gantt_sheet()]
             + gantt_day_sheets() + why_sheets() + errors_sheets()
-            + [mttr_sheet(), axis_strip('RUN MTTR Axis', MTTR_Y, 'Axis Label Anchor MTTR')])
+            + [mttr_sheet(), axis_strip('RUN MTTR Axis', MTTR_Y, 'Axis Label Anchor MTTR', 'Axis Month Label',
+                                        'n#,##0"h";-#,##0"h"')])
 
 
 # ================================================================ dashboard content (build plan 3.4)
@@ -459,26 +457,33 @@ def content() -> Z:
         sheet('RUN Why Failed Bar', 130),
         text([run('MODELS THAT FAILED MOST', 7, INK3, SEMI)], fixed=26, **{'padding-top': '10'}),
         sheet('RUN Top Failing Models Bar')])
-    errors = card('RUN Errors Card', margins={'right': 7}, kids=[
+    errors = card('RUN Errors Card', fixed=MAIN_W - 7, margins={'right': 7}, kids=[
         card_header('Recent errors', 'Newest first. Hover a message to read it in full. Click a row to open its lineage.'),
         sheet('RUN Recent Errors Header', 22),
         sheet('RUN Recent Errors Table')])
-    mttr = card('RUN MTTR Card', fixed=SIDE_W + 7, margins={'left': 7}, kids=[
+    mttr = card('RUN MTTR Card', margins={'left': 7}, kids=[
         card_header('Mean time to recover', 'Rolling 7-day average, in hours. Long tails come from issues that wait '
                     'for the next daily run.', 58),
         sheet('RUN MTTR Rolling Line'),
         sheet('RUN MTTR Axis', 16)])
     return Z('vert', friendly='RUN Content', style=CONTENT_PAD, kids=[
         daily,
-        Z('horz', friendly='RUN Middle Row', fixed=MID_H + 14, style={'margin-top': '14'}, kids=[gantt, why]),
-        Z('horz', friendly='RUN Bottom Row', fixed=BOTTOM_H + 14, style={'margin-top': '14'}, kids=[errors, mttr])])
+        # a fixed size excludes the zone's own margin: 352 + 14 above (v22 to v25 counted the 14 twice: 864 px in 836)
+        Z('horz', friendly='RUN Middle Row', fixed=MID_H, style={'margin-top': '14'}, kids=[gantt, why]),
+        Z('horz', friendly='RUN Bottom Row', fixed=BOTTOM_H, style={'margin-top': '14'}, kids=[errors, mttr])])
 
 
 def check_fit(zones) -> None:
-    by = {z.name: z.rect for z in zones if z.kind == 'sheet'}
-    for name, (w, h) in {'RUN Recent Errors Table': (TABLE_W, TABLE_ROW[1]), 'RUN Recent Errors Header': (TABLE_W, 22)}.items():
-        _, _, zw, zh = by[name]
-        assert w <= zw and h <= zh, f'{name}: needs {w} x {h} px, zone is {zw:.0f} x {zh:.0f}'
+    """The errors table fits its zone with room for the scroll bar, and the three rows end exactly where the content
+    area does (v22 to v25 overflowed by 28 px and Tableau rebalanced, leaving space at the bottom)."""
+    from .shell import CONTENT_PAD
+    by = {(z.name or z.friendly): z.rect for z in zones}
+    _, _, zw, _ = by['RUN Recent Errors Table']
+    assert TABLE_W + 18 <= zw, f'RUN Recent Errors Table: needs {TABLE_W} + 18 px, zone is {zw:.0f}'
+    _, y, _, h = by['RUN Bottom Row']
+    end = 1000 - int(CONTENT_PAD['padding-bottom'])
+    assert abs(y + h - end) < 0.5, f'RUN rows end at {y + h:.0f}, content ends at {end}'
+
 
 
 ACTIONS = [  # (sheet, source Ref factory, parameter, caption)

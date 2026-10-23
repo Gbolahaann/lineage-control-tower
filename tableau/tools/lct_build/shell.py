@@ -212,7 +212,11 @@ def filter_band(tab) -> Z:
         sheet('GL Period Hint', None, **{'padding-top': '4'})])
 
 
-CONTENT_PAD = {'padding-top': '20', 'padding-right': '28', 'padding-bottom': '22', 'padding-left': '28'}
+CONTENT_PAD = {'padding-top': '20', 'padding-right': '28', 'padding-bottom': '14', 'padding-left': '28'}
+# content area under the header (69 + 1) and filter band (51 + 1): 1000 - 122 - 20 - 14 = 844 px high, 1312 wide.
+# The bottom padding was the prototype's 22; GB asked for no unneeded space at the bottom (v25), so it matches the
+# 14 px gap between cards.
+CONTENT_H = 1000 - 122 - int(CONTENT_PAD['padding-top']) - int(CONTENT_PAD['padding-bottom'])
 
 
 def content_placeholder(tab) -> Z:

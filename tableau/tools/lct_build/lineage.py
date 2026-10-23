@@ -29,7 +29,7 @@ from .core import (PANEL_WRITES, Cross, ACCENT, AI_INK, B_DIM, BOOK, CALCS, CANV
                    GOOD_INK, I_DIM, I_MEA, IMAGES, INK1, INK2, INK3, INK4, LAT, LINE, LINE_SOFT, LON, NAVY, NL, NONE,
                    NONE_TINT, OUT_OF_WINDOW, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, WARN_INK, WARN_TINT, Nest, Pane, R,
                    Sheet, Z, blank, card, color_map, label_pane, run, sheet, text)
-from .shell import CONTENT_PAD, segmented
+from .shell import CONTENT_H, CONTENT_PAD, segmented
 
 P = 'LIN'
 DATE = 'date (dim_date.csv)'
@@ -43,7 +43,7 @@ PLAT_COL = {'Snowflake': '#005fae', 'Databricks': '#4baee3', 'Redshift': '#5b5fc
 # ================================================================ geometry (px), build plan 3.2
 GRAPH_CARD_W, PANEL_CARD_W = 965, 340            # graph card fixed; panel 340 plus a 7 px margin = 1312
 GRAPH_INNER_W = GRAPH_CARD_W - 2 * 16 - 2        # 931
-GRAPH_INNER_H = 836 - 14 - 10 - 2                # 810 (card padding 14 top, 10 bottom)
+GRAPH_INNER_H = CONTENT_H - 14 - 10 - 2          # 818 (card padding 14 top, 10 bottom)
 HEADER_H, GAP_H, LEGEND_H = 36, 8, 22
 W = GRAPH_INNER_W - SH.SLACK                     # 927: the canvas, a few px inside its zone (no scroll bars)
 H = GRAPH_INNER_H - HEADER_H - GAP_H - LEGEND_H - SH.SLACK   # 740
