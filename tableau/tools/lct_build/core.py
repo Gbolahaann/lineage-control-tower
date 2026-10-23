@@ -684,9 +684,10 @@ class Sheet:
             rule('pane', ["            <format attr='border-style' value='none' />", "            <format attr='border-width' value='0' />"])
         rule('table', ["            <format attr='show-null-value-warning' value='false' />",
                        "            <format attr='background-color' value='#00000000' />"])
-        div = ['on', LINE] if self.divider else ['off', '#00000000']
-        rule('table-div', [f"            <format attr='line-visibility' scope='{s}' value='{div[0]}' />" for s in ('rows', 'cols')]
-             + [f"            <format attr='stroke-color' scope='{s}' value='{div[1]}' />" for s in ('rows', 'cols')]
+        # divider True: lines between rows and columns; 'rows': row lines only (a table's row separators)
+        div = {s: (['on', LINE] if self.divider is True or self.divider == s else ['off', '#00000000']) for s in ('rows', 'cols')}
+        rule('table-div', [f"            <format attr='line-visibility' scope='{s}' value='{div[s][0]}' />" for s in ('rows', 'cols')]
+             + [f"            <format attr='stroke-color' scope='{s}' value='{div[s][1]}' />" for s in ('rows', 'cols')]
              + [f"            <format attr='stroke-size' scope='{s}' value='1' />" for s in ('rows', 'cols')])
         rule('worksheet', ["            <format attr='display-field-labels' scope='cols' value='false' />",
                            "            <format attr='display-field-labels' scope='rows' value='false' />"])

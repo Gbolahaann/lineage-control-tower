@@ -167,6 +167,10 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - **Plain text tables are native** (v26): hidden order and key headers, then fixed-width row headers (When 96,
   Model 192, Category 120) and the last column as the Text mark filling the rest, row height set on the last header
   (`cell` rule `height`). Columns can never run into each other. Texts that must fit are cut by the build.
+- **Check a native table against the prototype's table CSS before sending** (v26 skipped it): Tableau text tables
+  band alternate rows grey by default (set `band-color` clear on the `pane` and `header` rules), wrap text that
+  does not fit the cell (cut it about 40 px short of the column), and have no row lines unless asked (row dividers
+  only, `table-div` rows on, cols off; a 1 px line zone under the title row).
 - **Title row:** the same structure on a one-row scaffold (constant calcs "WHEN", "MODEL" ...), same header widths,
   7 pt grey bold via the `label` rule, so it lines up with the table.
 - **Tables with pills** are a canvas (section 5): one fixed pane per row, pills as polygons from the row's own

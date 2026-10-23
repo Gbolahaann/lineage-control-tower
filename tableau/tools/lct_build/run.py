@@ -78,7 +78,8 @@ def _table_calcs():
         'When': {k: _when(r['run_started_at']) for k, r in keys.items()},
         'Model': {k: _fit(NODE_NAME.get(r['node_id'], r['node_id']), COL_W['Model'] - 16, 8) for k, r in keys.items()},
         'Category': {k: CAT_NAME.get(r['error_category'], r['error_category']) for k, r in keys.items()},
-        'Message': {k: _fit(r['error_message'], MSG_W - 16, 8) for k, r in keys.items()},
+        # Tableau pads a cell and wraps text that does not fit (v26 wrapped onto a second line): leave 40 px
+        'Message': {k: _fit(r['error_message'], MSG_W - 40, 8) for k, r in keys.items()},
     }
     for c, vals in cols.items():
         f[f'Error {c} Text'] = _key_case(f'Error {c} Text', f'{c} cell of the Recent errors table, as the build wrote it.', vals)
@@ -359,6 +360,11 @@ def why_sheets() -> list[Sheet]:
     ]
 
 
+# a text table bands alternate rows grey by default (v26); the prototype has none
+NO_BANDS = {el: [f"            <format attr='band-color' scope='{s}' value='#00000000' />" for s in ('rows', 'cols')]
+            for el in ('pane', 'header')}
+
+
 def errors_sheets() -> list[Sheet]:
     """A native text table: hidden order and key, then When / Model / Category as fixed-width row headers and the
     message as the text mark. The title row is the same structure on a one-row scaffold, so its columns line up."""
@@ -382,12 +388,12 @@ def errors_sheets() -> list[Sheet]:
         return out
     table = Sheet('RUN Recent Errors Table', rows=[order, key, when, model, cat], filters=[R('In Period'), R('Is Platform Match Error')],
                   hide=[order, key], header_width={when: COL_W['When'], model: COL_W['Model'], cat: COL_W['Category']},
-                  row_height=(cat, ROW_H), zoom='fit-width', extra={'label': styles([when, model, cat], 8, INK1)},
+                  row_height=(cat, ROW_H), zoom='fit-width', divider='rows', extra={'label': styles([when, model, cat], 8, INK1), **NO_BANDS},
                   panes=Pane('Text', text=[msg], label=[run(msg, 8, INK2)], lod=clicks, tooltip=tip, align='left'))
     heads = [R(f'Error Head {c}') for c in ('When', 'Model', 'Category', 'Message')]
     header = Sheet('RUN Recent Errors Header', rows=heads[:3], filters=[R('Is First Date Row')], tooltip=False,
                    header_width={heads[0]: COL_W['When'], heads[1]: COL_W['Model'], heads[2]: COL_W['Category']},
-                   row_height=(heads[2], 22), zoom='fit-width', extra={'label': styles(heads[:3], 7, INK3, True)},
+                   row_height=(heads[2], 22), zoom='fit-width', extra={'label': styles(heads[:3], 7, INK3, True), **NO_BANDS},
                    panes=Pane('Text', text=[heads[3]], label=[run(heads[3], 7, INK3, SEMI)], align='left'))
     return [header, table]
 
@@ -460,6 +466,7 @@ def content() -> Z:
     errors = card('RUN Errors Card', fixed=MAIN_W - 7, margins={'right': 7}, kids=[
         card_header('Recent errors', 'Newest first. Hover a message to read it in full. Click a row to open its lineage.'),
         sheet('RUN Recent Errors Header', 22),
+        blank(1, LINE),  # the prototype's 1 px line under the column titles
         sheet('RUN Recent Errors Table')])
     mttr = card('RUN MTTR Card', margins={'left': 7}, kids=[
         card_header('Mean time to recover', 'Rolling 7-day average, in hours. Long tails come from issues that wait '
