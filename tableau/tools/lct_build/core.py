@@ -100,9 +100,6 @@ PARAMS = [
     dict(name='p_panel_type', datatype='string', value='model', domain='any'),
     dict(name='p_panel_platform', datatype='string', value='snowflake', domain='any'),
     dict(name='p_panel_tags', datatype='string', value='|', domain='any'),
-    # Run & failures: the Gantt day as days before the as-of date + 0.5, the position of its bar on the daily
-    # chart's axis (the dashed selected-day line reads it). Written with p_gantt_date by every day click.
-    dict(name='p_gantt_back', datatype='real', value='0.5', domain='any'),
 ]
 PARAM_ID = {p['name']: f'[Parameter {i + 1}]' for i, p in enumerate(PARAMS)}
 PARAM_BY = {p['name']: p for p in PARAMS}
@@ -327,12 +324,18 @@ class Ref:
 
 
 class Raw:
-    """A shelf entry Tableau generates itself (map Latitude / Longitude). Not declared in dependencies."""
+    """A shelf entry Tableau generates itself (map Latitude / Longitude, Measure Names / Values). Not declared in
+    dependencies."""
+    is_calc = False
+
     def __init__(self, name):
         self.name, self.ref, self.inst = name, f'[{DS}].[{name}]', f'[{name}]'
 
 
 LAT, LON = Raw('Latitude (generated)'), Raw('Longitude (generated)')
+MEASURE_NAMES, MEASURE_VALUES = Raw(':Measure Names'), Raw('Multiple Values')
+# Measure Names colours, written to the data source style like any palette: {measure Ref instance: colour}
+MV_COLORS: dict[str, str] = {}
 
 
 def R(name, agg=None, kind=None) -> Ref:
@@ -526,7 +529,8 @@ class Sheet:
 
     def __init__(self, name, *, rows=(), cols=(), panes=None, filters=(), formats=None, hide=(), fixed=None,
                  header_font=None, header_width=None, row_height=None, divider=False, tooltip=True, zoom='entire-view',
-                 sync=(), map_washout=None, layers=False, no_basemap=False, extra=None, sorts=(), bands=None):
+                 sync=(), map_washout=None, layers=False, no_basemap=False, extra=None, sorts=(), bands=None,
+                 measure_values=()):
         self.name, self.rows, self.cols = name, list(rows), list(cols)
         self.panes = panes if isinstance(panes, list) else [panes or Pane()]
         self.filters, self.formats, self.hide = list(filters), formats or {}, list(hide)
@@ -541,6 +545,11 @@ class Sheet:
         self.axis_heights = {}          # {Ref: px} height of a (hidden) continuous axis band
         self.extra = {k: list(v) for k, v in (extra or {}).items()}  # {style element: [format lines]} added as written
         self.sorts = list(sorts)        # (dimension Ref, 'ASC' / 'DESC', measure Ref): computed sorts
+        # Measure Values on a shelf (MEASURE_VALUES): [(measure Ref, colour)], in stack order (first at the bottom),
+        # filtered and sorted on Measure Names the way Tableau writes it (GB's border-highlight example)
+        self.measure_values = list(measure_values)
+        for r, c in self.measure_values:
+            MV_COLORS[f'"{r.ref}"'] = c
         if bands:                       # banded rows in this colour (as Tableau writes it: pane colour, table size)
             self.extra.setdefault('pane', []).append(f"            <format attr='band-color' scope='rows' value='{bands}' />")
             self.extra.setdefault('table', []).append("            <format attr='band-size' scope='rows' value='1' />")
@@ -562,9 +571,11 @@ class Sheet:
             refs += p.refs()
         refs += list(self.formats)
         refs += [u for _, _, u in self.sorts]
+        refs += [r for r, _ in self.measure_values]
         uniq = {}
         for r in refs:
-            uniq.setdefault(r.inst, r)
+            if not isinstance(r, Raw):
+                uniq.setdefault(r.inst, r)
         return list(uniq.values())
 
     def scope(self, r) -> str:
@@ -593,12 +604,22 @@ class Sheet:
         dep += [r.instance_xml('            ') for r in refs]
         dep.append('          </datasource-dependencies>')
 
-        filt = ''.join(
+        filt = ''
+        if self.measure_values:
+            members = ''.join(f"              <groupfilter function='member' level='[:Measure Names]' member='{esc(chr(34) + r.ref + chr(34))}' />\n"
+                              for r, _ in self.measure_values)
+            buckets = ''.join(f"              <bucket>{esc(chr(34) + r.ref + chr(34))}</bucket>\n" for r, _ in self.measure_values)
+            filt += (f"          <filter class='categorical' column='{MEASURE_NAMES.ref}'>\n"
+                     "            <groupfilter function='union' user:op='manual'>\n" + members + "            </groupfilter>\n"
+                     "          </filter>\n"
+                     f"          <manual-sort column='{MEASURE_NAMES.ref}' direction='ASC'>\n            <dictionary>\n" + buckets
+                     + "            </dictionary>\n          </manual-sort>\n")
+        filt += ''.join(
             f"          <filter class='categorical' column='{r.ref}'>\n"
             f"            <groupfilter function='member' level='{r.inst}' member='true' "
             "user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />\n"
             "          </filter>\n" for r in self.filters)
-        slice_cols = [r.ref for r in self.filters]
+        slice_cols = ([MEASURE_NAMES.ref] if self.measure_values else []) + [r.ref for r in self.filters]
         if self.dehighlight:
             filt += (f"          <filter class='categorical' column='[{DS}].{DEHIGHLIGHT_GROUP}'>\n"
                      f"            <groupfilter function='level-members' level='[{CALCS.cid('Dehighlight False')}]' "
@@ -724,6 +745,11 @@ def datasource_style() -> str:
         rules.append(f"          <encoding attr='shape' field='{ref.inst}' type='shape'>")
         for b, sh in m.items():
             rules.append(f"            <map to='{esc(sh)}'>\n              <bucket>{esc(b)}</bucket>\n            </map>")
+        rules.append('          </encoding>')
+    if MV_COLORS:
+        rules.append("          <encoding attr='color' field='[:Measure Names]' type='palette'>")
+        for b, c in MV_COLORS.items():
+            rules.append(f"            <map to='{c}'>\n              <bucket>{esc(b)}</bucket>\n            </map>")
         rules.append('          </encoding>')
     for ref, m in COLOR_MAPS:
         rules.append(f"          <encoding attr='color' field='{ref.inst}' type='palette'>")

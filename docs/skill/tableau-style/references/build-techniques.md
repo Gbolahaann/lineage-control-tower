@@ -198,6 +198,11 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
   it. Put the number on a clear hairline mark on the second axis instead (align left ends it at the point, valign top
   lifts it above the bar).
 - **Buttons:** label on a clear custom shape (Shape mark, embedded `LCT/Transparent.png`), GB's preference since v22b.
+- **Border round a selected bar** (GB's example workbook): a wider bar on the back axis, coloured only for the
+  selected item; the normal bar in front. Three layers (border, two stacked colours) fit a dual axis by stacking the
+  front as Measure Values: rows `(back + [Multiple Values])`, a `[:Measure Names]` member filter and `manual-sort`
+  for the stack order, `<color column='[:Measure Names]'>`, and the palette in the data source style with buckets
+  `"[ds].[usr:Calc:qk]"`. The same back axis can draw a window band: full-height, full-width bars on in-window days.
 - **Shared reversed axis:** a 90-day chart on `days_before_as_of + 0.5`, fixed 0 to 90 with `reverse='true'`, puts
   today on the right, and the selected window is "below p_period". A reference line straight on the parameter
   (`value-column='[Parameters].[Parameter N]' formula='constant'`, inside the pane after `<encodings>`) with a

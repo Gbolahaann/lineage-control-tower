@@ -5,7 +5,8 @@ line) and a pixel canvas only for the Recent errors table (GB, 22 Oct: "Mixed").
 
 The 90-day charts share one x axis: Days Back Mid (days before the as-of date + 0.5), fixed 0 to 90 and reversed,
 so today is on the right and day d fills [d, d + 1]. The selected window is then simply "below p_period", which a
-reference line on p_period shades (fill-below), and the selected Gantt day is a line on p_gantt_back. The incident
+band of full-width back bars shades (light blue), and the clicked day gets a navy border: a wider navy bar behind its
+stack, the technique of GB's border-highlight example (v24). The incident
 strip above the bars and the date strip under them use the same axis, and the same fixed y axis with its labels
 made clear, so all three line up to the pixel.
 """
@@ -17,7 +18,7 @@ from datetime import datetime
 
 from . import shapes as SH
 from .core import (PANEL_WRITES, ACCENT, ACCENT_TINT, B_DIM, CALCS, CRIT, CRIT_INK, I_DIM, I_MEA, INK1, INK2, INK3,
-                   INK4, LAT, LINE, LON, NAVY, NL, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, Cross, Nest, Pane, R, Sheet, Z, blank,
+                   INK4, LAT, MEASURE_NAMES, MEASURE_VALUES, LINE, LON, NAVY, NL, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, Cross, Nest, Pane, R, Sheet, Z, blank,
                    button_label_pane, card, card_header, color_map, label_pane, run, sheet, text)
 from .lineage import _fit, _grid, _q
 from .shell import CONTENT_PAD
@@ -128,10 +129,13 @@ def calcs():
         'Job Platform Name': ('// Job Platform Name\n// Platform the job ran on, as written in the legend.\n'
                               'CASE [platform (mart_job_runs.csv)] WHEN "snowflake" THEN "Snowflake" WHEN "databricks" THEN "Databricks"\n'
                               'WHEN "redshift" THEN "Redshift" ELSE [platform (mart_job_runs.csv)] END'),
-        'Gantt Prev Back': ('// Gantt Prev Back\n// What the ‹ button writes into p_gantt_back (one day earlier = one more day back).\n'
-                            'IF [p_gantt_back] < 89 THEN [p_gantt_back] + 1 ELSE [p_gantt_back] END'),
-        'Gantt Next Back': ('// Gantt Next Back\n// What the › button writes into p_gantt_back. Stops at the last day.\n'
-                            'IF [p_gantt_back] > 1 THEN [p_gantt_back] - 1 ELSE [p_gantt_back] END'),
+        # the back layer of the daily chart: the clicked day's border, else the selected window's band
+        'Daily Back Height': ('// Daily Back Height\n// Back bars of the daily chart: the clicked day a little taller than its stack (its navy border shows\n'
+                              '// round the red and grey), every other day in the window full height (light blue, the bars touch: a band).\n'
+                              'IF MAX(IIF([Is Gantt Day], 1, 0)) = 1 THEN [Daily Failed And Skipped] + 1.5\n'
+                              'ELSEIF MAX(IIF([In Period], 1, 0)) = 1 THEN 52\nEND'),
+        'Daily Back Key': ('// Daily Back Key\n// Colour of the back bars: Selected (navy border) or Window (light blue band).\n'
+                           'IF MAX(IIF([Is Gantt Day], 1, 0)) = 1 THEN "Selected"\nELSEIF MAX(IIF([In Period], 1, 0)) = 1 THEN "Window"\nEND'),
         'Tooltip Day Text': ('// Tooltip Day Text\n// "Mon 12 Oct" in a 90-day chart\'s tooltip, as an aggregate so it never splits a line or area.\n'
                              'LEFT(DATENAME(\'weekday\', MIN([date (dim_date.csv)])), 3) + " " + STR(DAY(MIN([date (dim_date.csv)]))) + " "\n'
                              '+ LEFT(DATENAME(\'month\', MIN([date (dim_date.csv)])), 3)'),
@@ -168,7 +172,7 @@ TYPES = {
     'Axis Label Anchor MTTR': R_MEA,
     'Gantt Start Hour': R_MEA, 'Gantt Duration Hours': R_MEA, 'Tests Failed Marker Hour': R_MEA,
     'Gantt Started Text': S_DIM, 'Gantt Duration Text': S_DIM, 'Job Platform Name': S_DIM,
-    'Gantt Prev Back': R_DIM_Q, 'Gantt Next Back': R_DIM_Q, 'Gantt Prev Glyph': S_MEA, 'Gantt Next Glyph': S_MEA,
+    'Daily Back Height': R_MEA, 'Daily Back Key': S_MEA, 'Is Gantt Day': B_DIM, 'Gantt Prev Glyph': S_MEA, 'Gantt Next Glyph': S_MEA,
     'Tooltip Day Text': S_MEA, 'Why Track': R_MEA, 'Top Model Track': R_MEA, 'Is Top Failing Model': ('boolean', 'measure', 'nominal'),
     'Error Key': S_DIM, 'Error Order': I_DIM,
     'MTTR Rolling 7 Day Line': R_MEA, 'MTTR Rolling 7 Day Area': R_MEA,
@@ -204,38 +208,38 @@ def _axis_style(y, show_labels=True, fmt=None):
     return lines
 
 
-def _window_lines(axis, selected=True):
-    """The selected window (fill below the p_period line, the line itself clear) and the selected Gantt day."""
+def _window_lines(axis):
+    """The selected window: fill below a reference line on p_period, the line itself clear (MTTR chart)."""
+    # The daily chart draws its window as a band of back bars (v24). Tableau re-saved this line as %null% in v22b,
+    # so it waits for a Tableau-saved parameter reference line to copy.
     rl = [dict(id='refline0', axis=axis, param='p_period', z=1)]
     style = ["            <format attr='stroke-size' id='refline0' value='0' />",
              f"            <format attr='stroke-color' id='refline0' value='{CLEAR}' />",
              f"            <format attr='fill-above' id='refline0' value='{CLEAR}' />",
              f"            <format attr='fill-below' id='refline0' value='{ACCENT_TINT}' />"]
-    if selected:
-        rl.append(dict(id='refline1', axis=axis, param='p_gantt_back', z=2))
-        style += ["            <format attr='stroke-size' id='refline1' value='1' />",
-                  f"            <format attr='stroke-color' id='refline1' value='{NAVY}' />",
-                  f"            <format attr='fill-above' id='refline1' value='{CLEAR}' />",
-                  f"            <format attr='fill-below' id='refline1' value='{CLEAR}' />"]
     return rl, style
 
 
 def daily_sheet() -> Sheet:
+    """Back axis: the window band and the clicked day's navy border (wide bars). Front axis: failed (red) and skipped
+    (grey) stacked as Measure Values, narrower, so the back bar shows round the clicked day's stack."""
     x, date = R('Days Back Mid'), R(DATE)
-    total, failed = R('Daily Failed And Skipped'), R('Daily Failed Runs')
-    rl, rstyle = _window_lines(x)
+    back, key, failed, skipped = R('Daily Back Height'), R('Daily Back Key'), R('Daily Failed Runs'), R('Daily Skipped Runs')
+    color_map(key, {'Selected': NAVY, 'Window': ACCENT_TINT})
     tip = [run(R(DATE), 9, INK1, SEMI), run(NL, 7, INK3),
            run('FAILED   ', 7, INK3, SEMI), run(failed, 9, CRIT_INK, SEMI), run(NL, 7, INK3),
            run('SKIPPED   ', 7, INK3, SEMI), run(R('Daily Skipped Runs'), 9, NAVY, SEMI), run(NL, 7, INK3),
            run('CLICK TO LOAD ITS RUN TIMELINE', 7, INK3, SEMI)]
-    return Sheet('RUN Daily Failures Bar', cols=[x], rows=[(total, failed)], filters=[R('Is Platform Match Day')],
-                 hide=[x, failed], sync=[failed], fixed={x: BACK_AXIS, total: BAR_Y},
-                 formats={R(DATE): '*d mmm yyyy', total: 'n#,##0;-#,##0'},
-                 extra={'axis': _axis_style(total), 'refline': rstyle},
-                 panes=[Pane('Bar', size=1.2, label_show=False),
-                        Pane('Bar', axis=total, size=1.2, label_show=False, mark_color=SKIP_GREY, lod=[date],
-                             tooltip=tip, reflines=rl),
-                        Pane('Bar', axis=failed, size=1.2, label_show=False, mark_color=CRIT, lod=[date], tooltip=tip)])
+    mv = MEASURE_VALUES.ref
+    axis = _axis_style(back) + [
+        f"            <encoding attr='space' class='0' field='{mv}' field-type='quantitative' fold='true' scope='rows' synchronized='true' type='space' />",
+        f"            <format attr='display' class='0' field='{mv}' scope='rows' value='false' />"]
+    return Sheet('RUN Daily Failures Bar', cols=[x], rows=[(back, MEASURE_VALUES)], filters=[R('Is Platform Match Day')],
+                 hide=[x], fixed={x: BACK_AXIS, back: BAR_Y}, measure_values=[(failed, CRIT), (skipped, SKIP_GREY)],
+                 formats={R(DATE): '*d mmm yyyy', back: 'n#,##0;-#,##0'}, extra={'axis': axis},
+                 panes=[Pane('Bar', size=1.2, label_show=False, lod=[date]),
+                        Pane('Bar', axis=back, color=key, size=1.9890055656433105, label_show=False, lod=[date], tooltip=tip),
+                        Pane('Bar', axis=MEASURE_VALUES, color=MEASURE_NAMES, size=1.2, label_show=False, lod=[date], tooltip=tip)])
 
 
 def incident_sheet() -> Sheet:
@@ -298,15 +302,15 @@ def gantt_day_sheets() -> list[Sheet]:
     first = R('Is First Date Row')
     bar, anchor = R('Full Bar'), R('Text Anchor Centre')
 
-    def button(name, glyph, date_field, back_field):
-        lod = [R(date_field), R(back_field)]
+    def button(name, glyph, date_field):
+        lod = [R(date_field)]
         return Sheet(name, cols=[(bar, anchor)], hide=[bar, anchor], filters=[first], fixed={bar: (0, 1), anchor: (0, 1)},
                      tooltip=False, panes=[Pane(lod=list(lod)),
                                            Pane('Bar', axis=bar, mark_color='#ffffff', lod=list(lod), size=1.9890055656433105, label_show=False),
                                            button_label_pane(axis=anchor, text=[R(glyph)], lod=list(lod), align='center',
                                                              label=[run(R(glyph), 12, INK2)])])
-    return [button('RUN Gantt Prev Button', 'Gantt Prev Glyph', 'Gantt Prev Date', 'Gantt Prev Back'),
-            button('RUN Gantt Next Button', 'Gantt Next Glyph', 'Gantt Next Date', 'Gantt Next Back'),
+    return [button('RUN Gantt Prev Button', 'Gantt Prev Glyph', 'Gantt Prev Date'),
+            button('RUN Gantt Next Button', 'Gantt Next Glyph', 'Gantt Next Date'),
             Sheet('RUN Gantt Day Label', filters=[first], tooltip=False,
                   panes=label_pane(text=[R('Gantt Day Label')], align='center',
                                    label=[run(R('Gantt Day Label'), 10, INK1, SEMI)]))]
@@ -373,7 +377,7 @@ def mttr_sheet() -> Sheet:
     x = R('Days Back Mid')
     line, area = R('MTTR Rolling 7 Day Line'), R('MTTR Rolling 7 Day Area')
     date = R('Tooltip Day Text')   # an aggregate: a date dimension on Detail broke the area and line into pieces (v22b)
-    rl, rstyle = _window_lines(x, selected=False)
+    rl, rstyle = _window_lines(x)
     fmt = 'n#,##0"h";-#,##0"h"'
     tip = [run(date, 9, INK1, SEMI), run(NL, 7, INK3), run('MEAN RECOVERY, 7 DAYS   ', 7, INK3, SEMI),
            run(line, 9, NAVY, SEMI)]
@@ -457,11 +461,8 @@ def check_fit(zones) -> None:
 
 ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     ('RUN Daily Failures Bar', lambda: R(DATE), 'p_gantt_date', 'RUN Pick Gantt Day'),
-    ('RUN Daily Failures Bar', lambda: R('Days Back Mid'), 'p_gantt_back', 'RUN Pick Gantt Day Back'),
     ('RUN Gantt Prev Button', lambda: R('Gantt Prev Date'), 'p_gantt_date', 'RUN Gantt Prev'),
-    ('RUN Gantt Prev Button', lambda: R('Gantt Prev Back'), 'p_gantt_back', 'RUN Gantt Prev Back'),
     ('RUN Gantt Next Button', lambda: R('Gantt Next Date'), 'p_gantt_date', 'RUN Gantt Next'),
-    ('RUN Gantt Next Button', lambda: R('Gantt Next Back'), 'p_gantt_back', 'RUN Gantt Next Back'),
     ('RUN Recent Errors Table', lambda: R('node_id (mart_run_errors.csv)'), 'p_selected_node', 'RUN Error Select Node'),
     ('RUN Recent Errors Table', lambda: R('node_key'), 'p_selected_node_key', 'RUN Error Select Node Key'),
     *[('RUN Recent Errors Table', (lambda f=f: R(f)), param, f'RUN Error Set {param}') for f, param in PANEL_WRITES],

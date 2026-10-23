@@ -434,9 +434,6 @@
       <column caption='p_panel_tags' datatype='string' datatype-customized='true' name='[Parameter 13]' param-domain-type='any' role='measure' type='nominal' value='&quot;|&quot;'>
         <calculation class='tableau' formula='&quot;|&quot;' />
       </column>
-      <column caption='p_gantt_back' datatype='real' datatype-customized='true' name='[Parameter 14]' param-domain-type='any' role='measure' type='quantitative' value='0.5'>
-        <calculation class='tableau' formula='0.5' />
-      </column>
     </datasource>
     <datasource caption='Lineage Control Tower' inline='true' name='federated.07vo3ft0hzn0yt1e7nb981upju80' version='18.1'>
       <connection class='federated'>
@@ -5204,11 +5201,20 @@
       <column caption='Daily Failed And Skipped' datatype='real' name='[Calculation_2885600867321422714]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Daily Failed And Skipped&#13;&#10;// Grey bars behind the red ones: failed + skipped, so the grey part above the red&#13;&#10;// is the skipped runs (an overlay, exact even on the 19 node-days that had both).&#13;&#10;SUM([runs_failed]) + SUM([runs_skipped])' />
       </column>
-      <column caption='Daily Failed Runs' datatype='real' name='[Calculation_3098460751127839790]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='// Daily Failed Runs&#13;&#10;// Red bars: failed model runs that day.&#13;&#10;SUM([runs_failed])' />
+      <column caption='Is Gantt Day' datatype='boolean' name='[Calculation_9861913593929028361]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='// Is Gantt Day&#13;&#10;// The bar for the day loaded in the Gantt (reference line on the date axis instead of a colour change).&#13;&#10;[date (dim_date.csv)] = [Parameters].[Parameter 6]' />
+      </column>
+      <column caption='Daily Back Height' datatype='real' name='[Calculation_9871844494807156944]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Daily Back Height&#13;&#10;// Back bars of the daily chart: the clicked day a little taller than its stack (its navy border shows&#13;&#10;// round the red and grey), every other day in the window full height (light blue, the bars touch: a band).&#13;&#10;IF MAX(IIF([Calculation_9861913593929028361], 1, 0)) = 1 THEN [Calculation_2885600867321422714] + 1.5&#13;&#10;ELSEIF MAX(IIF([Calculation_1409194560049525583], 1, 0)) = 1 THEN 52&#13;&#10;END' />
       </column>
       <column caption='Days Back Mid' datatype='real' name='[Calculation_2904210747288447847]' role='dimension' type='quantitative'>
         <calculation class='tableau' formula='// Days Back Mid&#13;&#10;// x of every 90-day chart on this tab: days before the as-of date + 0.5, on an axis fixed&#13;&#10;// 0 to 90 and reversed, so day d fills [d, d + 1] and the window is everything below p_period.&#13;&#10;[days_before_as_of] + 0.5' />
+      </column>
+      <column caption='Daily Back Key' datatype='string' name='[Calculation_1507981906426335172]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Daily Back Key&#13;&#10;// Colour of the back bars: Selected (navy border) or Window (light blue band).&#13;&#10;IF MAX(IIF([Calculation_9861913593929028361], 1, 0)) = 1 THEN &quot;Selected&quot;&#13;&#10;ELSEIF MAX(IIF([Calculation_1409194560049525583], 1, 0)) = 1 THEN &quot;Window&quot;&#13;&#10;END' />
+      </column>
+      <column caption='Daily Failed Runs' datatype='real' name='[Calculation_3098460751127839790]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='// Daily Failed Runs&#13;&#10;// Red bars: failed model runs that day.&#13;&#10;SUM([runs_failed])' />
       </column>
       <column caption='Daily Skipped Runs' datatype='real' name='[Calculation_2138488070576058935]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Daily Skipped Runs&#13;&#10;// Skipped because an upstream model failed (tooltip).&#13;&#10;SUM([runs_skipped])' />
@@ -5261,9 +5267,6 @@
       <column caption='Gantt Prev Date' datatype='date' name='[Calculation_4255842174353675499]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Gantt Prev Date&#13;&#10;// Value the ‹ button writes into p_gantt_date. Stops at the first day.&#13;&#10;IF [Parameters].[Parameter 6] &gt; { MIN([date (dim_date.csv)]) }&#13;&#10;    THEN DATE(DATEADD(&apos;day&apos;, -1, [Parameters].[Parameter 6]))&#13;&#10;ELSE [Parameters].[Parameter 6]&#13;&#10;END' />
       </column>
-      <column caption='Gantt Prev Back' datatype='real' name='[Calculation_2100442842155549834]' role='dimension' type='quantitative'>
-        <calculation class='tableau' formula='// Gantt Prev Back&#13;&#10;// What the ‹ button writes into p_gantt_back (one day earlier = one more day back).&#13;&#10;IF [Parameters].[Parameter 14] &lt; 89 THEN [Parameters].[Parameter 14] + 1 ELSE [Parameters].[Parameter 14] END' />
-      </column>
       <column caption='Gantt Prev Glyph' datatype='string' name='[Calculation_5461572561073485727]' role='measure' type='nominal'>
         <calculation class='tableau' formula='// Gantt Prev Glyph&#13;&#10;// ‹ on the previous-day button.&#13;&#10;MIN(&quot;‹&quot;)' />
       </column>
@@ -5272,9 +5275,6 @@
       </column>
       <column caption='Gantt Next Date' datatype='date' name='[Calculation_2973907925170101119]' role='dimension' type='ordinal'>
         <calculation class='tableau' formula='// Gantt Next Date&#13;&#10;// Value the › button writes into p_gantt_date. Stops at the last day.&#13;&#10;IF [Parameters].[Parameter 6] &lt; [Calculation_3151274114862452881]&#13;&#10;    THEN DATE(DATEADD(&apos;day&apos;, 1, [Parameters].[Parameter 6]))&#13;&#10;ELSE [Parameters].[Parameter 6]&#13;&#10;END' />
-      </column>
-      <column caption='Gantt Next Back' datatype='real' name='[Calculation_1733785505387696222]' role='dimension' type='quantitative'>
-        <calculation class='tableau' formula='// Gantt Next Back&#13;&#10;// What the › button writes into p_gantt_back. Stops at the last day.&#13;&#10;IF [Parameters].[Parameter 14] &gt; 1 THEN [Parameters].[Parameter 14] - 1 ELSE [Parameters].[Parameter 14] END' />
       </column>
       <column caption='Gantt Next Glyph' datatype='string' name='[Calculation_2561110447235085966]' role='measure' type='nominal'>
         <calculation class='tableau' formula='// Gantt Next Glyph&#13;&#10;// › on the next-day button.&#13;&#10;MIN(&quot;›&quot;)' />
@@ -5981,6 +5981,7 @@
       <column-instance column='[Calculation_9934721400824060829]' derivation='None' name='[none:Calculation_9934721400824060829:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_1007352953374889853]' derivation='None' name='[none:Calculation_1007352953374889853:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_2496845894520933783]' derivation='None' name='[none:Calculation_2496845894520933783:ok]' pivot='key' type='ordinal' />
+      <column-instance column='[Calculation_1507981906426335172]' derivation='User' name='[usr:Calculation_1507981906426335172:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_2594716741566639131]' derivation='None' name='[none:Calculation_2594716741566639131:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_1687481836717768070]' derivation='None' name='[none:Calculation_1687481836717768070:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_2702365918922892839]' derivation='None' name='[none:Calculation_2702365918922892839:nk]' pivot='key' type='nominal' />
@@ -6004,6 +6005,14 @@
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <style>
         <style-rule element='mark'>
+          <encoding attr='color' field='[:Measure Names]' type='palette'>
+            <map to='#d2453f'>
+              <bucket>&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]&quot;</bucket>
+            </map>
+            <map to='#c3c9cf'>
+              <bucket>&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]&quot;</bucket>
+            </map>
+          </encoding>
           <encoding attr='color' field='[none:Calculation_1290101426377148290:nk]' type='palette'>
             <map to='#ffffff'>
               <bucket>true</bucket>
@@ -6138,6 +6147,14 @@
             </map>
             <map to='#a3adb8'>
               <bucket>1</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[usr:Calculation_1507981906426335172:nk]' type='palette'>
+            <map to='#002c55'>
+              <bucket>Selected</bucket>
+            </map>
+            <map to='#e9f1f9'>
+              <bucket>Window</bucket>
             </map>
           </encoding>
           <encoding attr='color' field='[none:Calculation_2594716741566639131:nk]' type='palette'>
@@ -6352,9 +6369,6 @@
         </column>
         <column caption='p_panel_tags' datatype='string' datatype-customized='true' name='[Parameter 13]' param-domain-type='any' role='measure' type='nominal' value='&quot;|&quot;'>
           <calculation class='tableau' formula='&quot;|&quot;' />
-        </column>
-        <column caption='p_gantt_back' datatype='real' datatype-customized='true' name='[Parameter 14]' param-domain-type='any' role='measure' type='quantitative' value='0.5'>
-          <calculation class='tableau' formula='0.5' />
         </column>
         <column alias='Last 30 days' caption='p_period' datatype='integer' datatype-customized='true' name='[Parameter 1]' param-domain-type='list' role='measure' type='quantitative' value='30'>
           <calculation class='tableau' formula='30' />
@@ -7821,16 +7835,6 @@
         <param name='target-parameter' value='[Parameters].[Parameter 6]' />
       </params>
     </edit-parameter-action>
-    <edit-parameter-action caption='RUN Pick Gantt Day Back' name='[Action1_05D021AD5A9356904A63D78858F528F7]'>
-      <activation type='on-select' />
-      <source dashboard='Run &amp; failures' type='sheet' worksheet='RUN Daily Failures Bar' />
-      <agg-type type='attr' />
-      <clear-option type='do-nothing' value='s:LROOT:' />
-      <params>
-        <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' />
-        <param name='target-parameter' value='[Parameters].[Parameter 14]' />
-      </params>
-    </edit-parameter-action>
     <edit-parameter-action caption='RUN Gantt Prev' name='[Action1_452A7405F37213B4E5EE8B7CA52CD53E]'>
       <activation type='on-select' />
       <source dashboard='Run &amp; failures' type='sheet' worksheet='RUN Gantt Prev Button' />
@@ -7841,16 +7845,6 @@
         <param name='target-parameter' value='[Parameters].[Parameter 6]' />
       </params>
     </edit-parameter-action>
-    <edit-parameter-action caption='RUN Gantt Prev Back' name='[Action1_202FB8D5170CAA68F602FAA039CF5D07]'>
-      <activation type='on-select' />
-      <source dashboard='Run &amp; failures' type='sheet' worksheet='RUN Gantt Prev Button' />
-      <agg-type type='attr' />
-      <clear-option type='do-nothing' value='s:LROOT:' />
-      <params>
-        <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2100442842155549834:qk]' />
-        <param name='target-parameter' value='[Parameters].[Parameter 14]' />
-      </params>
-    </edit-parameter-action>
     <edit-parameter-action caption='RUN Gantt Next' name='[Action1_B545E118AAE1CD7350522652C4843053]'>
       <activation type='on-select' />
       <source dashboard='Run &amp; failures' type='sheet' worksheet='RUN Gantt Next Button' />
@@ -7859,16 +7853,6 @@
       <params>
         <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
         <param name='target-parameter' value='[Parameters].[Parameter 6]' />
-      </params>
-    </edit-parameter-action>
-    <edit-parameter-action caption='RUN Gantt Next Back' name='[Action1_56B1D4BC417AE9850B10AFD5606E37BD]'>
-      <activation type='on-select' />
-      <source dashboard='Run &amp; failures' type='sheet' worksheet='RUN Gantt Next Button' />
-      <agg-type type='attr' />
-      <clear-option type='do-nothing' value='s:LROOT:' />
-      <params>
-        <param name='source-field' value='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733785505387696222:qk]' />
-        <param name='target-parameter' value='[Parameters].[Parameter 14]' />
       </params>
     </edit-parameter-action>
     <edit-parameter-action caption='RUN Error Select Node' name='[Action1_45BEB3AF01BE87548030403217A0D8E5]'>
@@ -17526,9 +17510,6 @@
             <datasource name='Parameters' />
           </datasources>
           <datasource-dependencies datasource='Parameters'>
-            <column caption='p_gantt_back' datatype='real' datatype-customized='true' name='[Parameter 14]' param-domain-type='any' role='measure' type='quantitative' value='0.5'>
-              <calculation class='tableau' formula='0.5' />
-            </column>
             <column alias='Last 30 days' caption='p_period' datatype='integer' datatype-customized='true' name='[Parameter 1]' param-domain-type='list' role='measure' type='quantitative' value='30'>
               <calculation class='tableau' formula='30' />
               <aliases>
@@ -17557,13 +17538,22 @@
                 <member alias='Redshift' value='&quot;redshift&quot;' />
               </members>
             </column>
+            <column caption='p_gantt_date' datatype='date' datatype-customized='true' name='[Parameter 6]' param-domain-type='any' role='measure' type='quantitative' value='#2026-10-19#'>
+              <calculation class='tableau' formula='#2026-10-19#' />
+            </column>
           </datasource-dependencies>
           <datasource-dependencies datasource='federated.07vo3ft0hzn0yt1e7nb981upju80'>
             <column caption='Daily Failed And Skipped' datatype='real' name='[Calculation_2885600867321422714]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Daily Failed And Skipped&#13;&#10;// Grey bars behind the red ones: failed + skipped, so the grey part above the red&#13;&#10;// is the skipped runs (an overlay, exact even on the 19 node-days that had both).&#13;&#10;SUM([runs_failed]) + SUM([runs_skipped])' />
             </column>
-            <column caption='Daily Failed Runs' datatype='real' name='[Calculation_3098460751127839790]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='// Daily Failed Runs&#13;&#10;// Red bars: failed model runs that day.&#13;&#10;SUM([runs_failed])' />
+            <column caption='In Period' datatype='boolean' name='[Calculation_1409194560049525583]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// In Period&#13;&#10;// TRUE for days inside the selected window: the last 7, 30 or 90 days up to 19 Oct.&#13;&#10;// Used by every &quot;- Focus&quot; measure and to colour the window on trend bars.&#13;&#10;[days_before_as_of] &lt; [Parameters].[Parameter 1]' />
+            </column>
+            <column caption='Is Gantt Day' datatype='boolean' name='[Calculation_9861913593929028361]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Is Gantt Day&#13;&#10;// The bar for the day loaded in the Gantt (reference line on the date axis instead of a colour change).&#13;&#10;[date (dim_date.csv)] = [Parameters].[Parameter 6]' />
+            </column>
+            <column caption='Daily Back Height' datatype='real' name='[Calculation_9871844494807156944]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Daily Back Height&#13;&#10;// Back bars of the daily chart: the clicked day a little taller than its stack (its navy border shows&#13;&#10;// round the red and grey), every other day in the window full height (light blue, the bars touch: a band).&#13;&#10;IF MAX(IIF([Calculation_9861913593929028361], 1, 0)) = 1 THEN [Calculation_2885600867321422714] + 1.5&#13;&#10;ELSEIF MAX(IIF([Calculation_1409194560049525583], 1, 0)) = 1 THEN 52&#13;&#10;END' />
             </column>
             <column caption='Days Back Mid' datatype='real' name='[Calculation_2904210747288447847]' role='dimension' type='quantitative'>
               <calculation class='tableau' formula='// Days Back Mid&#13;&#10;// x of every 90-day chart on this tab: days before the as-of date + 0.5, on an axis fixed&#13;&#10;// 0 to 90 and reversed, so day d fills [d, d + 1] and the window is everything below p_period.&#13;&#10;[days_before_as_of] + 0.5' />
@@ -17577,6 +17567,12 @@
             <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
             </column>
+            <column caption='Daily Back Key' datatype='string' name='[Calculation_1507981906426335172]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Daily Back Key&#13;&#10;// Colour of the back bars: Selected (navy border) or Window (light blue band).&#13;&#10;IF MAX(IIF([Calculation_9861913593929028361], 1, 0)) = 1 THEN &quot;Selected&quot;&#13;&#10;ELSEIF MAX(IIF([Calculation_1409194560049525583], 1, 0)) = 1 THEN &quot;Window&quot;&#13;&#10;END' />
+            </column>
+            <column caption='Daily Failed Runs' datatype='real' name='[Calculation_3098460751127839790]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='// Daily Failed Runs&#13;&#10;// Red bars: failed model runs that day.&#13;&#10;SUM([runs_failed])' />
+            </column>
             <column caption='Daily Skipped Runs' datatype='real' name='[Calculation_2138488070576058935]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='// Daily Skipped Runs&#13;&#10;// Skipped because an upstream model failed (tooltip).&#13;&#10;SUM([runs_skipped])' />
             </column>
@@ -17585,15 +17581,28 @@
             <column caption='Platform On Day' datatype='string' name='[platform_on_day]' role='dimension' type='nominal' />
             <column caption='Runs Failed' datatype='real' name='[runs_failed]' role='measure' type='quantitative' />
             <column caption='Runs Skipped' datatype='real' name='[runs_skipped]' role='measure' type='quantitative' />
-            <column-instance column='[Calculation_2885600867321422714]' derivation='User' name='[usr:Calculation_2885600867321422714:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[Calculation_3098460751127839790]' derivation='User' name='[usr:Calculation_3098460751127839790:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_9871844494807156944]' derivation='User' name='[usr:Calculation_9871844494807156944:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2904210747288447847]' derivation='None' name='[none:Calculation_2904210747288447847:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1100032193373739257]' derivation='None' name='[none:Calculation_1100032193373739257:nk]' pivot='key' type='nominal' />
+            <column-instance column='[date (dim_date.csv)]' derivation='None' name='[none:date (dim_date.csv):ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
-            <column-instance column='[date (dim_date.csv)]' derivation='None' name='[none:date (dim_date.csv):ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_1507981906426335172]' derivation='User' name='[usr:Calculation_1507981906426335172:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_3098460751127839790]' derivation='User' name='[usr:Calculation_3098460751127839790:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2138488070576058935]' derivation='User' name='[usr:Calculation_2138488070576058935:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[:Measure Names]'>
+            <groupfilter function='union' user:op='manual'>
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]&quot;' />
+            </groupfilter>
+          </filter>
+          <manual-sort column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[:Measure Names]' direction='ASC'>
+            <dictionary>
+              <bucket>&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]&quot;</bucket>
+              <bucket>&quot;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]&quot;</bucket>
+            </dictionary>
+          </manual-sort>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1100032193373739257:nk]'>
             <groupfilter function='member' level='[none:Calculation_1100032193373739257:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
@@ -17601,6 +17610,7 @@
             <groupfilter function='level-members' level='[Calculation_1841670643858094106]' user:ui-action-filter='[Action9_A2097DE9F8C09C875CFA11BD6AA9E2FD]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
           <slices>
+            <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[:Measure Names]</column>
             <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1100032193373739257:nk]</column>
             <column>[federated.07vo3ft0hzn0yt1e7nb981upju80].[Action (Dehighlight False)]</column>
           </slices>
@@ -17609,19 +17619,19 @@
         <style>
           <style-rule element='axis'>
             <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' field-type='quantitative' fold='true' max='90' min='0' range-type='fixed' reverse='true' scope='cols' type='space' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]' field-type='quantitative' fold='true' max='52' min='0' range-type='fixed' major-origin='0' major-spacing='25' scope='rows' type='space' />
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]' field-type='quantitative' fold='true' scope='rows' synchronized='true' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk]' field-type='quantitative' fold='true' max='52' min='0' range-type='fixed' major-origin='0' major-spacing='25' scope='rows' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' scope='cols' value='false' />
-            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]' scope='rows' value='false' />
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='font-size' value='8' />
             <format attr='color' value='#7a838e' />
-            <format attr='title' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]' scope='rows' value='' />
+            <format attr='title' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk]' scope='rows' value='' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Multiple Values]' field-type='quantitative' fold='true' scope='rows' synchronized='true' type='space' />
+            <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Multiple Values]' scope='rows' value='false' />
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' value='*d mmm yyyy' />
-            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]' value='n#,##0;-#,##0' />
+            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk]' value='n#,##0;-#,##0' />
             <format attr='border-style' scope='cols' value='none' />
             <format attr='border-width' scope='cols' value='0' />
           </style-rule>
@@ -17630,7 +17640,7 @@
           </style-rule>
           <style-rule element='label'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' value='*d mmm yyyy' />
-            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]' value='n#,##0;-#,##0' />
+            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk]' value='n#,##0;-#,##0' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -17651,16 +17661,6 @@
           <style-rule element='zeroline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
-          <style-rule element='refline'>
-            <format attr='stroke-size' id='refline0' value='0' />
-            <format attr='stroke-color' id='refline0' value='#00000000' />
-            <format attr='fill-above' id='refline0' value='#00000000' />
-            <format attr='fill-below' id='refline0' value='#e9f1f9' />
-            <format attr='stroke-size' id='refline1' value='1' />
-            <format attr='stroke-color' id='refline1' value='#002c55' />
-            <format attr='fill-above' id='refline1' value='#00000000' />
-            <format attr='fill-below' id='refline1' value='#00000000' />
-          </style-rule>
         </style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
@@ -17670,6 +17670,7 @@
             <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -17689,60 +17690,18 @@
               </style-rule>
             </style>
           </pane>
-          <pane id='1' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]'>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk]'>
             <view>
               <breakdown value='auto' />
             </view>
             <mark class='Bar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1507981906426335172:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
-              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]' />
-            </encodings>
-            <reference-line axis-column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' enable-instant-analytics='false' formula='constant' id='refline0' label-type='none' scope='per-table' value-column='[Parameters].[Parameter 1]' z-order='1' />
-            <reference-line axis-column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' enable-instant-analytics='false' formula='constant' id='refline1' label-type='none' scope='per-table' value-column='[Parameters].[Parameter 14]' z-order='2' />
-            <customized-tooltip>
-              <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>FAILED   </run>
-                <run fontcolor='#a92e29' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>SKIPPED   </run>
-                <run fontcolor='#002c55' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]&gt;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
-                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>CLICK TO LOAD ITS RUN TIMELINE</run>
-              </formatted-text>
-            </customized-tooltip>
-            <style>
-              <style-rule element='cell'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='label'>
-                <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
-              </style-rule>
-              <style-rule element='mark'>
-                <format attr='mark-labels-show' value='false' />
-                <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='1.2' />
-                <format attr='mark-color' value='#c3c9cf' />
-              </style-rule>
-            </style>
-          </pane>
-          <pane id='2' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]'>
-            <view>
-              <breakdown value='auto' />
-            </view>
-            <mark class='Bar' />
-            <mark-sizing mark-sizing-setting='marks-scaling-off' />
-            <encodings>
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]' />
               <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]' />
             </encodings>
             <customized-tooltip>
@@ -17770,13 +17729,55 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
+                <format attr='size' value='1.9890055656433105' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Multiple Values]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
+            <mark-sizing mark-sizing-setting='marks-scaling-off' />
+            <encodings>
+              <color column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[:Measure Names]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]' />
+            </encodings>
+            <customized-tooltip>
+              <formatted-text>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]&gt;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>FAILED   </run>
+                <run fontcolor='#a92e29' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk]&gt;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>SKIPPED   </run>
+                <run fontcolor='#002c55' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2138488070576058935:qk]&gt;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
+                <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>CLICK TO LOAD ITS RUN TIMELINE</run>
+              </formatted-text>
+            </customized-tooltip>
+            <style>
+              <style-rule element='cell'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='label'>
+                <format attr='text-align' value='left' />
+                <format attr='vertical-align' value='center' />
+              </style-rule>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='false' />
+                <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='1.2' />
-                <format attr='mark-color' value='#d2453f' />
               </style-rule>
             </style>
           </pane>
         </panes>
-        <rows>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3098460751127839790:qk])</rows>
+        <rows>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_9871844494807156944:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[Multiple Values])</rows>
         <cols>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]</cols>
       </table>
       <simple-id uuid='{9D1A1D02-F015-C995-08C9-D94F728C4106}' />
@@ -18362,9 +18363,6 @@
             <datasource name='Parameters' />
           </datasources>
           <datasource-dependencies datasource='Parameters'>
-            <column caption='p_gantt_back' datatype='real' datatype-customized='true' name='[Parameter 14]' param-domain-type='any' role='measure' type='quantitative' value='0.5'>
-              <calculation class='tableau' formula='0.5' />
-            </column>
             <column caption='p_gantt_date' datatype='date' datatype-customized='true' name='[Parameter 6]' param-domain-type='any' role='measure' type='quantitative' value='#2026-10-19#'>
               <calculation class='tableau' formula='#2026-10-19#' />
             </column>
@@ -18382,9 +18380,6 @@
             <column caption='Gantt Prev Date' datatype='date' name='[Calculation_4255842174353675499]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Gantt Prev Date&#13;&#10;// Value the ‹ button writes into p_gantt_date. Stops at the first day.&#13;&#10;IF [Parameters].[Parameter 6] &gt; { MIN([date (dim_date.csv)]) }&#13;&#10;    THEN DATE(DATEADD(&apos;day&apos;, -1, [Parameters].[Parameter 6]))&#13;&#10;ELSE [Parameters].[Parameter 6]&#13;&#10;END' />
             </column>
-            <column caption='Gantt Prev Back' datatype='real' name='[Calculation_2100442842155549834]' role='dimension' type='quantitative'>
-              <calculation class='tableau' formula='// Gantt Prev Back&#13;&#10;// What the ‹ button writes into p_gantt_back (one day earlier = one more day back).&#13;&#10;IF [Parameters].[Parameter 14] &lt; 89 THEN [Parameters].[Parameter 14] + 1 ELSE [Parameters].[Parameter 14] END' />
-            </column>
             <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
             </column>
@@ -18400,7 +18395,6 @@
             <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_7201951502715406386]' derivation='None' name='[none:Calculation_7201951502715406386:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_4255842174353675499]' derivation='None' name='[none:Calculation_4255842174353675499:ok]' pivot='key' type='ordinal' />
-            <column-instance column='[Calculation_2100442842155549834]' derivation='None' name='[none:Calculation_2100442842155549834:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_5461572561073485727]' derivation='User' name='[usr:Calculation_5461572561073485727:nk]' pivot='key' type='nominal' />
@@ -18460,7 +18454,6 @@
             <mark class='Automatic' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4255842174353675499:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2100442842155549834:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18487,7 +18480,6 @@
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4255842174353675499:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2100442842155549834:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18516,7 +18508,6 @@
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4255842174353675499:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2100442842155549834:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_5461572561073485727:nk]' />
@@ -18560,9 +18551,6 @@
             <datasource name='Parameters' />
           </datasources>
           <datasource-dependencies datasource='Parameters'>
-            <column caption='p_gantt_back' datatype='real' datatype-customized='true' name='[Parameter 14]' param-domain-type='any' role='measure' type='quantitative' value='0.5'>
-              <calculation class='tableau' formula='0.5' />
-            </column>
             <column caption='p_gantt_date' datatype='date' datatype-customized='true' name='[Parameter 6]' param-domain-type='any' role='measure' type='quantitative' value='#2026-10-19#'>
               <calculation class='tableau' formula='#2026-10-19#' />
             </column>
@@ -18583,9 +18571,6 @@
             <column caption='Gantt Next Date' datatype='date' name='[Calculation_2973907925170101119]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Gantt Next Date&#13;&#10;// Value the › button writes into p_gantt_date. Stops at the last day.&#13;&#10;IF [Parameters].[Parameter 6] &lt; [Calculation_3151274114862452881]&#13;&#10;    THEN DATE(DATEADD(&apos;day&apos;, 1, [Parameters].[Parameter 6]))&#13;&#10;ELSE [Parameters].[Parameter 6]&#13;&#10;END' />
             </column>
-            <column caption='Gantt Next Back' datatype='real' name='[Calculation_1733785505387696222]' role='dimension' type='quantitative'>
-              <calculation class='tableau' formula='// Gantt Next Back&#13;&#10;// What the › button writes into p_gantt_back. Stops at the last day.&#13;&#10;IF [Parameters].[Parameter 14] &gt; 1 THEN [Parameters].[Parameter 14] - 1 ELSE [Parameters].[Parameter 14] END' />
-            </column>
             <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
             </column>
@@ -18601,7 +18586,6 @@
             <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_7201951502715406386]' derivation='None' name='[none:Calculation_7201951502715406386:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2973907925170101119]' derivation='None' name='[none:Calculation_2973907925170101119:ok]' pivot='key' type='ordinal' />
-            <column-instance column='[Calculation_1733785505387696222]' derivation='None' name='[none:Calculation_1733785505387696222:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2561110447235085966]' derivation='User' name='[usr:Calculation_2561110447235085966:nk]' pivot='key' type='nominal' />
@@ -18661,7 +18645,6 @@
             <mark class='Automatic' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733785505387696222:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18688,7 +18671,6 @@
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733785505387696222:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18717,7 +18699,6 @@
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733785505387696222:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2561110447235085966:nk]' />
