@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .core import (R_MEA, ACCENT, BOLD, BOOK, CALCS, CANVAS, CARD, CARD_STYLE, INK1, INK2, INK3, INK4, LIME, LINE,
                    LINE_SOFT, MEDIUM, NAVY, NL, PLAT, SEMI, B_DIM, I_DIM, S_DIM, Cross, Pane, R, Sheet, Z, blank,
-                   color_map, label_pane, run, sheet, text)
+                   color_map, button_label_pane, label_pane, run, sheet, text)
 
 TABS = [  # prefix, dashboard name, nav group, question, nav icon (None = not in the nav)
     ('HO', 'Health overview', 'Monitor', 'Is anything on fire right now?', 'health'),
@@ -71,7 +71,7 @@ def segmented(name, order_field, option_field, active_field, act_label, inact_la
                  filters=[R(row_filter)], fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
                  panes=[Pane(),
                         Pane('Bar', axis=bar, color=R(active_field), lod=lod, size=1.9890055656433105, label_show=False),
-                        label_pane(axis=anchor, text=texts, lod=lod, label=label, align='center')])
+                        button_label_pane(axis=anchor, text=texts, lod=lod, label=label, align='center')])
 
 
 def gl_sheets() -> list[Sheet]:

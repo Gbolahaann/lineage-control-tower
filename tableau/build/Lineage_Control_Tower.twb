@@ -5295,12 +5295,12 @@
         <calculation class='tableau' formula='// Error Category Label&#13;&#10;// Prototype names for the error categories.&#13;&#10;CASE [error_category]&#13;&#10;WHEN &quot;database&quot;      THEN &quot;Database error&quot;&#13;&#10;WHEN &quot;compilation&quot;   THEN &quot;Compilation error&quot;&#13;&#10;WHEN &quot;permission&quot;    THEN &quot;Permission denied&quot;&#13;&#10;WHEN &quot;timeout&quot;       THEN &quot;Timeout&quot;&#13;&#10;WHEN &quot;schema_change&quot; THEN &quot;Schema change&quot;&#13;&#10;ELSE [error_category]&#13;&#10;END' />
       </column>
       <column caption='Why Track' datatype='real' name='[Calculation_2807912847742869558]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='// Why Track&#13;&#10;// Light grey track behind each red bar: the longest bar in the card.&#13;&#10;// Table calc along Error Category Label.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
+        <calculation class='tableau' formula='// Why Track&#13;&#10;// Where each count label ends: the longest bar&apos;s end, so the counts line up on the right as in&#13;&#10;// the mock. Table calc along Error Category Label.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
           <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2759662032659617150]' ordering-type='Field' />
         </calculation>
       </column>
       <column caption='Top Model Track' datatype='real' name='[Calculation_1053829186246530949]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='// Top Model Track&#13;&#10;// Track behind the top-models bars. Table calc along display_name.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
+        <calculation class='tableau' formula='// Top Model Track&#13;&#10;// Same for the top-models bars. Table calc along display_name.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
           <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[display_name]' ordering-type='Field' />
         </calculation>
       </column>
@@ -5369,6 +5369,9 @@
         <calculation class='tableau' formula='// MTTR Rolling 7 Day Line&#13;&#10;// Mean recovery time of episodes that started in the 7 days up to each day (episode-weighted).&#13;&#10;// Table calc along Days Back Mid (ascending = back in time, so the 6 days before are +1 to +6).&#13;&#10;WINDOW_SUM(SUM(IF NOT [is_open] THEN [hours_to_recover] END), 0, 6)&#13;&#10;/&#13;&#10;WINDOW_SUM(COUNT(IF NOT [is_open] THEN [hours_to_recover] END), 0, 6)'>
           <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' ordering-type='Field' />
         </calculation>
+      </column>
+      <column caption='Tooltip Day Text' datatype='string' name='[Calculation_2968828563623477298]' role='measure' type='nominal'>
+        <calculation class='tableau' formula='// Tooltip Day Text&#13;&#10;// &quot;Mon 12 Oct&quot; in a 90-day chart&apos;s tooltip, as an aggregate so it never splits a line or area.&#13;&#10;LEFT(DATENAME(&apos;weekday&apos;, MIN([date (dim_date.csv)])), 3) + &quot; &quot; + STR(DAY(MIN([date (dim_date.csv)]))) + &quot; &quot;&#13;&#10;+ LEFT(DATENAME(&apos;month&apos;, MIN([date (dim_date.csv)])), 3)' />
       </column>
       <column caption='Axis Label Anchor MTTR' datatype='real' name='[Calculation_4501011842619422576]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='// Axis Label Anchor MTTR&#13;&#10;// Same, on the MTTR chart&apos;s 0 to 25 scale.&#13;&#10;IF NOT ISNULL(MIN([Calculation_2516393983253929826])) THEN 12.5 END' />
@@ -8402,6 +8405,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -8478,7 +8485,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2018629980644388562:nk]' />
@@ -8504,6 +8511,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -8605,6 +8613,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -8682,7 +8694,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1708304674625620149:nk]' />
@@ -8715,6 +8727,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -8763,6 +8776,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -8850,6 +8867,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -8935,6 +8956,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9046,6 +9071,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9210,6 +9239,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1734332201503898389:qk]' value='p0.00%' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9375,6 +9406,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1059166526216479784:qk]' value='n#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2561166764669332405:qk]' value='n#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9595,6 +9628,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1484671631694661168:qk]' value='p0.00%' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9761,6 +9796,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_5039955109046369523:qk]' value='n#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_4452841432140642752:qk]' value='n#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -9981,6 +10018,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1872933243208732540:qk]' value='p0.00%' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -10147,6 +10186,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1084932894337796393:qk]' value='n#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2103565215221969907:qk]' value='n#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -10334,6 +10375,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -10498,6 +10543,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2107588681978104977:qk]' value='n#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3360750808181857461:qk]' value='n#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -10718,6 +10765,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -10880,6 +10931,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2182700666057493534:qk]' value='n#,##0.0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2828040696381880192:qk]' value='n#,##0.0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -11099,6 +11152,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2007928041536179389:qk]' value='c&quot;$&quot;#,##0;-&quot;$&quot;#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -11265,6 +11320,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3253353875959333377:qk]' value='c&quot;$&quot;#,##0;-&quot;$&quot;#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_4504844918117665692:qk]' value='c&quot;$&quot;#,##0;-&quot;$&quot;#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -11665,6 +11722,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -12357,6 +12418,10 @@
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -12845,6 +12910,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -13537,6 +13606,10 @@
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -14025,6 +14098,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -14717,6 +14794,10 @@
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -15205,6 +15286,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -15897,6 +15982,10 @@
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -16184,6 +16273,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -16266,7 +16359,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
@@ -16294,6 +16387,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -16531,6 +16625,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -17280,6 +17378,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2008892738692294245:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -17520,6 +17622,8 @@
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' value='*d mmm yyyy' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2885600867321422714:qk]' value='n#,##0;-#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -17720,6 +17824,10 @@
             <format attr='color' value='#00000000' />
             <format attr='title' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1447918477104689102:qk]' scope='rows' value='' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -17879,6 +17987,10 @@
             <format attr='font-size' value='8' />
             <format attr='color' value='#00000000' />
             <format attr='title' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3034596744519413745:qk]' scope='rows' value='' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18050,6 +18162,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[min:Calculation_3122650177919167747:qk]' value='n00&quot;:00&quot;;-00&quot;:00&quot;' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18265,17 +18379,17 @@
             <column caption='Is First Date Row' datatype='boolean' name='[Calculation_7201951502715406386]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is First Date Row&#13;&#10;// One-row scaffold (the first day) for the Gantt day buttons and label. Put on Filters (True).&#13;&#10;[day_index] = 0' />
             </column>
-            <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
-            </column>
-            <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
-            </column>
             <column caption='Gantt Prev Date' datatype='date' name='[Calculation_4255842174353675499]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// Gantt Prev Date&#13;&#10;// Value the ‹ button writes into p_gantt_date. Stops at the first day.&#13;&#10;IF [Parameters].[Parameter 6] &gt; { MIN([date (dim_date.csv)]) }&#13;&#10;    THEN DATE(DATEADD(&apos;day&apos;, -1, [Parameters].[Parameter 6]))&#13;&#10;ELSE [Parameters].[Parameter 6]&#13;&#10;END' />
             </column>
             <column caption='Gantt Prev Back' datatype='real' name='[Calculation_2100442842155549834]' role='dimension' type='quantitative'>
               <calculation class='tableau' formula='// Gantt Prev Back&#13;&#10;// What the ‹ button writes into p_gantt_back (one day earlier = one more day back).&#13;&#10;IF [Parameters].[Parameter 14] &lt; 89 THEN [Parameters].[Parameter 14] + 1 ELSE [Parameters].[Parameter 14] END' />
+            </column>
+            <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
+            </column>
+            <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
             </column>
             <column caption='Gantt Prev Glyph' datatype='string' name='[Calculation_5461572561073485727]' role='measure' type='nominal'>
               <calculation class='tableau' formula='// Gantt Prev Glyph&#13;&#10;// ‹ on the previous-day button.&#13;&#10;MIN(&quot;‹&quot;)' />
@@ -18285,10 +18399,10 @@
             <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_7201951502715406386]' derivation='None' name='[none:Calculation_7201951502715406386:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_4255842174353675499]' derivation='None' name='[none:Calculation_4255842174353675499:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_2100442842155549834]' derivation='None' name='[none:Calculation_2100442842155549834:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_5461572561073485727]' derivation='User' name='[usr:Calculation_5461572561073485727:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_7201951502715406386:nk]'>
@@ -18310,6 +18424,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18341,6 +18459,8 @@
             </view>
             <mark class='Automatic' />
             <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4255842174353675499:ok]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2100442842155549834:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18392,7 +18512,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_4255842174353675499:ok]' />
@@ -18420,6 +18540,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -18456,12 +18577,6 @@
             <column caption='Is First Date Row' datatype='boolean' name='[Calculation_7201951502715406386]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is First Date Row&#13;&#10;// One-row scaffold (the first day) for the Gantt day buttons and label. Put on Filters (True).&#13;&#10;[day_index] = 0' />
             </column>
-            <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
-            </column>
-            <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
-            </column>
             <column caption='As Of Date' datatype='date' name='[Calculation_3151274114862452881]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='// As Of Date&#13;&#10;// Last day in the data (19 Oct). Every &quot;now&quot; in the dashboard is measured against it.&#13;&#10;{ MAX([date (dim_date.csv)]) }' />
             </column>
@@ -18471,6 +18586,12 @@
             <column caption='Gantt Next Back' datatype='real' name='[Calculation_1733785505387696222]' role='dimension' type='quantitative'>
               <calculation class='tableau' formula='// Gantt Next Back&#13;&#10;// What the › button writes into p_gantt_back. Stops at the last day.&#13;&#10;IF [Parameters].[Parameter 14] &gt; 1 THEN [Parameters].[Parameter 14] - 1 ELSE [Parameters].[Parameter 14] END' />
             </column>
+            <column caption='Dehighlight True' datatype='boolean' name='[Calculation_1329749043964588995]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Dehighlight True&#13;&#10;// Source field of the dehighlight action (clicked marks are not left greyed out).&#13;&#10;TRUE' />
+            </column>
+            <column caption='Dehighlight False' datatype='boolean' name='[Calculation_1841670643858094106]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='// Dehighlight False&#13;&#10;// Target field of the dehighlight action: matches no mark, so the selection clears at once.&#13;&#10;FALSE' />
+            </column>
             <column caption='Gantt Next Glyph' datatype='string' name='[Calculation_2561110447235085966]' role='measure' type='nominal'>
               <calculation class='tableau' formula='// Gantt Next Glyph&#13;&#10;// › on the next-day button.&#13;&#10;MIN(&quot;›&quot;)' />
             </column>
@@ -18479,10 +18600,10 @@
             <column-instance column='[Calculation_2313436587575898004]' derivation='User' name='[usr:Calculation_2313436587575898004:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2496391787737110048]' derivation='User' name='[usr:Calculation_2496391787737110048:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_7201951502715406386]' derivation='None' name='[none:Calculation_7201951502715406386:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2973907925170101119]' derivation='None' name='[none:Calculation_2973907925170101119:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Calculation_1733785505387696222]' derivation='None' name='[none:Calculation_1733785505387696222:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_1329749043964588995]' derivation='None' name='[none:Calculation_1329749043964588995:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1841670643858094106]' derivation='None' name='[none:Calculation_1841670643858094106:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2561110447235085966]' derivation='User' name='[usr:Calculation_2561110447235085966:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_7201951502715406386:nk]'>
@@ -18504,6 +18625,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='cols' value='false' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18535,6 +18660,8 @@
             </view>
             <mark class='Automatic' />
             <encodings>
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
+              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1733785505387696222:qk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1841670643858094106:nk]' />
             </encodings>
@@ -18586,7 +18713,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2973907925170101119:ok]' />
@@ -18614,6 +18741,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -18659,6 +18787,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18796,6 +18928,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -18904,7 +19040,7 @@
               <calculation class='tableau' formula='// Failed Model Runs&#13;&#10;// Count of failed model runs. 30d check: 50 (18 compilation, 17 database, 9 permission, 6 timeout).&#13;&#10;COUNT([job_run_id])' />
             </column>
             <column caption='Why Track' datatype='real' name='[Calculation_2807912847742869558]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='// Why Track&#13;&#10;// Light grey track behind each red bar: the longest bar in the card.&#13;&#10;// Table calc along Error Category Label.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
+              <calculation class='tableau' formula='// Why Track&#13;&#10;// Where each count label ends: the longest bar&apos;s end, so the counts line up on the right as in&#13;&#10;// the mock. Table calc along Error Category Label.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
                 <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2759662032659617150]' ordering-type='Field' />
               </calculation>
             </column>
@@ -18919,10 +19055,10 @@
             <column caption='Job Run Id' datatype='string' name='[job_run_id]' role='dimension' type='nominal' />
             <column caption='Platform (Run Errors)' datatype='string' name='[platform (mart_run_errors.csv)]' role='dimension' type='nominal' />
             <column-instance column='[Calculation_2759662032659617150]' derivation='None' name='[none:Calculation_2759662032659617150:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1556808545805540049]' derivation='User' name='[usr:Calculation_1556808545805540049:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_2807912847742869558]' derivation='User' name='[usr:Calculation_2807912847742869558:qk]' pivot='key' type='quantitative'>
               <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2759662032659617150]' ordering-type='Field' />
             </column-instance>
-            <column-instance column='[Calculation_1556808545805540049]' derivation='User' name='[usr:Calculation_1556808545805540049:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1409194560049525583]' derivation='None' name='[none:Calculation_1409194560049525583:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1475933581110583641]' derivation='None' name='[none:Calculation_1475933581110583641:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2759662032659617150]' derivation='Attribute' name='[attr:Calculation_2759662032659617150:nk]' pivot='key' type='nominal' />
@@ -18942,10 +19078,14 @@
         </view>
         <style>
           <style-rule element='axis'>
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' field-type='quantitative' fold='true' scope='cols' synchronized='true' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk]' field-type='quantitative' fold='true' scope='cols' synchronized='true' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk]' scope='cols' value='false' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -18956,6 +19096,7 @@
           <style-rule element='label'>
             <format attr='font-size' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2759662032659617150:nk]' value='8' />
             <format attr='color' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2759662032659617150:nk]' value='#4a5563' />
+            <format attr='text-align' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2759662032659617150:nk]' value='left' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -18998,7 +19139,7 @@
               </style-rule>
             </style>
           </pane>
-          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk]'>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]'>
             <view>
               <breakdown value='auto' />
             </view>
@@ -19027,16 +19168,16 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
-                <format attr='mark-color' value='#eef0ee' />
+                <format attr='size' value='0.3' />
+                <format attr='mark-color' value='#d2453f' />
               </style-rule>
             </style>
           </pane>
-          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]'>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk]'>
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Bar' />
+            <mark class='GanttBar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' />
@@ -19058,23 +19199,24 @@
             <style>
               <style-rule element='cell'>
                 <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
+                <format attr='vertical-align' value='top' />
               </style-rule>
               <style-rule element='label'>
                 <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
+                <format attr='vertical-align' value='top' />
               </style-rule>
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
-                <format attr='mark-color' value='#d2453f' />
+                <format attr='size' value='0.009999999776482582' />
+                <format attr='mark-color' value='#ffffff' />
+                <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2759662032659617150:nk]</rows>
-        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk])</cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2807912847742869558:qk])</cols>
       </table>
       <simple-id uuid='{7A57E5EE-65C6-AF37-441F-41885C08EDE6}' />
     </worksheet>
@@ -19120,7 +19262,7 @@
               <calculation class='tableau' formula='// Failed Model Runs&#13;&#10;// Count of failed model runs. 30d check: 50 (18 compilation, 17 database, 9 permission, 6 timeout).&#13;&#10;COUNT([job_run_id])' />
             </column>
             <column caption='Top Model Track' datatype='real' name='[Calculation_1053829186246530949]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='// Top Model Track&#13;&#10;// Track behind the top-models bars. Table calc along display_name.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
+              <calculation class='tableau' formula='// Top Model Track&#13;&#10;// Same for the top-models bars. Table calc along display_name.&#13;&#10;WINDOW_MAX([Calculation_1556808545805540049])'>
                 <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[display_name]' ordering-type='Field' />
               </calculation>
             </column>
@@ -19140,10 +19282,10 @@
             <column caption='Job Run Id' datatype='string' name='[job_run_id]' role='dimension' type='nominal' />
             <column caption='Platform (Run Errors)' datatype='string' name='[platform (mart_run_errors.csv)]' role='dimension' type='nominal' />
             <column-instance column='[display_name]' derivation='None' name='[none:display_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_1556808545805540049]' derivation='User' name='[usr:Calculation_1556808545805540049:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1053829186246530949]' derivation='User' name='[usr:Calculation_1053829186246530949:qk]' pivot='key' type='quantitative'>
               <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[display_name]' ordering-type='Field' />
             </column-instance>
-            <column-instance column='[Calculation_1556808545805540049]' derivation='User' name='[usr:Calculation_1556808545805540049:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_1409194560049525583]' derivation='None' name='[none:Calculation_1409194560049525583:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_1475933581110583641]' derivation='None' name='[none:Calculation_1475933581110583641:nk]' pivot='key' type='nominal' />
             <column-instance column='[Calculation_2758321348733286171]' derivation='User' name='[usr:Calculation_2758321348733286171:nk]' pivot='key' type='nominal'>
@@ -19170,10 +19312,14 @@
         </view>
         <style>
           <style-rule element='axis'>
-            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' field-type='quantitative' fold='true' scope='cols' synchronized='true' type='space' />
+            <encoding attr='space' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk]' field-type='quantitative' fold='true' scope='cols' synchronized='true' type='space' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk]' scope='cols' value='false' />
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -19184,6 +19330,7 @@
           <style-rule element='label'>
             <format attr='font-size' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='8' />
             <format attr='color' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='#16212e' />
+            <format attr='text-align' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]' value='left' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -19226,7 +19373,7 @@
               </style-rule>
             </style>
           </pane>
-          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk]'>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]'>
             <view>
               <breakdown value='auto' />
             </view>
@@ -19255,16 +19402,16 @@
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='false' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
-                <format attr='mark-color' value='#eef0ee' />
+                <format attr='size' value='0.3' />
+                <format attr='mark-color' value='#d2453f' />
               </style-rule>
             </style>
           </pane>
-          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]'>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' x-axis-name='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk]'>
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='Bar' />
+            <mark class='GanttBar' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <text column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]' />
@@ -19286,23 +19433,24 @@
             <style>
               <style-rule element='cell'>
                 <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
+                <format attr='vertical-align' value='top' />
               </style-rule>
               <style-rule element='label'>
                 <format attr='text-align' value='left' />
-                <format attr='vertical-align' value='center' />
+                <format attr='vertical-align' value='top' />
               </style-rule>
               <style-rule element='mark'>
                 <format attr='mark-labels-show' value='true' />
                 <format attr='mark-labels-cull' value='false' />
-                <format attr='size' value='0.45' />
-                <format attr='mark-color' value='#d2453f' />
+                <format attr='size' value='0.009999999776482582' />
+                <format attr='mark-color' value='#ffffff' />
+                <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
           </pane>
         </panes>
         <rows>[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:display_name:nk]</rows>
-        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk])</cols>
+        <cols>([federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk] + [federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1053829186246530949:qk])</cols>
       </table>
       <simple-id uuid='{BD1CC21F-D726-A10B-D7D3-932072F28305}' />
     </worksheet>
@@ -19348,6 +19496,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -19617,6 +19769,10 @@
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -19636,10 +19792,10 @@
             <format attr='background-color' value='#00000000' />
           </style-rule>
           <style-rule element='table-div'>
-            <format attr='line-visibility' scope='rows' value='on' />
-            <format attr='line-visibility' scope='cols' value='on' />
-            <format attr='stroke-color' scope='rows' value='#e6e7e2' />
-            <format attr='stroke-color' scope='cols' value='#e6e7e2' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='line-visibility' scope='cols' value='off' />
+            <format attr='stroke-color' scope='rows' value='#00000000' />
+            <format attr='stroke-color' scope='cols' value='#00000000' />
             <format attr='stroke-size' scope='rows' value='1' />
             <format attr='stroke-size' scope='cols' value='1' />
           </style-rule>
@@ -19937,26 +20093,23 @@
             <column caption='Is Platform Match Day (Episodes)' datatype='boolean' name='[Calculation_3348788321593585024]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='// Is Platform Match Day (Episodes)&#13;&#10;// Same rule for Recovery Episodes: the platform the node was on when the failure started.&#13;&#10;[Parameters].[Parameter 2] = &quot;All&quot;&#13;&#10;OR [platform_on_day (mart_recovery_episodes.csv)] = [Parameters].[Parameter 2]' />
             </column>
+            <column caption='Tooltip Day Text' datatype='string' name='[Calculation_2968828563623477298]' role='measure' type='nominal'>
+              <calculation class='tableau' formula='// Tooltip Day Text&#13;&#10;// &quot;Mon 12 Oct&quot; in a 90-day chart&apos;s tooltip, as an aggregate so it never splits a line or area.&#13;&#10;LEFT(DATENAME(&apos;weekday&apos;, MIN([date (dim_date.csv)])), 3) + &quot; &quot; + STR(DAY(MIN([date (dim_date.csv)]))) + &quot; &quot;&#13;&#10;+ LEFT(DATENAME(&apos;month&apos;, MIN([date (dim_date.csv)])), 3)' />
+            </column>
             <column caption='Date (Dates)' datatype='date' name='[date (dim_date.csv)]' role='dimension' type='ordinal' />
             <column caption='Days Before As Of' datatype='integer' name='[days_before_as_of]' role='dimension' type='ordinal' />
             <column caption='Hours To Recover' datatype='real' name='[hours_to_recover]' role='measure' type='quantitative' />
             <column caption='Is Open' datatype='boolean' name='[is_open]' role='dimension' type='nominal' />
             <column caption='Platform On Day (Recovery Episodes)' datatype='string' name='[platform_on_day (mart_recovery_episodes.csv)]' role='dimension' type='nominal' />
             <column-instance column='[Calculation_3037070239198132758]' derivation='User' name='[usr:Calculation_3037070239198132758:qk]' pivot='key' type='quantitative'>
-              <table-calc level-address='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' ordering-type='Field'>
-                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' />
-                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[date (dim_date.csv)]' />
-              </table-calc>
+              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' ordering-type='Field' />
             </column-instance>
             <column-instance column='[Calculation_6430925892119406940]' derivation='User' name='[usr:Calculation_6430925892119406940:qk]' pivot='key' type='quantitative'>
-              <table-calc level-address='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' ordering-type='Field'>
-                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' />
-                <order field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[date (dim_date.csv)]' />
-              </table-calc>
+              <table-calc ordering-field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[Calculation_2904210747288447847]' ordering-type='Field' />
             </column-instance>
             <column-instance column='[Calculation_2904210747288447847]' derivation='None' name='[none:Calculation_2904210747288447847:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Calculation_3348788321593585024]' derivation='None' name='[none:Calculation_3348788321593585024:nk]' pivot='key' type='nominal' />
-            <column-instance column='[date (dim_date.csv)]' derivation='None' name='[none:date (dim_date.csv):ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Calculation_2968828563623477298]' derivation='User' name='[usr:Calculation_2968828563623477298:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_3348788321593585024:nk]'>
             <groupfilter function='member' level='[none:Calculation_3348788321593585024:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
@@ -19983,7 +20136,8 @@
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3037070239198132758:qk]' value='n#,##0.0&quot;h&quot;;-#,##0.0&quot;h&quot;' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_6430925892119406940:qk]' value='n#,##0.0&quot;h&quot;;-#,##0.0&quot;h&quot;' />
-            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' value='*d mmm yyyy' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -19991,7 +20145,6 @@
           <style-rule element='label'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3037070239198132758:qk]' value='n#,##0.0&quot;h&quot;;-#,##0.0&quot;h&quot;' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_6430925892119406940:qk]' value='n#,##0.0&quot;h&quot;;-#,##0.0&quot;h&quot;' />
-            <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' value='*d mmm yyyy' />
           </style-rule>
           <style-rule element='table'>
             <format attr='show-null-value-warning' value='false' />
@@ -20046,12 +20199,12 @@
             </view>
             <mark class='Area' />
             <encodings>
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2968828563623477298:nk]' />
             </encodings>
             <reference-line axis-column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_2904210747288447847:qk]' enable-instant-analytics='false' formula='constant' id='refline0' label-type='none' scope='per-table' value-column='[Parameters].[Parameter 1]' z-order='1' />
             <customized-tooltip>
               <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]&gt;</run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2968828563623477298:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>MEAN RECOVERY, 7 DAYS   </run>
                 <run fontcolor='#002c55' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_6430925892119406940:qk]&gt;</run>
@@ -20081,11 +20234,11 @@
             <mark class='Line' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
-              <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]' />
+              <tooltip column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2968828563623477298:nk]' />
             </encodings>
             <customized-tooltip>
               <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):ok]&gt;</run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2968828563623477298:nk]&gt;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7'>Æ&#10;</run>
                 <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>MEAN RECOVERY, 7 DAYS   </run>
                 <run fontcolor='#002c55' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_6430925892119406940:qk]&gt;</run>
@@ -20149,6 +20302,10 @@
             <format attr='font-size' value='8' />
             <format attr='color' value='#00000000' />
             <format attr='title' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_4501011842619422576:qk]' scope='rows' value='' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -20791,6 +20948,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -21494,6 +21655,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2496391787737110048:qk]' scope='cols' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -21576,7 +21741,7 @@
             <view>
               <breakdown value='auto' />
             </view>
-            <mark class='GanttBar' />
+            <mark class='Shape' />
             <mark-sizing mark-sizing-setting='marks-scaling-off' />
             <encodings>
               <lod column='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:Calculation_1329749043964588995:nk]' />
@@ -21604,6 +21769,7 @@
                 <format attr='mark-labels-cull' value='false' />
                 <format attr='size' value='0.009999999776482582' />
                 <format attr='mark-color' value='#ffffff' />
+                <format attr='shape' value='LCT/Transparent.png' />
                 <format attr='mark-transparency' value='0' />
               </style-rule>
             </style>
@@ -21745,6 +21911,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -21998,6 +22168,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -22439,6 +22613,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -23236,6 +23414,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -23662,6 +23844,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -24077,6 +24263,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -24490,6 +24680,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -24908,6 +25102,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -25321,6 +25519,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -25788,6 +25990,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -26231,6 +26437,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -26661,6 +26871,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -27111,6 +27325,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -27591,6 +27807,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_5270684263439303529:qk]' value='n#,##0' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -28031,6 +28249,10 @@
             <format attr='display' class='0' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2313436587575898004:qk]' scope='rows' value='false' />
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -28444,6 +28666,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -28856,6 +29082,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -29275,6 +29505,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -29719,6 +29953,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -30205,6 +30441,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -30649,6 +30889,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -31098,6 +31340,10 @@
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
           </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
+          </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
           </style-rule>
@@ -31540,6 +31786,8 @@
           </style-rule>
           <style-rule element='cell'>
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[none:date (dim_date.csv):qk]' value='*d mmm yyyy' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -31983,6 +32231,10 @@
         <style>
           <style-rule element='axis'>
             <format attr='tick-color' value='#00000000' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -32439,6 +32691,8 @@
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3176503466807260993:qk]' value='n#,##0.0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_3016817971858344399:qk]' value='c&quot;$&quot;#,##0' />
             <format attr='text-format' field='[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_2256908730979128074:qk]' value='c&quot;$&quot;#,##0.00' />
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -32902,6 +33156,10 @@
             <format attr='tick-color' value='#00000000' />
             <format attr='line-visibility' value='off' />
             <format attr='stroke-size' value='0' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='border-style' scope='cols' value='none' />
+            <format attr='border-width' scope='cols' value='0' />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' value='off' />
@@ -45960,4 +46218,12 @@
       <pin-values />
     </graph>
   </datagraph>
+  <external>
+    <shapes>
+      <shape name='LCT/Transparent.png'>
+        iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGP8//8/Az7AhFd2
+        2CgAABhjAw0z+maXAAAAAElFTkSuQmCC
+      </shape>
+    </shapes>
+  </external>
 </workbook>

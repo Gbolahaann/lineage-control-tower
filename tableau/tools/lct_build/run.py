@@ -18,7 +18,7 @@ from datetime import datetime
 from . import shapes as SH
 from .core import (PANEL_WRITES, ACCENT, ACCENT_TINT, B_DIM, CALCS, CRIT, CRIT_INK, I_DIM, I_MEA, INK1, INK2, INK3,
                    INK4, LAT, LINE, LON, NAVY, NL, R_MEA, S_DIM, S_MEA, SEMI, SP_MEA, WARN, Cross, Nest, Pane, R, Sheet, Z, blank,
-                   card, card_header, color_map, label_pane, run, sheet, text)
+                   button_label_pane, card, card_header, color_map, label_pane, run, sheet, text)
 from .lineage import _fit, _grid, _q
 from .shell import CONTENT_PAD
 
@@ -132,12 +132,15 @@ def calcs():
                             'IF [p_gantt_back] < 89 THEN [p_gantt_back] + 1 ELSE [p_gantt_back] END'),
         'Gantt Next Back': ('// Gantt Next Back\n// What the › button writes into p_gantt_back. Stops at the last day.\n'
                             'IF [p_gantt_back] > 1 THEN [p_gantt_back] - 1 ELSE [p_gantt_back] END'),
+        'Tooltip Day Text': ('// Tooltip Day Text\n// "Mon 12 Oct" in a 90-day chart\'s tooltip, as an aggregate so it never splits a line or area.\n'
+                             'LEFT(DATENAME(\'weekday\', MIN([date (dim_date.csv)])), 3) + " " + STR(DAY(MIN([date (dim_date.csv)]))) + " "\n'
+                             '+ LEFT(DATENAME(\'month\', MIN([date (dim_date.csv)])), 3)'),
         'Gantt Prev Glyph': '// Gantt Prev Glyph\n// ‹ on the previous-day button.\nMIN("‹")',
         'Gantt Next Glyph': '// Gantt Next Glyph\n// › on the next-day button.\nMIN("›")',
         # why runs failed and top models (Run Errors)
-        'Why Track': ('// Why Track\n// Light grey track behind each red bar: the longest bar in the card.\n'
-                      '// Table calc along Error Category Label.\nWINDOW_MAX([Failed Model Runs])'),
-        'Top Model Track': ('// Top Model Track\n// Track behind the top-models bars. Table calc along display_name.\nWINDOW_MAX([Failed Model Runs])'),
+        'Why Track': ('// Why Track\n// Where each count label ends: the longest bar\'s end, so the counts line up on the right as in\n'
+                      '// the mock. Table calc along Error Category Label.\nWINDOW_MAX([Failed Model Runs])'),
+        'Top Model Track': ('// Top Model Track\n// Same for the top-models bars. Table calc along display_name.\nWINDOW_MAX([Failed Model Runs])'),
         'Is Top Failing Model': ('// Is Top Failing Model\n// The 7 models that failed most. Table calc filter (True), along display_name.\n'
                                  'RANK_UNIQUE([Failed Model Runs]) <= 7'),
         # errors table
@@ -166,7 +169,7 @@ TYPES = {
     'Gantt Start Hour': R_MEA, 'Gantt Duration Hours': R_MEA, 'Tests Failed Marker Hour': R_MEA,
     'Gantt Started Text': S_DIM, 'Gantt Duration Text': S_DIM, 'Job Platform Name': S_DIM,
     'Gantt Prev Back': R_DIM_Q, 'Gantt Next Back': R_DIM_Q, 'Gantt Prev Glyph': S_MEA, 'Gantt Next Glyph': S_MEA,
-    'Why Track': R_MEA, 'Top Model Track': R_MEA, 'Is Top Failing Model': ('boolean', 'measure', 'nominal'),
+    'Tooltip Day Text': S_MEA, 'Why Track': R_MEA, 'Top Model Track': R_MEA, 'Is Top Failing Model': ('boolean', 'measure', 'nominal'),
     'Error Key': S_DIM, 'Error Order': I_DIM,
     'MTTR Rolling 7 Day Line': R_MEA, 'MTTR Rolling 7 Day Area': R_MEA,
     'Error Heading': S_DIM, 'Error Heading Point': SP_MEA,
@@ -298,10 +301,10 @@ def gantt_day_sheets() -> list[Sheet]:
     def button(name, glyph, date_field, back_field):
         lod = [R(date_field), R(back_field)]
         return Sheet(name, cols=[(bar, anchor)], hide=[bar, anchor], filters=[first], fixed={bar: (0, 1), anchor: (0, 1)},
-                     tooltip=False, panes=[Pane(),
-                                           Pane('Bar', axis=bar, mark_color='#ffffff', lod=lod, size=1.9890055656433105, label_show=False),
-                                           label_pane(axis=anchor, text=[R(glyph)], lod=lod, align='center',
-                                                      label=[run(R(glyph), 12, INK2)])])
+                     tooltip=False, panes=[Pane(lod=list(lod)),
+                                           Pane('Bar', axis=bar, mark_color='#ffffff', lod=list(lod), size=1.9890055656433105, label_show=False),
+                                           button_label_pane(axis=anchor, text=[R(glyph)], lod=list(lod), align='center',
+                                                             label=[run(R(glyph), 12, INK2)])])
     return [button('RUN Gantt Prev Button', 'Gantt Prev Glyph', 'Gantt Prev Date', 'Gantt Prev Back'),
             button('RUN Gantt Next Button', 'Gantt Next Glyph', 'Gantt Next Date', 'Gantt Next Back'),
             Sheet('RUN Gantt Day Label', filters=[first], tooltip=False,
@@ -316,15 +319,18 @@ def why_sheets() -> list[Sheet]:
     def bars(name, dim, track_name, header_w, colour, extra_filters=()):
         track = R(track_name)
         label = [f"            <format attr='font-size' field='{dim.ref}' value='8' />",
-                 f"            <format attr='color' field='{dim.ref}' value='{colour}' />"]
+                 f"            <format attr='color' field='{dim.ref}' value='{colour}' />",
+                 f"            <format attr='text-align' field='{dim.ref}' value='left' />"]  # GB, v22b
         tip = [run(R(dim.name, 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run('FAILED RUNS   ', 7, INK3, SEMI),
                run(count, 9, CRIT_INK, SEMI)]
-        return Sheet(name, rows=[dim], cols=[(track, count)], filters=[period, plat, *extra_filters], hide=[track, count],
-                     sync=[count], header_width={dim: header_w}, sorts=[(dim, 'DESC', count)], extra={'label': label},
+        # the count rides on a clear hairline mark at the longest bar's end: text-align left ends the text at that
+        # point and vertical-align top lifts it above the bar, so no bar runs through it (GB, v22b)
+        return Sheet(name, rows=[dim], cols=[(count, track)], filters=[period, plat, *extra_filters], hide=[track, count],
+                     sync=[track], header_width={dim: header_w}, sorts=[(dim, 'DESC', count)], extra={'label': label},
                      panes=[Pane('Bar', label_show=False),
-                            Pane('Bar', axis=track, mark_color='#eef0ee', size=0.45, label_show=False, tooltip=tip),
-                            Pane('Bar', axis=count, mark_color=CRIT, size=0.45, text=[count],
-                                 label=[run(count, 8, INK1, SEMI)], tooltip=tip)])
+                            Pane('Bar', axis=count, mark_color=CRIT, size=0.3, label_show=False, tooltip=tip),
+                            label_pane(axis=track, text=[count], label=[run(count, 8, INK1, SEMI)], align='left',
+                                       valign='top', tooltip=tip)])
     return [
         Sheet('RUN Failed Count Label', filters=[period, plat], tooltip=False,
               panes=label_pane(text=[R('Failed Runs Label')], valign='top', label=[run(R('Failed Runs Label'), 8, INK3)])),
@@ -349,7 +355,7 @@ def errors_sheets() -> list[Sheet]:
                           tooltip=None if inert else tip)
     table = _grid(Sheet('RUN Recent Errors Table', rows=[Cross([Nest([order, key]), LAT])], cols=[LON],
                         filters=[R('In Period'), R('Is Platform Match Error')], hide=[order, key], layers=True,
-                        no_basemap=True, zoom=None, divider=True,
+                        no_basemap=True, zoom=None,
                         panes=[Pane('Automatic', lod=[key], pane_size=pane),
                                cell('When', INK1), cell('Model', INK1), cell('Category', INK1),
                                cell('Message', INK2, inert=False)]), pane)
@@ -366,21 +372,18 @@ def errors_sheets() -> list[Sheet]:
 def mttr_sheet() -> Sheet:
     x = R('Days Back Mid')
     line, area = R('MTTR Rolling 7 Day Line'), R('MTTR Rolling 7 Day Area')
-    date = R(DATE)
-    for r in (line, area):  # the date rides along on Detail for the tooltip, so address across both
-        r.tc_order = [x, date]
+    date = R('Tooltip Day Text')   # an aggregate: a date dimension on Detail broke the area and line into pieces (v22b)
     rl, rstyle = _window_lines(x, selected=False)
     fmt = 'n#,##0"h";-#,##0"h"'
     tip = [run(date, 9, INK1, SEMI), run(NL, 7, INK3), run('MEAN RECOVERY, 7 DAYS   ', 7, INK3, SEMI),
            run(line, 9, NAVY, SEMI)]
     return Sheet('RUN MTTR Rolling Line', cols=[x], rows=[(area, line)], filters=[R('Is Platform Match Day (Episodes)')],
                  hide=[x, line], sync=[line], fixed={x: BACK_AXIS, area: MTTR_Y},
-                 formats={area: 'n#,##0.0"h";-#,##0.0"h"', line: 'n#,##0.0"h";-#,##0.0"h"', date: '*d mmm yyyy'},
+                 formats={area: 'n#,##0.0"h";-#,##0.0"h"', line: 'n#,##0.0"h";-#,##0.0"h"'},
                  extra={'axis': _axis_style(area, fmt=fmt), 'refline': rstyle},
                  panes=[Pane('Area', label_show=False),
-                        Pane('Area', axis=area, mark_color=ACCENT, transparency=40, label_show=False, lod=[date], tooltip=tip,
-                             reflines=rl),
-                        Pane('Line', axis=line, mark_color=ACCENT, size=1, label_show=False, lod=[date], tooltip=tip)])
+                        Pane('Area', axis=area, mark_color=ACCENT, transparency=40, label_show=False, tooltip=tip, reflines=rl),
+                        Pane('Line', axis=line, mark_color=ACCENT, size=1, label_show=False, tooltip=tip)])
 
 
 def sheets() -> list[Sheet]:

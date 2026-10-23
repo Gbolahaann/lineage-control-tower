@@ -189,6 +189,15 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 
 - **Validate before sending:** `tableau/tools/validate_twb.py` checks the build against Tableau's 2026.1 XSD and the
   manifest flags. Wrong element order and missing flags are caught there instead of in Tableau.
+- **Parameter reference lines: unsolved.** `value-column='[Parameters].[Parameter N]' formula='constant'` loads, but
+  Tableau re-saves it as `value='%null%'` on the axis field, so the line has no value (v22). Get one saved by Tableau
+  before trying again.
+- **Never put a date dimension on Detail of a line or area** for a tooltip: it splits the line into dots and the area
+  into strips. Use an aggregate text calc (`MIN([date])` formatted) instead.
+- **Labels next to thin bars:** a Bar label with text-align left sits inside the bar start and the bar runs through
+  it. Put the number on a clear hairline mark on the second axis instead (align left ends it at the point, valign top
+  lifts it above the bar).
+- **Buttons:** label on a clear custom shape (Shape mark, embedded `LCT/Transparent.png`), GB's preference since v22b.
 - **Shared reversed axis:** a 90-day chart on `days_before_as_of + 0.5`, fixed 0 to 90 with `reverse='true'`, puts
   today on the right, and the selected window is "below p_period". A reference line straight on the parameter
   (`value-column='[Parameters].[Parameter N]' formula='constant'`, inside the pane after `<encodings>`) with a

@@ -474,6 +474,12 @@ def label_pane(**kw) -> 'Pane':
     return Pane('GanttBar', size=HAIRLINE, mark_color='#ffffff', transparency=0, **kw)
 
 
+def button_label_pane(**kw) -> 'Pane':
+    """A button's label: a clear custom shape (LCT/Transparent.png, embedded) instead of a hairline Gantt bar, as GB
+    set on the v22b Gantt day buttons ("I now prefer blank shapes to Gantt bars for buttons")."""
+    return Pane('Shape', size=HAIRLINE, mark_color='#ffffff', transparency=0, shape='LCT/Transparent.png', **kw)
+
+
 class Cross(list):
     """Fields crossed on one shelf, written (a * b * c): a grid of map panes is (row index * Latitude)."""
 
@@ -628,6 +634,9 @@ class Sheet:
             head += [f"            <format attr='{k}' value='{v}' />" for k, v in self.header_font.items()]
         head += [f"            <format attr='width' field='{r.ref}' value='{px}' />" for r, px in self.header_width.items()]
         cell = [f"            <format attr='text-format' field='{r.ref}' value='{esc(f)}' />" for r, f in self.formats.items()]
+        # no cell borders (GB on the v22b re-save: "cell line is none")
+        cell += ["            <format attr='border-style' scope='cols' value='none' />",
+                 "            <format attr='border-width' scope='cols' value='0' />"]
         if self.row_height:
             r, px = self.row_height
             cell.append(f"            <format attr='height' field='{r.ref}' value='{px}' />")

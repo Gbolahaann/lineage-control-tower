@@ -18,7 +18,7 @@ XSD = Path(__file__).resolve().parent / 'xsd' / 'twb_2026.1.0.xsd'
 # Known, harmless schema complaints about what Tableau itself writes on the master workbook
 BASELINE = (
     re.compile(r"Element 'workbook', attribute '(author-id|creator-author-id|creator-license-type|creator-machine-id|license-type|machine-id)'"),
-    re.compile(r"Element 'workbook': Missing child element\(s\)\. Expected is one of \( thumbnails"),
+    re.compile(r"Element 'workbook': Missing child element\(s\)\. Expected is one of \( (thumbnails|external|referenced-extensions)"),
 )
 
 # element or attribute in use -> manifest flag Tableau needs before it accepts it
