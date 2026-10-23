@@ -231,7 +231,8 @@ MANIFEST_FLAGS = ['AccessibleZoneTabOrder', 'Layers', 'BasicButtonObject', 'Basi
                   'DatagraphNodeDashboardZoneVisibilityV1', 'DatagraphNodeSingleValueFieldV1', 'ParameterAction',
                   'ParameterActionClearSelection', 'WorksheetBackgroundTransparency', 'ZoneBackgroundTransparency',
                   'ZoneFriendlyName', 'ZoneVisibilityControl',
-                  'NavigationAction']  # Go to Sheet: without it Tableau rejects <nav-action> ("no declaration found", v19)
+                  'NavigationAction', 'IntuitiveSorting', 'IntuitiveSorting_SP2',
+                  'SortTagCleanup']  # <computed-sort> (v22: "no declaration found"), as IronViz and GB's example declare  # Go to Sheet: without it Tableau rejects <nav-action> ("no declaration found", v19)
 
 
 def build(master: Path, out: Path) -> Path:

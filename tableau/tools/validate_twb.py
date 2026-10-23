@@ -24,6 +24,9 @@ BASELINE = (
 # element or attribute in use -> manifest flag Tableau needs before it accepts it
 FEATURES = [
     (re.compile(r'<nav-action '), 'NavigationAction'),
+    (re.compile(r'<computed-sort '), 'SortTagCleanup'),
+    (re.compile(r'<computed-sort '), 'IntuitiveSorting'),
+    (re.compile(r'<computed-sort '), 'IntuitiveSorting_SP2'),
     (re.compile(r"customization-axis='layer'"), 'Layers'),
     (re.compile(r'<edit-parameter-action '), 'ParameterAction'),
     (re.compile(r'<dashboard-zone-visibility-node '), 'DatagraphNodeDashboardZoneVisibilityV1'),

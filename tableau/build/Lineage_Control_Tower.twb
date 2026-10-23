@@ -26,6 +26,9 @@
     <ZoneFriendlyName />
     <ZoneVisibilityControl />
     <NavigationAction />
+    <IntuitiveSorting />
+    <IntuitiveSorting_SP2 />
+    <SortTagCleanup />
     <_.fcp.DashboardRoundedCorners.true...DashboardRoundedCorners />
   </document-format-change-manifest>
   <preferences>

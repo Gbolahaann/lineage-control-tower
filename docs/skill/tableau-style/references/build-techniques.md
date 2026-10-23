@@ -196,7 +196,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - **Strips that line up with a chart** (incident labels, date labels): same x axis and range, and a y axis with the
   chart's fixed range and tick spacing but clear label colour, so the axis takes the same width.
 - **Stacked look without Measure Names:** overlay total (grey) and part (red) on a synchronised dual axis.
-- **Sort by a measure:** `<computed-sort column=... direction='DESC' using=...>` after the filters. Top N: a table-calc
+- **Sort by a measure:** `<computed-sort column=... direction='DESC' using=...>` after the filters. Needs `<SortTagCleanup />`,
+  `<IntuitiveSorting />` and `<IntuitiveSorting_SP2 />` in the manifest (v22 would not open without them). Before using
+  an element for the first time, find it in a Tableau-saved file and copy that file's manifest flags. Top N: a table-calc
   filter `RANK_UNIQUE(...) <= 7` addressed along the dimension.
 - **Axis details:** blank title `<format attr='title' class='0' field scope value='' />`; ticks `major-origin` /
   `major-spacing` on the space encoding; banded rows: pane `band-color` + table `band-size`; per-field header
