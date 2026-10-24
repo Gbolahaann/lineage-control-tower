@@ -341,6 +341,8 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   Draw the icon edge to edge in its PNG (padding shrinks it) and size the shape to the text's height (1.2 next to 9 pt;
   0.55 was tiny, v40). Keep the click bar clear (transparency 0): a white bar squares off the holder's rounded
   corners. The holder carries the white fill, border and radius, with a few px of padding.
+  Turn the button sheet's pane border off (`pane` rule: `border-style none`, `border-width 0`), or Tableau's
+  default pane line draws a second, square border inside the rounded one (v41).
 - **Check CASE keys against the lookup expression:** a bar-width CASE keyed on period|node but looked up with
   period|platform|node returned nothing (the simulator caught it: bars as slivers).
 

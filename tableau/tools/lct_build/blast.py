@@ -524,6 +524,9 @@ def header_sheets() -> list[Sheet]:
     lod = [R('BR Incident Subject'), R('BR Incident Body')]
     out.append(Sheet('BR Email Button', cols=[(bar, anchor)], hide=[bar, anchor], filters=[R('Is First Date Row')],
                      fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
+                     # no pane border: Tableau's default line drew a second, square border inside the rounded holder (v41)
+                     extra={'pane': ["            <format attr='border-style' value='none' />",
+                                     "            <format attr='border-width' value='0' />"]},
                      panes=[Pane(lod=list(lod)),
                             # clear but clickable: a white bar squared off the holder's rounded corners (v40)
                             Pane('Bar', axis=bar, mark_color='#ffffff', transparency=0, lod=list(lod), size=1.9890055656433105, label_show=False),
