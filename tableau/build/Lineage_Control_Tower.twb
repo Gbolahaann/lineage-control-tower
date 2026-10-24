@@ -35227,7 +35227,7 @@
                     <format attr='margin-top' value='14' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='244' friendly-name='RUN Bottom Row' h='25800' id='326' is-fixed='true' param='horz' type-v2='layout-flow' w='82000' x='16250' y='72800'>
+                <zone friendly-name='RUN Bottom Row' h='25800' id='326' param='horz' type-v2='layout-flow' w='82000' x='16250' y='72800'>
                   <zone fixed-size='911' friendly-name='RUN Errors Card' h='24400' id='320' is-fixed='true' param='vert' type-v2='layout-flow' w='57375' x='16250' y='74200'>
                     <zone fixed-size='44' h='4400' id='316' is-fixed='true' type-v2='text' w='54812' x='17312' y='75700'>
                       <formatted-text>

@@ -477,7 +477,9 @@ def content() -> Z:
         daily,
         # a fixed size excludes the zone's own margin: 352 + 14 above (v22 to v25 counted the 14 twice: 864 px in 836)
         Z('horz', friendly='RUN Middle Row', fixed=MID_H, style={'margin-top': '14'}, kids=[gantt, why]),
-        Z('horz', friendly='RUN Bottom Row', fixed=BOTTOM_H, style={'margin-top': '14'}, kids=[errors, mttr])])
+        # the last row is flexible: it always runs down to the bottom padding, whatever Tableau makes of the fixed rows
+        # above (v27: Tableau laid the middle row out about 30 px shorter and the slack became a gap at the bottom)
+        Z('horz', friendly='RUN Bottom Row', style={'margin-top': '14'}, kids=[errors, mttr])])
 
 
 def check_fit(zones) -> None:

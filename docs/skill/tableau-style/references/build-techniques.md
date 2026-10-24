@@ -152,6 +152,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - **Content height comes from one place:** 1000 - header 70 - filter band 52 - padding 20 top - 14 bottom = 844.
   The bottom padding is 14 (the card gap) since v26, not the prototype's 22 (GB: no unneeded space at the
   bottom). Tabs size their last row as "the rest", and the builder asserts the rows end at the content edge.
+- **The last row of a content area is always flexible** (no fixed size). Tableau does its own arithmetic on fixed
+  rows; with every row fixed, any difference became a grey gap under the bottom cards (RUN v27, about 30 px). Health
+  and Lineage end in a flexible row and never showed it.
 - **Matching columns across rows:** fix the wide card (918 including its 7 px margin, so fixed 911) and let the
   narrow card take the rest, in every row, so the right-hand cards (394) line up.
 - **`card_header` in a horizontal row needs `fixed=None`:** its default 44 is a height in a column but a width in
