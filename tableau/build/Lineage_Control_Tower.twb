@@ -29,6 +29,7 @@
     <IntuitiveSorting />
     <IntuitiveSorting_SP2 />
     <SortTagCleanup />
+    <CustomReferenceLineTooltips />
     <_.fcp.DashboardRoundedCorners.true...DashboardRoundedCorners />
   </document-format-change-manifest>
   <preferences>

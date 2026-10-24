@@ -30,6 +30,7 @@ FEATURES = [
     (re.compile(r"customization-axis='layer'"), 'Layers'),
     (re.compile(r'<edit-parameter-action '), 'ParameterAction'),
     (re.compile(r'<dashboard-zone-visibility-node '), 'DatagraphNodeDashboardZoneVisibilityV1'),
+    (re.compile(r"<reference-line [^>]*tooltip-type="), 'CustomReferenceLineTooltips'),
 ]
 
 

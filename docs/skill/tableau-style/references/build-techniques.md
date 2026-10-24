@@ -54,7 +54,10 @@ building cards, buttons, tiles, tables, time charts or anything written into XML
   - `<Layers />` for `customization-axis='layer'`, `generated-title`, `inert` (v07)
   - `<NavigationAction />` for `<nav-action>` (v19)
   - `<SortTagCleanup />`, `<IntuitiveSorting />`, `<IntuitiveSorting_SP2 />` for `<computed-sort>` (v22)
-  Rule: before using an element for the first time, find it in a Tableau-saved file and copy that file's flags.
+  - `<CustomReferenceLineTooltips />` for `tooltip-type` on `<reference-line>` (v33; attributes are gated too: the
+    error reads "attribute ... is not declared", and the XSD alone does not catch it)
+  Rule: before using an element **or attribute** for the first time, find it in a Tableau-saved file and copy that
+  file's flags (list them: the reference's `<document-format-change-manifest>` names its features).
 - **The XSD is 2026.1, GB runs a later version:** the user's error message lists the real content model, for example
   `(datasources?, mapsources?, datasource-dependencies*, filter, sort, perspectives, slices?, aggregation)`. Trust it
   over the XSD.
@@ -254,6 +257,8 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   `formula='constant' value='46.5' value-column=<the axis field> label='HubSpot moves' label-type='custom'
   scope='per-pane'`, styled per id in the `refline` rule (stroke, label colour, font size, `vertical-align top`,
   `text-align left` or `right` to keep neighbouring labels apart). The value is in axis units (Days Back Mid).
+  `tooltip-type='none'` needs the manifest flag `<CustomReferenceLineTooltips />` (v33 failed to load without it:
+  "attribute 'tooltip-type' is not declared for element 'reference-line'"); the validator checks it.
 - **A value axis that follows the data** (Redshift's costs and runtimes are a fraction of the others): no fixed
   range; the band's height is written per combination as a round number just above the tallest value, so Tableau's
   automatic axis ends on it, and the axis width is fixed (`<format attr='width' field=<measure> value='40' />` in the
