@@ -275,6 +275,8 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Measured-centre text plus live right-aligned numbers on one canvas row:** static texts (name, built as, rows)
   centred at half their measured width; live aggregates (runtime, change, cost) on a hairline label point 4 px past
   the column's right edge with `text-align right` (on a map pane the label goes to the left of the point).
+  Tableau ends such a label a few px **past** the point, not 4 px before it (v34: "$1,102" touched a pill 18 px
+  away), so leave about 40 px before the next element and check the widest variant still fits the canvas.
 - **When the calc pack and the prototype disagree on a number**, check which definition gives the prototype's
   figures (v33: model cost is build cost only; the pack's build + query cost moved fct_orders from $118 to $252),
   build that one, and say so in the changelog and the message to GB.

@@ -52,7 +52,9 @@ ROW_H = (BOTTOM_H - 2 - 28 - 44 - HEAD_H - 1 - SH.SLACK) // TOP_N
 ROW = (EW, ROW_H)
 # prototype columns (.t, 734 px at 1600): left edges, or right edges for the numbers
 # GB (v33b): more room between the columns; the numbers spread over 300 to 600 and the pill clear of the cost
-COL = {'dot': 11, 'name': 23, 'built': 172, 'runtime': 360, 'trend': 432, 'rows': 532, 'cost': 596, 'pill': 614}
+# the pill starts 40 px past the cost column: Tableau ends a right-aligned live label a few px past its point,
+# not 4 px before it, so 18 px left the pill touching "$1,102" (GB, v34)
+COL = {'dot': 11, 'name': 23, 'built': 172, 'runtime': 356, 'trend': 428, 'rows': 520, 'cost': 580, 'pill': 620}
 GAP = 4                                         # Tableau leaves about 4 px between a point and a label beside it
 AXIS_W = 40                                     # value axis width on both charts and their (clear) date strips
 COST_X = (0, DAYS, {'reverse': 'true'})         # Days Back Mid, as on Run & failures
@@ -369,7 +371,7 @@ def kpi_sheets() -> list[Sheet]:
     tip = lambda t, d: [run(t, 7, INK3, SEMI), run(NL, 7, INK3), run(d, 9, INK1, BOOK)]
     return [
         Sheet('PF Average Per Day KPI', filters=[day], formats={R('Average Cost Per Day'): USD},
-              panes=label_pane(text=[r['_ref'] for r in per_day if '_ref' in r], valign='top', label=per_day,
+              panes=label_pane(text=list({r['_ref'].inst: r['_ref'] for r in per_day if '_ref' in r}.values()), valign='top', label=per_day,
                                tooltip=tip('AVERAGE PER DAY', 'Warehouse cost in the window divided by its days, then by platform.'))),
         Sheet('PF Slowest Model KPI', filters=[R('Is Model'), R('Is PF Slowest Model')],
               panes=label_pane(valign='top', text=[slow_name, R('Model Runtime Label'), R('PF Slowest Trend Text')], label=[
@@ -414,9 +416,10 @@ def cost_sheet() -> Sheet:
     return Sheet('PF Cost by Platform Bar', cols=[x], rows=[(band, cost)], filters=[R('Is Platform Match Day')],
                  hide=[x, cost], sync=[cost], fixed={x: COST_X}, formats={band: USD, cost: USD},
                  extra={'axis': _axis_style(band, fmt=USD) + _axis_width(band), 'refline': rstyle},
-                 panes=[Pane('Bar', label_show=False),
-                        Pane('Bar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False),
-                        Pane('Bar', axis=cost, color=plat, size=1.25, label_show=False, tooltip=tip, reflines=rl)])
+                 # GB (v34): event lines on the all-pane, both bar layers at 0.581713 with a white border
+                 panes=[Pane('Bar', label_show=False, reflines=rl, stroke='#ffffff'),
+                        Pane('Bar', axis=band, mark_color=BAND, size=0.581713, label_show=False, stroke='#ffffff'),
+                        Pane('Bar', axis=cost, color=plat, size=0.581713, label_show=False, tooltip=tip, stroke='#ffffff')])
 
 
 def runtime_sheet() -> Sheet:
@@ -559,7 +562,7 @@ def content() -> Z:
     cost = card('PF Cost Card', fixed=MAIN_W, margins={'right': 7}, kids=[
         Z('horz', friendly='PF Cost Header', fixed=44, kids=[
             card_header('Cost by platform, per day', 'Estimated USD. Redshift winds down as marketing models move to Snowflake.', None),
-            text(_legend([(v, PLAT[k]) for k, v in PLAT_NAME.items()]), fixed=230, **{'text-align': 'right'})]),
+            text(_legend([(v, PLAT[k]) for k, v in PLAT_NAME.items()]), fixed=230)]),  # left-aligned (GB, v34)
         sheet('PF Cost by Platform Bar'),
         sheet('PF Cost Axis', 16)])
     runtime = card('PF Runtime Card', margins={'left': 7}, kids=[
