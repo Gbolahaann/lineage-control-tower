@@ -331,6 +331,8 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **URL action (mailto):** an `<action>` with `<activation type='on-select'>`, the source sheet and a `<link
   expression='mailto:?subject=&lt;[ds].[none:Calc:nk]~na&gt;&amp;body=...' url-escape='true'>`, no command; the
   fields on Detail of the button sheet.
+- **GB's preferred action button (v42):** the icon shape and its text on one hidden axis, axis rulers off, no click
+  bar; the holder draws the white fill and rounded border. Otherwise:
 - **Buttons that run an action carry a dual axis:** a white bar on one axis takes the click on the whole button, the
   label (and any icon as a custom shape with the text to its right) on the other. With a single axis only the first
   pane is written: v39's email button showed a default square and no text. The builder now refuses a sheet with
@@ -345,6 +347,9 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   default pane line draws a second, square border inside the rounded one (v41).
 - **Check CASE keys against the lookup expression:** a bar-width CASE keyed on period|node but looked up with
   period|platform|node returned nothing (the simulator caught it: bars as slivers).
+
+- **Builds must be reproducible:** never let a Python set decide the order of CASE lines (set order changes from
+  run to run, so every diff against GB's copy showed rewritten calcs); sort it. Check by building twice and comparing.
 
 ## 11. Colours and palettes
 

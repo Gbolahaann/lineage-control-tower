@@ -188,7 +188,7 @@ SHOWN = sorted({(per, e) for (per, _p, _s), es in RANK_ROWS.items() for e in es}
 
 def _names(cap):
     # "Unregistered: " is dropped from the name: the flag column says it (room for the full names)
-    return {e: _fit(NODES[e]['display_name'].replace('Unregistered: ', ''), cap, 8, True) for e in {e for _p, e in SHOWN}}
+    return {e: _fit(NODES[e]['display_name'].replace('Unregistered: ', ''), cap, 8, True) for e in sorted({e for _p, e in SHOWN})}   # sorted: a stable build (set order varies run to run)
 
 
 def _ranked_cols(names):

@@ -516,23 +516,21 @@ def header_sheets() -> list[Sheet]:
                                                          run(_a('BR Chip Unregistered Label'), 7, INK3)]))
     out.append(_scaffold_label('BR Unregistered Callout', [run(_a('BR Unregistered Callout Text'), 8, WARN_INK)], valign='center'))
     out.append(_scaffold_label('BR No Owner Callout', [run(_a('BR No Owner Callout Text'), 8, CRIT_INK, SEMI)], valign='center'))
-    # the prototype's "Copy incident message" button, with an envelope: a white bar takes the click on the whole button,
-    # the envelope is a custom shape with the text to its right. A dual axis, as the Run & failures buttons: with a
-    # single axis only the first pane is written (v39 showed a default square and no text)
+    # the prototype's "Copy incident message" button, with an envelope: the envelope is a custom shape with the text to
+    # its right, on one hidden axis (GB, v42: no click bar, axis rulers off); the holder draws the rounded border
     draw_email_icon()
-    glyph, bar, anchor = R('BR Email Glyph'), R('Full Bar'), R('BR Email Anchor')
+    glyph, anchor = R('BR Email Glyph'), R('BR Email Anchor')
     lod = [R('BR Incident Subject'), R('BR Incident Body')]
-    out.append(Sheet('BR Email Button', cols=[(bar, anchor)], hide=[bar, anchor], filters=[R('Is First Date Row')],
-                     fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
+    rulers = ["            <format attr='line-visibility' scope='cols' value='off' />",
+              "            <format attr='line-visibility' scope='rows' value='off' />",
+              "            <format attr='stroke-size' scope='cols' value='0' />",
+              "            <format attr='stroke-size' scope='rows' value='0' />"]
+    out.append(Sheet('BR Email Button', cols=[anchor], hide=[anchor], filters=[R('Is First Date Row')], fixed={anchor: (0, 1)}, tooltip=False,
                      # no pane border: Tableau's default line drew a second, square border inside the rounded holder (v41)
-                     extra={'pane': ["            <format attr='border-style' value='none' />",
-                                     "            <format attr='border-width' value='0' />"]},
-                     panes=[Pane(lod=list(lod)),
-                            # clear but clickable: a white bar squared off the holder's rounded corners (v40)
-                            Pane('Bar', axis=bar, mark_color='#ffffff', transparency=0, lod=list(lod), size=1.9890055656433105, label_show=False),
-                            # about the height of the 9 pt text (v40 at 0.55 was far smaller)
-                            Pane('Shape', axis=anchor, shape=f'{SH.FOLDER}/Email.png', size=1.2, lod=list(lod), text=[glyph],
-                                 label=[run(glyph, 9, INK1)], align='right')]))
+                     extra={'axis': rulers, 'pane': ["            <format attr='border-style' value='none' />",
+                                                      "            <format attr='border-width' value='0' />"]},
+                     panes=Pane('Shape', shape=f'{SH.FOLDER}/Email.png', size=1.2, lod=list(lod), text=[glyph],
+                                label=[run(glyph, 9, INK1)], align='right')))
     # the selected node's pills
     pane, path = PILL_PANE, R('Node Path Index', kind='ok')
     color_map(R('BR Pill Status Key'), {f'"{k}"': v for k, v in STATUS_TINT.items()})
@@ -684,7 +682,7 @@ def content() -> Z:
         sheet('BR Who To Tell Header', COLHEAD_H), blank(1, LINE), sheet('BR Who To Tell Table'),
         _callout('BR Unregistered Callout', 'Show BR Unregistered Callout', WARN_TINT, '#f3ddb4', 58),
         _callout('BR No Owner Callout', 'Show BR No Owner Callout', CRIT_TINT, '#f2cdca', 40)])
-    path = card('BR Downstream Card', margins={'left': 7}, kids=[
+    path = card('BR Downstream Card', fixed=HALF, margins={'left': 7}, kids=[  # 649 (GB, v42)
         card_header('Downstream path', 'Everything built on this node, by layer'), sheet('BR Downstream Path')])
     risk = card('BR Risk Card', kids=[
         card_header('Riskiest nodes in this period', 'Risk = average daily consumers downstream × failure rate. Failure rate is failed runs '
