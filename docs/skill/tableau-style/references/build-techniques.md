@@ -283,6 +283,25 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Bars with two row fields** (name and a tag): give the rank filter and the label track `tc_order` over both fields,
   or the tag partitions the table calc and each group ranks on its own.
 
+### Usage patterns (v36, to confirm when GB opens it)
+
+- **Log axes:** `scale='log'` on the axis `space` encoding (XSD `ScaleType-ST`: linear, log, symlog). A synchronised
+  second axis needs its own `synchronized='true'` encoding with `scale='log'` too, written by hand (the builder's
+  `sync` does not carry a scale).
+- **A non-rectangular zone behind a scatter:** an Area on the first axis at the zone's height for each product,
+  with the products sorted by the x measure (`computed-sort` ascending) so the area runs left to right; the dots on
+  the second axis draw on top. It spans only the first to the last product.
+- **Sparklines on a canvas:** one Node Daily row per day gives one point, so draw a Line (path = day index) through
+  the scaled values, a second layer for the window in the accent colour. Objects with no daily rows keep their
+  row through their dim_nodes-only text layers.
+- **Build-computed table numbers** (GB, v36): every number per period written by the build and placed at its
+  measured width, so right alignment is exact; the build reruns when the data changes.
+- **Fitting a wide prototype table** (it scrolled sideways): measure every column's widest text and title, assert
+  the total fits, then win room by dropping redundant prefixes, shorter titles (full words in the tooltip) and
+  cutting the longest names with "…".
+- **Names for lines that end together:** a small text table of the names beside the chart, coloured by the same key
+  (no font colour on the label run, so the text takes the mark colour), bottom-aligned where the lines end.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

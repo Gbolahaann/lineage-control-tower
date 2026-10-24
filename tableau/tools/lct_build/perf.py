@@ -58,7 +58,8 @@ COL = {'dot': 11, 'name': 23, 'built': 172, 'runtime': 356, 'trend': 428, 'rows'
 GAP = 4                                         # Tableau leaves about 4 px between a point and a label beside it
 AXIS_W = 40                                     # value axis width on both charts and their (clear) date strips
 COST_X = (0, DAYS, {'reverse': 'true'})         # Days Back Mid, as on Run & failures
-RT_X = (-26, DAYS, {'reverse': 'true'})         # 26 days of room right of today for the line-end names
+RT_X = COST_X                                   # the names sit in their own list right of the chart (GB, v35)
+NAMES_W, NAME_ROW = 132, 13
 EVENTS = [('2026-09-03', 'HubSpot moves', INK3, 'left'), ('2026-09-11', 'Ads move', INK3, 'right'),
           ('2026-10-04', 'fct_sessions fixed', GOOD_INK, 'right')]
 ASOF = dt.date(2026, 10, 19)
@@ -202,14 +203,12 @@ def combo_calcs():
         'PF Runtime Line': '// PF Runtime Line\n// Average successful run that day, in minutes.\n[Runtime Minutes (Daily)]',
         'PF Axis Anchor': '// PF Axis Anchor\n// Point the date labels under the two charts are centred on (strip axis 0 to 1).\nIF NOT ISNULL(MIN([Axis Date Label])) THEN 0.5 END',
         'PF Dot Key': '// PF Dot Key\n// Platform dot colour on a table row.\n[platform_now]',
-        'PF Runtime End Name': ('// PF Runtime End Name\n// The model\'s name on its line\'s last day (today), for the label to its right.\n'
-                                'IF MIN([days_before_as_of]) = 0 THEN ATTR([node_name]) END'),
     }
     t = {'PF Cost Rank': I_DIM, 'Is PF Top Cost Model': B_DIM, 'PF Slowest Rank': I_DIM, 'Is PF Slowest Six': B_DIM,
          'Is PF Slowest Model': B_DIM, 'PF Line Key': S_DIM, 'PF Pill State': S_DIM, 'PF Pill Text': S_DIM,
          'PF Pill Good Text': S_DIM, 'PF Pill Warn Text': S_DIM, 'PF Was Table Text': S_DIM, 'PF Cost Band': R_MEA,
          'PF Runtime Band': R_MEA, 'Model Build Cost (Period)': R_MEA, 'PF Runtime Line': R_MEA, 'PF Axis Anchor': R_MEA,
-         'PF Dot Key': S_DIM, 'PF Runtime End Name': S_MEA}
+         'PF Dot Key': S_DIM}
     return f, t
 
 
@@ -424,7 +423,7 @@ def cost_sheet() -> Sheet:
 
 def runtime_sheet() -> Sheet:
     x, band, line = R('Days Back Mid'), R('PF Runtime Band'), R('PF Runtime Line')
-    key, name, end = R('PF Line Key'), R('node_name'), R('PF Runtime End Name')
+    key, name = R('PF Line Key'), R('node_name')
     color_map(key, {'"Top change"': ACCENT, '"Other"': '#b9c0c7'})
     tip = [run(R('node_name', 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run(R('Tooltip Day Text'), 7, INK3, SEMI), run('   ', 7, INK3),
            run(line, 9, NAVY, SEMI), run(' min average run', 9, INK3)]
@@ -433,10 +432,17 @@ def runtime_sheet() -> Sheet:
                  extra={'axis': _axis_style(band, fmt=MINS) + _axis_width(band)},
                  panes=[Pane('Bar', label_show=False),
                         Pane('Bar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False),
-                        # the name only on today's point, to its right (v33b: line-end labels with line-first did
-                        # not show); overlapping names are hidden, as the prototype shows three of six
-                        Pane('Line', axis=line, color=key, size=0.4, lod=[name], text=[end], tooltip=tip, cull=True,
-                             label=[run(end, 7, INK3)], align='right')])
+                        Pane('Line', axis=line, color=key, size=0.4, lod=[name], label_show=False, tooltip=tip)])
+
+
+def runtime_names_sheet() -> Sheet:
+    """The six names stacked beside the chart, each in its line's colour, slowest first (v35: names on the lines
+    overlapped at the bottom, where five of the six end, and Tableau hid all but one)."""
+    order, name, key = R('PF Slowest Rank', kind='ok'), R('node_name'), R('PF Line Key')
+    return Sheet('PF Runtime Names', rows=[order], filters=[R('Is PF Slowest Six')], hide=[order], tooltip=False,
+                 row_height=(order, NAME_ROW), extra={'pane': [f"            <format attr='band-color' scope='rows' value='#00000000' />"]},
+                 # no font colour on the run, so the text takes the mark colour (the line's)
+                 panes=Pane('Text', color=key, text=[name], label=[{k: v for k, v in run(name, 7).items() if k != 'fontcolor'}], align='left'))
 
 
 def axis_strip(name, x_fixed, label='Axis Date Label') -> Sheet:
@@ -534,7 +540,7 @@ def product_sheet() -> Sheet:
 
 
 def sheets() -> list[Sheet]:
-    return (kpi_sheets() + [cost_sheet(), axis_strip('PF Cost Axis', COST_X), runtime_sheet(), axis_strip('PF Runtime Axis', RT_X, 'Axis Month Label')]
+    return (kpi_sheets() + [cost_sheet(), axis_strip('PF Cost Axis', COST_X), runtime_sheet(), runtime_names_sheet(), axis_strip('PF Runtime Axis', RT_X, 'Axis Month Label')]
             + table_sheets() + [product_sheet()])
 
 
@@ -567,8 +573,11 @@ def content() -> Z:
         sheet('PF Cost Axis', 16)])
     runtime = card('PF Runtime Card', margins={'left': 7}, kids=[
         card_header('Runtime of the six slowest models', 'Average successful run per day. The highlighted line is the biggest change.'),
-        sheet('PF Slowest Models Runtime Line'),
-        sheet('PF Runtime Axis', 16)])
+        Z('horz', friendly='PF Runtime Body', kids=[
+            Z('vert', friendly='PF Runtime Chart', kids=[sheet('PF Slowest Models Runtime Line'), sheet('PF Runtime Axis', 16)]),
+            # the names, bottom-aligned beside the chart where the lines end
+            Z('vert', friendly='PF Runtime Names Holder', fixed=NAMES_W, kids=[
+                blank(), sheet('PF Runtime Names', 6 * NAME_ROW + 6), blank(16)])])])
     expensive = card('PF Expensive Card', fixed=MAIN_W, margins={'right': 7}, kids=[
         card_header('Most expensive models in this period',
                     'Dot shows the platform. Flag shows full-refresh tables over 10M rows whose runtime grew more than 25%. '
