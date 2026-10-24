@@ -229,6 +229,11 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   navy square on a second axis. Give the sheet a fixed height so the rows stay compact, as in the prototype.
 - **Line-end labels on a reversed axis** come out at the oldest end (data order), and pile up when lines end on the
   same value; use a small legend instead (v30).
+- **Bars from zero defeat a fixed axis that does not start at zero** (v30: fixed 90 % to 100 % came out 0 % to
+  100 % with a band of bars on it). Draw bands and ticks on such an axis as Gantt bars starting at the axis bottom
+  (position = axis min, size = length).
+- **Near-100 % rates:** daily values are spikes nobody can read; a 7-day rolling share (`WINDOW_SUM` of the parts
+  over `WINDOW_SUM` of the whole along the day axis) on a zoomed axis shows the trend (GB's choice, v31).
 - **Decimal tick settings broke an axis:** `major-origin='0.9' major-spacing='0.05'` showed "nan" and Tableau dropped
   the fixed range. Keep tick spacing to whole numbers, or leave ticks automatic.
 - **A canvas only as tall as its content**, with spare pixels in both directions: a canvas the full height of its

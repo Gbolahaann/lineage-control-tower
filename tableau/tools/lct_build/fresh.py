@@ -45,12 +45,16 @@ NAME_W, VALUE_W, GAP = 200, 64, 10              # prototype .brow: 200px | bulle
 BX0, BX1 = NAME_W + GAP, BW - VALUE_W - GAP     # 210 .. 537: the bullet
 BY0, BY1, LY0, LY1 = 4, 18, 8.5, 13.5           # bullet band 14 px, lag bar 5 px centred in it
 COMP_H = 411                                    # compliance card; the bottom row takes the rest
-LATE_W = 400 - 7                                # late-now card 400 px with its 7 px margin (GB, v29); calendar the rest
+CAL_OUT = 289                                   # calendar card 289 px with its 7 px margin (GB, v30)
+LATE_W = RIGHT_W - CAL_OUT - 7                  # 353: late-now card takes the rest (its 7 px margin outside)
 LW = LATE_W - 2 * 16 - 2 - 8                    # 351: late-now canvas, 8 px spare so no scroll bar can appear
 LH_AVAIL = (CONTENT_H - COMP_H - 7 - 7) - 28 - 2 - 44 - 12   # room inside the card; the canvas is only as tall as its content
 X_AXIS = (0, 90, {'reverse': 'true'})           # Days Back Mid, as on Run & failures
-PCT_Y = (0.9, 1)                                # the prototype's 90 % to 100 % (tick settings broke the axis: "nan", v29)
-PCT = 'p0%'
+# 7-day rolling compliance never drops below 99.4 %, so the axis is 99 % to 100 % (GB, v30: the daily spikes on 0 % to
+# 100 % were unreadable). Ticks automatic: decimal tick settings broke the axis ("nan", v29).
+Y0, Y1 = 0.99, 1.0
+PCT_Y = (Y0, Y1)
+PCT = 'p0.0%'
 CHIP_BG, CHIP_LINE = '#f5f5f3', LINE
 PILL = {2: ('▲  Warning', WARN_INK, WARN_TINT, '#f3e0be'), 3: ('✕  Critical', CRIT_INK, CRIT_TINT, '#f2cdca')}
 
@@ -229,23 +233,31 @@ def late_calcs():
 
 def chart_calcs():
     f = {
-        'Compliance Band': ('// Compliance Band\n// Back bars of the compliance chart: full height on days in the window (the band).\n'
-                            'IF MAX(IIF([In Period], 1, 0)) = 1 THEN 1 END'),
-        'Freshness Incident Tick': ('// Freshness Incident Tick\n// Tick under a freshness incident\'s label (INC 6, INC 8), on the 90 % to 100 % scale.\n'
-                                    'IF COUNT(IF [category] = "freshness" THEN [incident_id] END) > 0 THEN 0.942 END'),
+        'Compliance Band': ('// Compliance Band\n// The window band: a Gantt bar from the bottom of the axis (99%) on days in the window. A bar from\n'
+                            '// zero made Tableau show 0 % to 100 % (v30).\n'
+                            'IF MAX(IIF([In Period], 1, 0)) = 1 THEN 0.99 END'),
+        'Compliance Band Length': '// Compliance Band Length\n// The band\'s length: the whole axis.\nMIN(0.0100)',
+        'Freshness Pass Rate 7 Day': ('// Freshness Pass Rate 7 Day\n// Share of hourly checks on time over the 7 days up to each day, per platform (GB, v30: a\n'
+                                      '// trend rather than daily spikes). Table calc along Days Back Mid: the 6 days before are +1 to +6.\n'
+                                      'WINDOW_SUM(SUM([fresh_checks_pass]), 0, 6)\n/\n'
+                                      'WINDOW_SUM(SUM([fresh_checks_pass] + [fresh_checks_warn] + [fresh_checks_error]), 0, 6)'),
+        'Freshness Incident Tick': ('// Freshness Incident Tick\n// Tick under a freshness incident\'s label (INC 6, INC 8): a Gantt bar from the axis bottom.\n'
+                                    'IF COUNT(IF [category] = "freshness" THEN [incident_id] END) > 0 THEN 0.99 END'),
+        'Freshness Incident Tick Length': '// Freshness Incident Tick Length\n// How far the tick reaches up the strip.\nMIN(0.00420)',
         'Freshness Incident Anchor': ('// Freshness Incident Anchor\n// Point the label sits above.\n'
-                                      'IF COUNT(IF [category] = "freshness" THEN [incident_id] END) > 0 THEN 0.946 END'),
+                                      'IF COUNT(IF [category] = "freshness" THEN [incident_id] END) > 0 THEN 0.99460 END'),
         'Freshness Incident Label': ('// Freshness Incident Label\n// "INC 6" over freshness incidents only (the prototype filters to them).\n'
                                      'IF [category] = "freshness" THEN [Incident Marker Label] END'),
         'Compliance Axis Anchor': ('// Compliance Axis Anchor\n// Date labels under the compliance chart (its 90 % to 100 % scale).\n'
-                                   'IF NOT ISNULL(MIN([Axis Date Label])) THEN 0.95 END'),
+                                   'IF NOT ISNULL(MIN([Axis Date Label])) THEN 0.9950 END'),
         'Calendar Day Short': '// Calendar Day Short\n// "Mon" ... "Sun" down the calendar.\nLEFT([day_name], 3)',
         'Calendar Cell': '// Calendar Cell\n// Every day\'s square sits at 0 on a hidden axis.\nMIN(0.0)',
         'Calendar Today': ('// Calendar Today\n// The navy square behind today\'s (a little larger): its outline, as in the prototype.\n'
                            'IF MIN([days_before_as_of]) = 0 THEN 0.0 END'),
         'Late Checks Text': '// Late Checks Text\n// The number in a calendar square, blank on days with none.\nIF [Late Checks (Daily)] > 0 THEN STR([Late Checks (Daily)]) END',
     }
-    t = {'Compliance Band': R_MEA, 'Freshness Incident Tick': R_MEA, 'Freshness Incident Anchor': R_MEA,
+    t = {'Compliance Band': R_MEA, 'Compliance Band Length': R_MEA, 'Freshness Pass Rate 7 Day': R_MEA,
+         'Freshness Incident Tick Length': R_MEA, 'Freshness Incident Tick': R_MEA, 'Freshness Incident Anchor': R_MEA,
          'Freshness Incident Label': S_DIM, 'Compliance Axis Anchor': R_MEA, 'Calendar Day Short': S_DIM,
          'Calendar Cell': R_MEA, 'Calendar Today': R_MEA, 'Late Checks Text': S_MEA}
     return f, t
@@ -263,7 +275,7 @@ for fn in (bullet_calcs, late_calcs, chart_calcs):
     a, b = fn()
     _f.update(a)
     _t.update(b)
-CALCS.add(formulas=_f, types=_t)
+CALCS.add(formulas=_f, types=_t, table_calc={'Freshness Pass Rate 7 Day': 'Days Back Mid'})
 
 
 # ================================================================ sheets
@@ -307,16 +319,17 @@ def latest_check_sheet() -> Sheet:
 
 
 def compliance_sheets() -> list[Sheet]:
-    x, band, rate = R('Days Back Mid'), R('Compliance Band'), R('Freshness Pass Rate (Daily)')
+    x, band, rate = R('Days Back Mid'), R('Compliance Band'), R('Freshness Pass Rate 7 Day')
     plat = R('Platform On Day Name')
     color_map(plat, {f'"{v}"': PLAT[k] for k, v in PLAT_NAME.items()})
     tip = [run(R('Tooltip Day Text'), 9, INK1, SEMI), run(NL, 7, INK3), run(R(plat.name, 'attr'), 7, INK3, SEMI), run('   ', 7, INK3),
-           run(rate, 9, NAVY, SEMI), run(' of checks on time', 9, INK3)]
+           run(rate, 9, NAVY, SEMI), run(' of checks on time, last 7 days', 9, INK3)]
     chart = Sheet('FR Compliance by Platform Line', cols=[x], rows=[(band, rate)], filters=[R('Is Platform Match Day')],
-                  hide=[x, rate], sync=[rate], fixed={x: X_AXIS, band: PCT_Y}, formats={band: PCT, rate: 'p0.0%'},
+                  hide=[x, rate], sync=[rate], fixed={x: X_AXIS, band: PCT_Y}, formats={band: PCT, rate: 'p0.00%'},
                   extra={'axis': _axis_style(band, fmt=PCT)},
                   panes=[Pane('Bar', label_show=False),
-                         Pane('Bar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False),
+                         Pane('GanttBar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False,
+                              size_field=R('Compliance Band Length')),
                          # no line-end labels: all three lines end at 100 % and the names piled up (v29); legend in the header
                          Pane('Line', axis=rate, color=plat, size=0.6, label_show=False, tooltip=tip)])
     tick, anchor, lab = R('Freshness Incident Tick'), R('Freshness Incident Anchor'), R('Freshness Incident Label', 'attr')
@@ -324,7 +337,8 @@ def compliance_sheets() -> list[Sheet]:
     incidents = Sheet('FR Incident Markers', cols=[x], rows=[(tick, anchor)], hide=[x, anchor], sync=[anchor],
                       fixed={x: X_AXIS, tick: PCT_Y}, formats={tick: PCT}, extra={'axis': _axis_style(tick, False, PCT)},
                       panes=[Pane('Bar', label_show=False),
-                             Pane('Bar', axis=tick, size=0.02, mark_color='#a5acb4', label_show=False, tooltip=itip),
+                             Pane('GanttBar', axis=tick, size=0.02, mark_color='#a5acb4', label_show=False, tooltip=itip,
+                                  size_field=R('Freshness Incident Tick Length')),
                              label_pane(axis=anchor, text=[lab], label=[run(lab, 7, INK2, SEMI)], align='center', valign='top',
                                         tooltip=itip)])
     ax = R('Compliance Axis Anchor')
@@ -408,18 +422,18 @@ def content() -> Z:
         sheet('FR Source Lag Bullets')])
     compliance = card('FR Compliance Card', fixed=COMP_H, margins={'bottom': 7}, kids=[
         Z('horz', friendly='FR Compliance Header', fixed=44, kids=[
-            card_header('Freshness SLA compliance by platform', 'Share of hourly checks that passed each day. The axis starts at 90%.',
+            card_header('Freshness SLA compliance by platform', 'Share of hourly checks on time over the last 7 days. The axis starts at 99%.',
                         None),
             text(_legend([(v, PLAT[k]) for k, v in PLAT_NAME.items()]), fixed=230)]),
         sheet('FR Incident Markers', 18),
         sheet('FR Compliance by Platform Line'),
         sheet('FR Compliance Axis', 16)])
-    calendar = card('FR Calendar Card', margins={'right': 7}, kids=[
+    calendar = card('FR Calendar Card', fixed=CAL_OUT - 7, margins={'right': 7}, kids=[
         card_header('Late checks by day', 'Number shows late checks. Outlined day is today.'),
         sheet('FR Late Checks Calendar', 7 * 21),  # compact at the top, as the prototype (7 rows of about 18 px squares)
         blank(),
         text(_legend([('Warn', WARN), ('Error', CRIT), ('On time', '#e3f2e9')]), fixed=22, **{'padding-top': '6'})])
-    late = card('FR Late Now Card', fixed=LATE_W, margins={'left': 7}, kids=[
+    late = card('FR Late Now Card', margins={'left': 7}, kids=[
         card_header('Late right now', 'And the data products waiting on them'),
         sheet('FR Late Right Now')])
     right = Z('vert', friendly='FR Right Column', fixed=RIGHT_W, style={'margin-left': '7'}, kids=[
