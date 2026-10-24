@@ -40,17 +40,16 @@ PLAT_NAME = {'snowflake': 'Snowflake', 'databricks': 'Databricks', 'redshift': '
 RIGHT_W = 649                                   # right column; 7 px margin-left outside
 LEFT_W = 1312 - RIGHT_W - 7 - 7                 # 649: bullets card, 7 px margin-right outside
 BW = LEFT_W - 2 * 16 - 2 - SH.SLACK            # 611: bullet canvas width
-ROW = (BW, 19)                                  # one pane per source (prototype: 12 px bullet + 6 px gap)
+ROW = (BW, 22)                                  # one pane per source: 27 rows fill about 594 px (GB: about 607, v29)
 NAME_W, VALUE_W, GAP = 200, 64, 10              # prototype .brow: 200px | bullet | 64px, gap 10
 BX0, BX1 = NAME_W + GAP, BW - VALUE_W - GAP     # 210 .. 537: the bullet
-BY0, BY1, LY0, LY1 = 3.5, 15.5, 7.5, 11.5       # bullet band 12 px, lag bar 4 px from its top + 4
+BY0, BY1, LY0, LY1 = 4, 18, 8.5, 13.5           # bullet band 14 px, lag bar 5 px centred in it
 COMP_H = 411                                    # compliance card; the bottom row takes the rest
-CAL_W = 318                                     # calendar card; 7 px margin-right outside
-LATE_W = RIGHT_W - CAL_W - 7 - 7                # 317: late-now card
-LW = LATE_W - 2 * 16 - 2 - SH.SLACK            # 279: late-now canvas
-LH = (CONTENT_H - COMP_H - 7 - 7) - 28 - 2 - 44 - 6   # late-now canvas height inside its card
-X_AXIS = (-11, 90, {'reverse': 'true'})         # Days Back Mid; -11 leaves room on the right for line-end labels
-PCT_Y = (0.9, 1, {'major-origin': '0.9', 'major-spacing': '0.05'})   # the prototype's 90 % to 100 %
+LATE_W = 400 - 7                                # late-now card 400 px with its 7 px margin (GB, v29); calendar the rest
+LW = LATE_W - 2 * 16 - 2 - 8                    # 351: late-now canvas, 8 px spare so no scroll bar can appear
+LH_AVAIL = (CONTENT_H - COMP_H - 7 - 7) - 28 - 2 - 44 - 12   # room inside the card; the canvas is only as tall as its content
+X_AXIS = (0, 90, {'reverse': 'true'})           # Days Back Mid, as on Run & failures
+PCT_Y = (0.9, 1)                                # the prototype's 90 % to 100 % (tick settings broke the axis: "nan", v29)
 PCT = 'p0%'
 CHIP_BG, CHIP_LINE = '#f5f5f3', LINE
 PILL = {2: ('▲  Warning', WARN_INK, WARN_TINT, '#f3e0be'), 3: ('✕  Critical', CRIT_INK, CRIT_TINT, '#f2cdca')}
@@ -155,9 +154,14 @@ def _late_layout():
             texts.append(('chip', t, x + w / 2, y + 8, r['node_id']))
             x += w + 4
         y += 16 + 14
+    y -= 14
     assert len(shapes) <= 11, f'Late right now: {len(shapes)} shapes, the 90-row scaffold holds 11 (8 rows each)'
-    assert len(texts) <= 90 and y <= LH, f'Late right now: {len(texts)} texts, {y:.0f} of {LH} px'
-    return late, shapes, texts
+    assert len(texts) <= 90 and y <= LH_AVAIL, f'Late right now: {len(texts)} texts, {y:.0f} of {LH_AVAIL} px'
+    return late, shapes, texts, y
+
+
+_LATE = _late_layout()
+LH = int(_LATE[3]) + 4                          # the canvas fits its content (v29 was the card's full height: scroll bars)
 
 
 def _platform_ok(source_id):
@@ -171,7 +175,7 @@ def _chamfer(x0, y0, x1, y1, r):
 
 
 def late_calcs():
-    late, shapes, texts = _late_layout()
+    late, shapes, texts, _y = _LATE
     lat = lambda y: f'{(LH / 2 - y) / 100:.4f}'
     lon = lambda x: f'{(x - LW / 2) / 100:.4f}'
 
@@ -313,9 +317,8 @@ def compliance_sheets() -> list[Sheet]:
                   extra={'axis': _axis_style(band, fmt=PCT)},
                   panes=[Pane('Bar', label_show=False),
                          Pane('Bar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False),
-                         Pane('Line', axis=rate, color=plat, size=0.6, text=[plat], label=[run(plat, 8, INK2)], tooltip=tip,
-                              mark_fmt=[('mark-labels-mode', 'line-ends'), ('mark-labels-line-first', 'false'),
-                                        ('mark-labels-line-last', 'true')])])
+                         # no line-end labels: all three lines end at 100 % and the names piled up (v29); legend in the header
+                         Pane('Line', axis=rate, color=plat, size=0.6, label_show=False, tooltip=tip)])
     tick, anchor, lab = R('Freshness Incident Tick'), R('Freshness Incident Anchor'), R('Freshness Incident Label', 'attr')
     itip = [run(R('Incident Marker Label', 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run(R('title', 'attr'), 9, INK1)]
     incidents = Sheet('FR Incident Markers', cols=[x], rows=[(tick, anchor)], hide=[x, anchor], sync=[anchor],
@@ -404,16 +407,19 @@ def content() -> Z:
         sheet('FR Latest Check Label', 20),
         sheet('FR Source Lag Bullets')])
     compliance = card('FR Compliance Card', fixed=COMP_H, margins={'bottom': 7}, kids=[
-        card_header('Freshness SLA compliance by platform', 'Share of hourly checks that passed each day. The axis starts at 90%.'),
+        Z('horz', friendly='FR Compliance Header', fixed=44, kids=[
+            card_header('Freshness SLA compliance by platform', 'Share of hourly checks that passed each day. The axis starts at 90%.',
+                        None),
+            text(_legend([(v, PLAT[k]) for k, v in PLAT_NAME.items()]), fixed=230)]),
         sheet('FR Incident Markers', 18),
         sheet('FR Compliance by Platform Line'),
         sheet('FR Compliance Axis', 16)])
-    calendar = card('FR Calendar Card', fixed=CAL_W, margins={'right': 7}, kids=[
+    calendar = card('FR Calendar Card', margins={'right': 7}, kids=[
         card_header('Late checks by day', 'Number shows late checks. Outlined day is today.'),
         sheet('FR Late Checks Calendar', 7 * 21),  # compact at the top, as the prototype (7 rows of about 18 px squares)
         blank(),
         text(_legend([('Warn', WARN), ('Error', CRIT), ('On time', '#e3f2e9')]), fixed=22, **{'padding-top': '6'})])
-    late = card('FR Late Now Card', margins={'left': 7}, kids=[
+    late = card('FR Late Now Card', fixed=LATE_W, margins={'left': 7}, kids=[
         card_header('Late right now', 'And the data products waiting on them'),
         sheet('FR Late Right Now')])
     right = Z('vert', friendly='FR Right Column', fixed=RIGHT_W, style={'margin-left': '7'}, kids=[

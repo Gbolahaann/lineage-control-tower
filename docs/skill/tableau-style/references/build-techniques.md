@@ -227,8 +227,12 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   live by wrapping each part in its parameter check. The build asserts the shapes fit (11 per 90 rows).
 - **Calendar heatmap:** rows weekday (sorted by day number), columns week, Square marks; today outlined by a larger
   navy square on a second axis. Give the sheet a fixed height so the rows stay compact, as in the prototype.
-- **Line-end labels:** `mark-labels-mode line-ends`, `mark-labels-line-last true`, and room on the right of the
-  axis (the reversed day axis starts at -11).
+- **Line-end labels on a reversed axis** come out at the oldest end (data order), and pile up when lines end on the
+  same value; use a small legend instead (v30).
+- **Decimal tick settings broke an axis:** `major-origin='0.9' major-spacing='0.05'` showed "nan" and Tableau dropped
+  the fixed range. Keep tick spacing to whole numbers, or leave ticks automatic.
+- **A canvas only as tall as its content**, with spare pixels in both directions: a canvas the full height of its
+  card got both scroll bars (Tableau's zone came out a little smaller).
 
 ## 11. Colours and palettes
 
