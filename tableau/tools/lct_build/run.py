@@ -505,7 +505,7 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     *[('RUN Recent Errors Table', (lambda f=f: R(f)), param, f'RUN Error Set {param}') for f, param in PANEL_WRITES],
 ]
 
-# an error row opens the Lineage explorer for now; Blast radius once that tab exists (GB, 22 Oct)
-NAV_ACTIONS = [('RUN Recent Errors Table', 'Lineage explorer', 'Go to Lineage from RUN Recent Errors Table')]
+# an error row opens Blast radius (GB, 22 Oct: Lineage until that tab existed)
+NAV_ACTIONS = [('RUN Recent Errors Table', 'Blast radius', 'Go to Blast radius from RUN Recent Errors Table')]
 
 DEHIGHLIGHT = ['RUN Daily Failures Bar', 'RUN Gantt Prev Button', 'RUN Gantt Next Button', 'RUN Recent Errors Table']

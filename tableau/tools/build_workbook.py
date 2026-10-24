@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import core, fresh, health, lineage, perf, quality, run, shapes, shell, usage  # noqa: E402
+from lct_build import blast, core, fresh, health, lineage, perf, quality, run, shapes, shell, usage  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -37,12 +37,13 @@ MASTER = ROOT / 'tableau' / 'Lineage_Control_Tower_Project_Dashboard.twb'
 OUT = ROOT / 'tableau' / 'build' / 'Lineage_Control_Tower.twb'
 VERSIONS = ROOT / 'tableau' / 'versions'
 
-CONTENT = {'HO': health.content, 'RUN': run.content, 'FR': fresh.content, 'PF': perf.content, 'US': usage.content, 'QA': quality.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
-TAB_ACTIONS = {'HO': health.ACTIONS, 'RUN': run.ACTIONS, 'FR': fresh.ACTIONS, 'PF': perf.ACTIONS, 'US': usage.ACTIONS, 'QA': quality.ACTIONS, 'LIN': lineage.ACTIONS}
-TAB_NAV = {'HO': health.NAV_ACTIONS, 'RUN': run.NAV_ACTIONS, 'FR': fresh.NAV_ACTIONS, 'PF': perf.NAV_ACTIONS, 'US': usage.NAV_ACTIONS}
+CONTENT = {'HO': health.content, 'RUN': run.content, 'FR': fresh.content, 'PF': perf.content, 'US': usage.content, 'QA': quality.content, 'BR': blast.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
+TAB_ACTIONS = {'HO': health.ACTIONS, 'RUN': run.ACTIONS, 'FR': fresh.ACTIONS, 'PF': perf.ACTIONS, 'US': usage.ACTIONS, 'QA': quality.ACTIONS, 'BR': blast.ACTIONS, 'LIN': lineage.ACTIONS}
+TAB_NAV = {'HO': health.NAV_ACTIONS, 'RUN': run.NAV_ACTIONS, 'FR': fresh.NAV_ACTIONS, 'PF': perf.NAV_ACTIONS, 'US': usage.NAV_ACTIONS, 'BR': blast.NAV_ACTIONS}
+TAB_URL = {'BR': blast.URL_ACTIONS}   # mailto links: (sheet, caption, subject field, body field)
 # clickable sheets that clear their selection after a click (one dashboard each; the GL buttons are on all 11)
 DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
-               'RUN': run.DEHIGHLIGHT, 'FR': fresh.DEHIGHLIGHT, 'PF': perf.DEHIGHLIGHT, 'US': usage.DEHIGHLIGHT,
+               'RUN': run.DEHIGHLIGHT, 'FR': fresh.DEHIGHLIGHT, 'PF': perf.DEHIGHLIGHT, 'US': usage.DEHIGHLIGHT, 'BR': blast.DEHIGHLIGHT,
                'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
 
 
@@ -70,6 +71,8 @@ def dashboard(tab, window_ids):
         usage.check_fit(zones)
     if p == 'QA':
         quality.check_fit(zones)
+    if p == 'BR':
+        blast.check_fit(zones)
     xml = (f"    <dashboard enable-sort-zone-taborder='true' name='{esc(name)}'>\n"
            "      <style>\n        <style-rule element='table'>\n"
            f"          <format attr='background-color' value='{core.CANVAS}' />\n        </style-rule>\n      </style>\n"
@@ -120,6 +123,16 @@ def actions(dash_sheets) -> str:
                 f"      <link caption='{esc('Dehighlight ' + ws)}' delimiter=',' escape='\\' expression='{expr}' include-null='true' "
                 "multi-select='true' url-escape='true' />\n"
                 f"      <command command='tsc:tsl-filter'>\n        <param name='target' value='{esc(ws)}' />\n      </command>\n"
+                "    </action>\n")
+        # URL actions (an <action> with a link and no command): the incident message as a pre-filled email
+        for ws, cap, subj, body in TAB_URL.get(tab[0], []):
+            ref = lambda n: f'&lt;{R(n).ref}~na&gt;'
+            filters.append(
+                f"    <action caption='{esc(cap)}' name='[Action3_{hashlib.md5(cap.encode()).hexdigest().upper()}]'>\n"
+                "      <activation type='on-select' />\n"
+                f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
+                f"      <link caption='{esc(cap)}' delimiter=',' escape='\\' expression='mailto:?subject={ref(subj)}&amp;body={ref(body)}' "
+                "include-null='true' multi-select='false' url-escape='true' />\n"
                 "    </action>\n")
         # Go to Sheet, as in GB's example (Go_to_Sheet_Action_Example.twbx), but with the dashboard on its source
         # like every other click action here: without it the v19 jump never fired from the Health dashboard
@@ -261,7 +274,7 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     check_spatial_tables(t)
-    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + lineage.sheets()
+    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + blast.sheets() + lineage.sheets()
     for so in sheet_objs:
         so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
     dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})

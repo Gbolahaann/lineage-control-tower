@@ -683,7 +683,7 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     ('US Semantic Refresh Table', lambda: R('node_key'), 'p_selected_node_key', 'US Semantic Select Node Key'),
     *[('US Semantic Refresh Table', (lambda f=f: R(f)), param, f'US Semantic Set {param}') for f, param in PANEL_WRITES],
 ]
-# a product opens in the Lineage explorer; a semantic object too, until Blast radius exists
-NAV_ACTIONS = [(ws, 'Lineage explorer', f'Go to Lineage from {ws}')
-               for ws in ('US Cost vs Usage Scatter', 'US Ranked Products Table', 'US Semantic Refresh Table')]
+# a product opens in the Lineage explorer; a semantic object in Blast radius (GB, 24 Oct)
+NAV_ACTIONS = [*[(ws, 'Lineage explorer', f'Go to Lineage from {ws}') for ws in ('US Cost vs Usage Scatter', 'US Ranked Products Table')],
+               ('US Semantic Refresh Table', 'Blast radius', 'Go to Blast radius from US Semantic Refresh Table')]
 DEHIGHLIGHT = ['US Cost vs Usage Scatter', 'US Ranked Products Table', 'US Semantic Refresh Table']

@@ -320,6 +320,20 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Simulator quirks are not workbook bugs:** the evaluator is eager in IIF and drifts ints to floats; keep keys built
   with `STR(INT(...))` so they never depend on number typing.
 
+### Blast radius patterns (v39, to confirm when GB opens it)
+
+- **A page driven by a selection parameter:** write what each selectable value reaches as CASE calcs on the parameter
+  (and the period where it matters): sentences, chip counts, membership filters (`CASE [p_selected_node] + "|" +
+  [node_id] WHEN ... THEN TRUE`), row order and callout visibility. DZV calcs then read parameters only, so they
+  update at once.
+- **Wrap and break long label text at build time:** mark labels do not wrap; join wrapped lines with `CHAR(10)` in
+  the calc (not a raw newline inside a string literal), or break before the last words when the measured width runs out.
+- **URL action (mailto):** an `<action>` with `<activation type='on-select'>`, the source sheet and a `<link
+  expression='mailto:?subject=&lt;[ds].[none:Calc:nk]~na&gt;&amp;body=...' url-escape='true'>`, no command; the
+  fields on Detail of the button sheet.
+- **Check CASE keys against the lookup expression:** a bar-width CASE keyed on period|node but looked up with
+  period|platform|node returned nothing (the simulator caught it: bars as slivers).
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

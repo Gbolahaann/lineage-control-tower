@@ -1,7 +1,7 @@
 """Tab 4, Performance & cost (PF): calc pack section 9, build plan 3.7.
 
 GB's choices (24 Oct): the most expensive models as a pixel canvas like the prototype, the data product costs as the
-Why runs failed bars, and a model row click opens it in the Lineage explorer (Blast radius once that tab exists).
+Why runs failed bars, and a model row click opens it in Blast radius.
 
 - KPIs: Warehouse cost re-uses the Health sheet; average per day with its platform split, the slowest model and the
   incremental candidates are label sheets.
@@ -613,6 +613,6 @@ ACTIONS = [  # (sheet, source Ref factory, parameter, caption)
     ('PF Most Expensive Models Table', lambda: R('node_key'), 'p_selected_node_key', 'PF Model Select Node Key'),
     *[('PF Most Expensive Models Table', (lambda f=f: R(f)), param, f'PF Model Set {param}') for f, param in PANEL_WRITES],
 ]
-# a model row opens the Lineage explorer for now; Blast radius once that tab exists (GB, 24 Oct)
-NAV_ACTIONS = [('PF Most Expensive Models Table', 'Lineage explorer', 'Go to Lineage from PF Most Expensive Models Table')]
+# a model row opens Blast radius (GB, 24 Oct: Lineage until that tab existed)
+NAV_ACTIONS = [('PF Most Expensive Models Table', 'Blast radius', 'Go to Blast radius from PF Most Expensive Models Table')]
 DEHIGHLIGHT = ['PF Most Expensive Models Table']
