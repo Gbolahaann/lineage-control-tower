@@ -306,6 +306,20 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Names for lines that end together:** a small text table of the names beside the chart, coloured by the same key
   (no font colour on the label run, so the text takes the mark colour), bottom-aligned where the lines end.
 
+### Data quality patterns (v38, to confirm when GB opens it)
+
+- **Scrolling heatmap with row totals:** a native Square grid (rows = order, name, counts; columns = discrete dates,
+  fit width, 13 px rows). Totals that must scroll with the rows go in as row headers, not a second sheet.
+- **Date labels over a discrete-date grid:** a strip sheet on a continuous reversed day axis whose fixed range must
+  match the grid's span; when the span changes with a parameter, build one strip per span and switch them with
+  dynamic zone visibility. Give the strip an empty row header as wide as the grid's headers, and pad its zone by the
+  grid's scroll bar width.
+- **Canvas rows that need more points than their data has** (a test has a few rows, seven bars need 84): draw each
+  row on a fixed "carrier" model's 90 Node Daily rows (`Node Path Index`), with all content written per period and
+  platform by the build. Small lists (5 to 6 bars) fit the 90-row date table at 4 rows per bar.
+- **Simulator quirks are not workbook bugs:** the evaluator is eager in IIF and drifts ints to floats; keep keys built
+  with `STR(INT(...))` so they never depend on number typing.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau
