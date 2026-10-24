@@ -217,6 +217,19 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   bar shows only as a hollow outline. Back bar: the clicked day navy to near the top, every other window day full
   height and full width in the band colour (the bars touch: the window band).
 
+### Freshness patterns (v29)
+
+- **Bullets as a canvas row per item:** zones and value bar as polygons from the item's own daily rows, each on its
+  own scale when the prototype does so; name and value placed at measured widths.
+- **Static "right now" cards on a scaffold:** when the content is fixed at the as-of date (late sources and the
+  products waiting on them), lay it out at build time (pills, wrapped chips) and draw it on the 90-row date table,
+  8 rows per rounded shape (chamfered corners read as rounded at chip size) and one row per text. Keep filters
+  live by wrapping each part in its parameter check. The build asserts the shapes fit (11 per 90 rows).
+- **Calendar heatmap:** rows weekday (sorted by day number), columns week, Square marks; today outlined by a larger
+  navy square on a second axis. Give the sheet a fixed height so the rows stay compact, as in the prototype.
+- **Line-end labels:** `mark-labels-mode line-ends`, `mark-labels-line-last true`, and room on the right of the
+  axis (the reversed day axis starts at -11).
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

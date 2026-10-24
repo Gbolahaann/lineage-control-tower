@@ -382,7 +382,8 @@ class Pane:
     def __init__(self, mark='Automatic', *, color=None, text=(), lod=(), tooltip_fields=(), label=None,
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
-                 transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=()):
+                 transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=(),
+                 mark_fmt=()):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -396,6 +397,7 @@ class Pane:
         # reference lines, as Tableau writes them inside the pane (IronViz reference): dicts with id, axis (Ref),
         # param (a parameter name: the line follows it) and z (z-order). Their look goes in the sheet's refline rule.
         self.reflines = list(reflines)
+        self.mark_fmt = list(mark_fmt)    # extra (attr, value) mark formats, e.g. ('mark-labels-mode', 'line-ends')
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else []) \
@@ -439,6 +441,7 @@ class Pane:
             mark_fmt.append(f"                <format attr='shape' value='{esc(self.shape)}' />")
         if self.transparency is not None:
             mark_fmt.append(f"                <format attr='mark-transparency' value='{self.transparency}' />")
+        mark_fmt += [f"                <format attr='{a}' value='{v}' />" for a, v in self.mark_fmt]
         if self.stroke:
             mark_fmt.append("                <format attr='has-stroke' value='true' />")
             mark_fmt.append(f"                <format attr='stroke-color' value='{self.stroke}' />")
