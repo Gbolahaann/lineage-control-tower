@@ -100,6 +100,9 @@ PARAMS = [
     dict(name='p_panel_type', datatype='string', value='model', domain='any'),
     dict(name='p_panel_platform', datatype='string', value='snowflake', domain='any'),
     dict(name='p_panel_tags', datatype='string', value='|', domain='any'),
+    # Usage & adoption: what the ranked table is sorted by (GB, v36)
+    dict(name='p_us_sort', datatype='string', value='Uses', domain='list',
+         members=[('Uses', 'Uses'), ('Change', 'Change'), ('Cost per use', 'Cost per use'), ('Daily consumers', 'Daily consumers')]),
 ]
 PARAM_ID = {p['name']: f'[Parameter {i + 1}]' for i, p in enumerate(PARAMS)}
 PARAM_BY = {p['name']: p for p in PARAMS}

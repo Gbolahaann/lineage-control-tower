@@ -42,12 +42,16 @@ DAYS = 90
 
 # ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 TOP_H = 330
-HALF = (1312 - 14) // 2                         # 649: every card, a 7 px margin on the inner side
-CW = HALF - 2 * 16 - 2 - SH.SLACK               # 611: both table canvases
+HALF = (1312 - 14) // 2                         # 649: the top cards, a 7 px margin on the inner side
+SEM_W = 643                                     # semantic card (GB, v36); 7 px margin-left outside
+RANK_W = 1312 - SEM_W - 7 - 7                   # 655: the ranked card takes the rest
+RCW = RANK_W - 2 * 16 - 2 - SH.SLACK - 18       # 599: ranked canvas, room for its own scroll bar (GB, v36)
+SCW = SEM_W - 2 * 16 - 2 - SH.SLACK             # 605: semantic canvas
 HEAD_H = 22
 ROWS_AVAIL = CONTENT_H - TOP_H - 14 - 2 - 28 - 44 - HEAD_H - 1 - SH.SLACK   # height left for table rows
-TOP_N = 19
+ROW_H = 27                                      # the prototype's rows; the ranked table scrolls (GB, v36)
 GAP = 9                                         # between table columns
+SORTS = ('Uses', 'Change', 'Cost per use', 'Daily consumers')
 BY_HAND_BG, AI_BG, AI_LINE, OBS_LINE = '#f5f5f3', '#eef0fb', '#d9dcf4', '#f3ddb4'
 ET_NAME = {'dashboard': 'Dashboard', 'notebook': 'Notebook', 'ml': 'ML model', 'data_app': 'Data app', 'agent': 'AI agent',
            'data_hub': 'Data hub'}
@@ -94,10 +98,15 @@ def _ranked():
             retire = ev / per * 30 < 10 and (cpu is None or cpu > 5) and n['is_declared'] == 'True'
             vals[(per, e)] = dict(ev=ev, ch=(ev - pev) / pev if pev else None, cons=sum(uc) / len(uc) if uc else 0,
                                   cpu=cpu, retire=retire, unreg=n['is_declared'] != 'True')
+        # every product, in the order p_us_sort asks for (ties and missing values by uses)
+        order = {'Uses': lambda v: (0, -v['ev']),
+                 'Change': lambda v: (v['ch'] is None, v['ch'] if v['ch'] is not None else 0, -v['ev']),   # biggest fall first
+                 'Cost per use': lambda v: (v['cpu'] is None, -(v['cpu'] or 0), -v['ev']),
+                 'Daily consumers': lambda v: (0, -v['cons'], -v['ev'])}
         for plat in PLATFORMS:
-            es = sorted((e for e in days if _in_plat(NODES[e], plat)), key=lambda e: -vals[(per, e)]['ev'])
-            top = es[:TOP_N] + [e for e in es[TOP_N:] if vals[(per, e)]['retire'] or vals[(per, e)]['unreg']]
-            rows[(per, plat)] = top
+            es = [e for e in days if _in_plat(NODES[e], plat)]
+            for srt, fn in order.items():
+                rows[(per, plat, srt)] = sorted(es, key=lambda e: fn(vals[(per, e)]))
     return vals, rows
 
 
@@ -126,10 +135,11 @@ def _semantic():
 RANK_VALS, RANK_ROWS = _ranked()
 SEM_VALS, SEM_ROWS = _semantic()
 MAX_RANKED = max(len(v) for v in RANK_ROWS.values())
-ROW_H = min(22, ROWS_AVAIL // MAX_RANKED)       # 20 px for 20 rows
 SEM_ROW_H = min(29, ROWS_AVAIL // max(len(v) for v in SEM_ROWS.values()))   # the prototype's 29 px
-ROW, SEM_ROW = (CW, ROW_H), (CW, SEM_ROW_H)
+ROW, SEM_ROW = (RCW, ROW_H), (SCW, SEM_ROW_H)
 KEY = 'STR([p_period]) + "|" + [p_platform] + "|" + [node_id (dim_nodes.csv)]'
+RKEY = 'STR([p_period]) + "|" + [p_platform] + "|" + [p_us_sort] + "|" + [node_id (dim_nodes.csv)]'
+COMBO = 'STR([p_period]) + "|" + [p_platform]'
 PKEY = 'STR([p_period]) + "|" + [node_id (dim_nodes.csv)]'
 NODE = '[node_id (dim_nodes.csv)]'
 
@@ -173,12 +183,15 @@ def _flag(v):
 
 W8 = lambda s, b=False: SH.text_width(s, 8, b)
 W7 = lambda s, b=False: SH.text_width(s, 7, b)
-SHOWN = sorted({(per, e) for (per, _p), es in RANK_ROWS.items() for e in es})
-# "Unregistered: " is dropped from the name: the flag column says it (room for the full names)
-NAMES = {e: _fit(NODES[e]['display_name'].replace('Unregistered: ', ''), 148, 8, True) for e in {e for _p, e in SHOWN}}
+SHOWN = sorted({(per, e) for (per, _p, _s), es in RANK_ROWS.items() for e in es})
 
 
-def _ranked_cols():
+def _names(cap):
+    # "Unregistered: " is dropped from the name: the flag column says it (room for the full names)
+    return {e: _fit(NODES[e]['display_name'].replace('Unregistered: ', ''), cap, 8, True) for e in {e for _p, e in SHOWN}}
+
+
+def _ranked_cols(names):
     """Left edges (name, type, built tag, flag) and right edges (numbers), from the widest text of each column."""
     texts = {
         'uses': [W8(''.join(_uses(RANK_VALS[k], k[1]))) for k in SHOWN],
@@ -188,8 +201,8 @@ def _ranked_cols():
     }
     # shorter titles than the prototype's (its table scrolled sideways): "Daily consumers" and "Cost per use" spelt out in the tooltip
     heads = {'uses': 'USES', 'change': 'CHANGE', 'cons': 'CONSUMERS', 'cpu': 'COST/USE'}
-    x = {'name': 8, 'type': 8 + max(W8(t, True) for t in NAMES.values()) + GAP}
-    x['built'] = x['type'] + max(W8(_type(e)) for e in NAMES) + GAP
+    x = {'name': 8, 'type': 8 + max(W8(t, True) for t in names.values()) + GAP}
+    x['built'] = x['type'] + max(W8(_type(e)) for e in names) + GAP
     tag_w = max(W7(t) for t in ('AI-built', 'By hand')) + 12
     edge = x['built'] + tag_w
     for c in ('uses', 'change', 'cons', 'cpu'):
@@ -197,11 +210,40 @@ def _ranked_cols():
         x[c] = edge
     x['flag'] = edge + GAP
     flag_w = max(W7(t, True) for t in ('✕  Retire?', 'Unregistered')) + 14
-    assert x['flag'] + flag_w <= CW - 2, f'US ranked table: {x["flag"] + flag_w:.0f} px of {CW}'
-    return x, tag_w, heads
+    return x, tag_w, heads, x['flag'] + flag_w
 
 
-RCOL, TAG_W, RHEADS = _ranked_cols()
+def _fit_names():
+    """The widest name column that still lets the table fit its canvas."""
+    for cap in range(170, 100, -2):
+        names = _names(cap)
+        x, tag_w, heads, end = _ranked_cols(names)
+        if end <= RCW - 2:
+            return names, x, tag_w, heads
+    raise AssertionError('US ranked table does not fit')
+
+
+NAMES, RCOL, TAG_W, RHEADS = _fit_names()
+
+
+def _xmax():
+    """Right edge of the scatter's cost axis per period and platform: the power of ten above the dearest product."""
+    import math
+    cost = collections.defaultdict(float)
+    for r in csv.DictReader(open(M / 'mart_exposure_daily.csv', encoding='utf-8')):
+        b = (ASOF - dt.date.fromisoformat(r['date'])).days
+        for per in PERIODS:
+            if b < per:
+                cost[(per, r['exposure_id'])] += _num(r['allocated_cost_usd']) or 0
+    out = {}
+    for per in PERIODS:
+        for plat in PLATFORMS:
+            cs = [c for (p, e), c in cost.items() if p == per and _in_plat(NODES[e], plat) and RANK_VALS[(per, e)]['ev'] > 0 and c > 0]
+            out[(per, plat)] = 10 ** math.ceil(math.log10(max(cs))) if cs else 1000
+    return out
+
+
+XMAX = _xmax()
 
 
 def _sem_cols():
@@ -218,7 +260,7 @@ def _sem_cols():
         edge += GAP + max(max(cells[c]), W7(heads[c], True))
         x[c] = edge
     x['spark'] = edge + GAP + 4
-    x['spark_w'] = CW - 6 - x['spark']
+    x['spark_w'] = SCW - 6 - x['spark']
     assert x['spark_w'] >= 90, f'US semantic sparkline only {x["spark_w"]:.0f} px'
     return x, heads
 
@@ -258,10 +300,10 @@ def _rounded(idx, x0, w, y0, y1, r, pane, cond=None):
 
 def ranked_calcs():
     f, t = {}, {}
-    rank = {f'{p}|{pl}|{e}': i + 1 for (p, pl), es in RANK_ROWS.items() for i, e in enumerate(es)}
-    f['US Use Rank'] = _calc('US Use Rank', 'Row of a data product in the ranked table: the 19 most used in the period, then any retire\n'
-                             '// candidate or unregistered product below them (worked out by the build per period and platform).',
-                             _case(KEY, rank, quote=False))
+    rank = {f'{p}|{pl}|{srt}|{e}': i + 1 for (p, pl, srt), es in RANK_ROWS.items() for i, e in enumerate(es)}
+    f['US Use Rank'] = _calc('US Use Rank', 'Row of a data product in the ranked table, in the order p_us_sort asks for (uses, change with the\n'
+                             '// biggest fall first, cost per use or daily consumers), worked out by the build per period and platform.',
+                             _case(RKEY, rank, quote=False))
     f['Is US Ranked Row'] = _calc('Is US Ranked Row', 'Rows of the ranked table. Put on Filters (True).', 'NOT ISNULL([US Use Rank])')
     by = lambda fn: {f'{p}|{e}': fn(p, e) for p, e in SHOWN}
     by_text = lambda fn: {k: v for k, v in by(fn).items() if v is not None}
@@ -305,8 +347,8 @@ def ranked_calcs():
     fw = {k: W7(v, True) + 14 for k, v in by_text(lambda p, e: _flag(RANK_VALS[(p, e)])).items()}
     f['US Flag Text Point'] = _calc('US Flag Text Point', 'Middle of the flag.', _centre_case(PKEY, {k: RCOL['flag'] + w / 2 for k, w in fw.items()}, pane))
     idx = '[Exposure Path Index]'
-    f['US Row Point'] = _calc('US Row Point', 'The row (white, takes the click).', _rounded(idx, 0, CW, 0, ROW_H - 1, 0, pane))
-    f['US Divider Point'] = _calc('US Divider Point', 'The 1 px line under each row.', _rounded(idx, 0, CW, ROW_H - 1, ROW_H, 0, pane))
+    f['US Row Point'] = _calc('US Row Point', 'The row (white, takes the click).', _rounded(idx, 0, RCW, 0, ROW_H - 1, 0, pane))
+    f['US Divider Point'] = _calc('US Divider Point', 'The 1 px line under each row.', _rounded(idx, 0, RCW, ROW_H - 1, ROW_H, 0, pane))
     f['US Built Border Point'] = _calc('US Built Border Point', 'Built tag outline (radius 4).', _rounded(idx, RCOL['built'], TAG_W, mid - 7, mid + 7, 4, pane))
     f['US Built Fill Point'] = _calc('US Built Fill Point', 'Built tag fill.', _rounded(idx, RCOL['built'] + 1, TAG_W - 2, mid - 6, mid + 6, 3, pane))
     fw_case = _case(PKEY, {k: f'{w:.0f}' for k, w in fw.items()}, '0', False)
@@ -314,14 +356,14 @@ def ranked_calcs():
                                       _rounded(idx, RCOL['flag'], fw_case, mid - 8, mid + 8, 4, pane, 'NOT ISNULL([US Flag Key])'))
     heads = [('DATA PRODUCT', RCOL['name'], 'l'), ('TYPE', RCOL['type'], 'l'), ('BUILT', RCOL['built'], 'l'),
              *[(RHEADS[c], RCOL[c], 'r') for c in ('uses', 'change', 'cons', 'cpu')]]
-    f.update(_heading_calcs('US Ranked', heads))
+    f.update(_heading_calcs('US Ranked', heads, RCW))
     t.update({n: SP_MEA for n in f if n.endswith('Point')})
     t.update({'US Use Rank': I_DIM, 'Is US Ranked Row': B_DIM})
     t.update({n: S_DIM for n in f if n not in t})
     return f, t
 
 
-def _heading_calcs(prefix, heads, pane_w=CW):
+def _heading_calcs(prefix, heads, pane_w):
     hx = {i: (x + W7(h, True) / 2) if a == 'l' else (x - W7(h, True) / 2) for i, (h, x, a) in enumerate(heads)}
     return {f'{prefix} Heading': _calc(f'{prefix} Heading', 'Column titles, one date row each.', _case('[day_index]', {i: h for i, (h, _, _) in enumerate(heads)})),
             f'{prefix} Heading Point': _calc(f'{prefix} Heading Point', 'Middle of a column title (measured by the build).',
@@ -373,7 +415,7 @@ def semantic_calcs():
                                        f"IF DATEDIFF('day', [date], {{ MAX([date]) }}) < [p_period] THEN {spark} END")
     heads = [('SEMANTIC OBJECT', SCOL['name'], 'l'), ('TOOL', SCOL['tool'], 'l'), ('MODE', SCOL['mode'], 'l'),
              *[(SHEADS[c], SCOL[c], 'r') for c in ('succ', 'fail', 'avg')], ('FAILURES PER DAY', SCOL['spark'], 'l')]
-    f.update(_heading_calcs('US Semantic', heads))
+    f.update(_heading_calcs('US Semantic', heads, SCW))
     t.update({n: SP_MEA for n in f if n.endswith('Point')})
     t.update({'US Semantic Rank': I_DIM, 'Is US Semantic Row': B_DIM, 'US Spark Index': I_DIM})
     t.update({n: S_DIM for n in f if n not in t})
@@ -382,13 +424,24 @@ def semantic_calcs():
 
 def chart_calcs():
     f = {
-        'US Has Cost And Use': ('// US Has Cost And Use\n// Log axes cannot show 0: products with uses and cost in the period. Put on Filters (True).\n'
-                                '[Product Uses (Period)] > 0 AND [Product Cost (Period)] > 0'),
-        'US Retire Zone': ('// US Retire Zone\n// Top of the retire zone at a product\'s cost: under 10 uses per 30 days and over $5 per use,\n'
-                           '// so min(threshold, cost / 5), at least 1 (the log axis floor). Drawn as an area in cost order.\n'
-                           'MAX(1, MIN([Retire Uses Threshold], [Product Cost (Period)] / 5))'),
+        # The retire zone is one polygon drawn on the scatter's own axes (GB, v36: "just like the prototype"). Its four
+        # corners are four date rows (day_index 86 to 89, always inside the window): on those marks MIN = MAX of
+        # day_index, while a product's dot spans all 90 days, so one x field gives either a corner or a product's cost.
+        'US Scatter X': ('// US Scatter X\n// Cost axis of the scatter. A product: its cost in the period (NULL with no use or cost: a log axis\n'
+                         '// cannot show 0). A retire-zone corner: $5 at the bottom left, $5 x the threshold at the bend, and the\n'
+                         '// axis\'s right edge (a round power of ten above the dearest product, per period and platform).\n'
+                         'IF MIN([day_index]) = MAX([day_index]) THEN\n'
+                         '    CASE MIN([day_index]) WHEN 86 THEN 5 WHEN 87 THEN 5 * [Retire Uses Threshold]\n'
+                         f'    ELSE {_case(COMBO, {f"{k[0]}|{k[1]}": v for k, v in XMAX.items()}, "1000", False)} END\n'
+                         'ELSEIF [Product Uses (Period)] > 0 AND [Product Cost (Period)] > 0 THEN [Product Cost (Period)]\nEND'),
+        'US Retire Zone': ('// US Retire Zone\n// Uses axis of the retire-zone corners: 1 (the axis floor), the threshold (10 uses per 30 days,\n'
+                           '// scaled to the window) at the bend and the right edge, 1 again at the bottom right.\n'
+                           'CASE MIN([day_index]) WHEN 86 THEN 1 WHEN 87 THEN [Retire Uses Threshold]\n'
+                           'WHEN 88 THEN [Retire Uses Threshold] WHEN 89 THEN 1 END'),
+        'US Scatter Uses': ('// US Scatter Uses\n// Uses axis of a product dot (NULL with no use or cost).\n'
+                            'IF [Product Uses (Period)] > 0 AND [Product Cost (Period)] > 0 THEN [Product Uses (Period)] END'),
     }
-    t = {'US Has Cost And Use': ('boolean', 'measure', 'nominal'), 'US Retire Zone': R_MEA}
+    t = {'US Scatter X': R_MEA, 'US Retire Zone': R_MEA, 'US Scatter Uses': R_MEA}
     for code, name, _title in TYPES:
         f[f'Is Declared Consumer Type {name}'] = (f'// Is Declared Consumer Type {name}\n// Small multiple filter: declared products counted in {UNIT[code]}.\n'
                                                   f'[consumption_type (mart_exposure_daily.csv)] = "{code}"\nAND [is_declared]')
@@ -424,12 +477,13 @@ def _clicks():
 
 
 def scatter_sheet() -> Sheet:
-    x, y, zone = R('Product Cost (Period)'), R('Product Uses (Period)'), R('US Retire Zone')
+    x, y, zone = R('US Scatter X'), R('US Scatter Uses'), R('US Retire Zone')
+    cost, uses, corner = R('Product Cost (Period)'), R('Product Uses (Period)'), R('day_index', kind='ok')
     key, colour, lab = R('node_id (dim_nodes.csv)'), R('Scatter Colour Key'), R('Scatter Label')
     color_map(colour, {'"Built by hand"': ACCENT, '"AI-built"': '#5b5fc7', '"Unregistered"': WARN, '"Retire candidate"': CRIT})
     tip = [run(_a('display_name'), 9, INK1, SEMI), run(NL, 7, INK3),
-           run('COST   ', 7, INK3, SEMI), run(x, 9, NAVY, SEMI), run(NL, 7, INK3),
-           run('USES   ', 7, INK3, SEMI), run(y, 9, NAVY, SEMI), run(' ', 9, INK3), run(_a('Uses Unit Label'), 9, INK3), run(NL, 7, INK3),
+           run('COST   ', 7, INK3, SEMI), run(cost, 9, NAVY, SEMI), run(NL, 7, INK3),
+           run('USES   ', 7, INK3, SEMI), run(uses, 9, NAVY, SEMI), run(' ', 9, INK3), run(_a('Uses Unit Label'), 9, INK3), run(NL, 7, INK3),
            run('COST PER USE   ', 7, INK3, SEMI), run(R('Cost Per Use'), 9, NAVY, SEMI), run(NL, 7, INK3),
            run('CLICK TO OPEN ITS LINEAGE', 7, INK3, SEMI)]
     log = lambda r, scope: (f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
@@ -444,12 +498,13 @@ def scatter_sheet() -> Sheet:
             "scope='rows' synchronized='true' type='space' />"]
     grid = ["            <format attr='line-visibility' scope='rows' value='on' />", f"            <format attr='stroke-color' scope='rows' value='{LINE_SOFT}' />",
             "            <format attr='line-visibility' scope='cols' value='on' />", f"            <format attr='stroke-color' scope='cols' value='{LINE_SOFT}' />"]
-    s = Sheet('US Cost vs Usage Scatter', cols=[x], rows=[(zone, y)], filters=[R('Is Platform Match Node'), R('US Has Cost And Use')],
-              hide=[y], formats={x: USD, zone: 'n#,##0;-#,##0', y: 'n#,##0;-#,##0', R('Cost Per Use'): 'c"$"#,##0.00;-"$"#,##0.00'},
-              # the zone's area runs through the products in cost order
-              sorts=[(key, 'ASC', x)], extra={'axis': axis, 'gridline': grid},
-              panes=[Pane('Area', lod=[key], label_show=False),
-                     Pane('Area', axis=zone, lod=[key], mark_color=CRIT_TINT, label_show=False),
+    s = Sheet('US Cost vs Usage Scatter', cols=[x], rows=[(zone, y)], filters=[R('Is Platform Match Node')],
+              hide=[y], formats={x: USD, zone: 'n#,##0;-#,##0', y: 'n#,##0;-#,##0', cost: USD, uses: 'n#,##0;-#,##0',
+                                 R('Cost Per Use'): 'c"$"#,##0.00;-"$"#,##0.00'},
+              extra={'axis': axis, 'gridline': grid},
+              # the retire zone: one polygon through its four corner rows (path = day_index), under the dots
+              panes=[Pane('Automatic', label_show=False),
+                     Pane('Polygon', axis=zone, path=corner, mark_color=CRIT_TINT, label_show=False),
                      Pane('Circle', axis=y, color=colour, size=0.55, lod=[key, *_clicks()], text=[lab], tooltip=tip, stroke='#ffffff',
                           label=[run(lab, 8, INK1)], align='right', cull=True)])
     return s
@@ -486,8 +541,8 @@ def _cell(title, point, runs, pane, lod):
                       valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane)
 
 
-def _header(name, prefix):
-    hp = (CW, HEAD_H)
+def _header(name, prefix, width):
+    hp = (width, HEAD_H)
     return _grid(Sheet(name, rows=[LAT], cols=[LON], filters=[R(f'Is {prefix} Heading Row')], layers=True, no_basemap=True,
                        zoom=None, tooltip=False,
                        panes=[Pane('Automatic', pane_size=hp),
@@ -530,7 +585,7 @@ def ranked_sheets() -> list[Sheet]:
     table = _grid(Sheet('US Ranked Products Table', rows=[Cross([Nest([order, key]), LAT])], cols=[LON], filters=[R('Is US Ranked Row')],
                         hide=[order, key], layers=True, no_basemap=True, zoom=None,
                         panes=[Pane('Automatic', lod=[key], pane_size=pane), *layers]), pane)
-    return [_header('US Ranked Products Header', 'US Ranked'), table]
+    return [_header('US Ranked Products Header', 'US Ranked', RCW), table]
 
 
 def semantic_sheets() -> list[Sheet]:
@@ -558,7 +613,7 @@ def semantic_sheets() -> list[Sheet]:
     table = _grid(Sheet('US Semantic Refresh Table', rows=[Cross([Nest([order, key]), LAT])], cols=[LON],
                         filters=[R('Is US Semantic Row')], hide=[order, key], layers=True, no_basemap=True, zoom=None, divider='rows',
                         panes=[Pane('Automatic', lod=[key], pane_size=pane), *layers]), pane)
-    return [_header('US Semantic Refresh Header', 'US Semantic'), table]
+    return [_header('US Semantic Refresh Header', 'US Semantic', SCW), table]
 
 
 def sheets() -> list[Sheet]:
@@ -586,11 +641,16 @@ def content() -> Z:
         card_header('Consumption by consumer type, per day', 'Each type is counted in its own unit, so each gets its own scale'),
         Z('horz', friendly='US Multiples Row 1', kids=[multiple(c1, n1, t1, {'right': 8}), multiple(c2, n2, t2, {'left': 8})]),
         Z('horz', friendly='US Multiples Row 2', style={'margin-top': '10'}, kids=[multiple(c3, n3, t3, {'right': 8}), multiple(c4, n4, t4, {'left': 8})])])
-    ranked = card('US Ranked Card', fixed=HALF, margins={'right': 7}, kids=[
-        card_header('Data products ranked by use', 'Usage in this period, change against the period before, and cost per use. '
-                    'Click a row to open its lineage.'),
+    ranked = card('US Ranked Card', margins={'right': 7}, kids=[
+        Z('horz', friendly='US Ranked Header', fixed=44, kids=[
+            # shorter than the prototype's subtitle, so it stays on one line beside the sort dropdown
+            card_header('Data products ranked by use', 'Uses, change against the period before, cost per use. '
+                        'Click a row to open its lineage.', None),
+            # sort dropdown (GB, v36): the build writes the row order for each choice
+            text([run('Sort by', 8, INK3)], fixed=46, **{'padding-top': '8', 'text-align': 'right'}),
+            Z('paramctrl', param='p_us_sort', fixed=132, style={'padding-top': '4', 'padding-bottom': '14', 'padding-left': '6'})]),
         sheet('US Ranked Products Header', HEAD_H), blank(1, LINE), sheet('US Ranked Products Table')])
-    semantic = card('US Semantic Card', margins={'left': 7}, kids=[
+    semantic = card('US Semantic Card', fixed=SEM_W, margins={'left': 7}, kids=[  # 643 (GB, v36)
         card_header('BI semantic layer refreshes', 'dbt can be green while an extract fails. This is where that shows.'),
         sheet('US Semantic Refresh Header', HEAD_H), blank(1, LINE), sheet('US Semantic Refresh Table')])
     return Z('vert', friendly='US Content', style=CONTENT_PAD, kids=[
@@ -601,9 +661,10 @@ def content() -> Z:
 
 def check_fit(zones) -> None:
     by = {(z.name or z.friendly): z.rect for z in zones}
-    for name, (w, h) in (('US Ranked Products Table', (CW, ROW_H * MAX_RANKED)), ('US Ranked Products Header', (CW, HEAD_H)),
-                         ('US Semantic Refresh Table', (CW, SEM_ROW_H * max(len(v) for v in SEM_ROWS.values()))),
-                         ('US Semantic Refresh Header', (CW, HEAD_H))):
+    # the ranked table scrolls (GB, v36): its width leaves room for the scroll bar, its height is free
+    for name, (w, h) in (('US Ranked Products Table', (RCW + 18, 0)), ('US Ranked Products Header', (RCW, HEAD_H)),
+                         ('US Semantic Refresh Table', (SCW, SEM_ROW_H * max(len(v) for v in SEM_ROWS.values()))),
+                         ('US Semantic Refresh Header', (SCW, HEAD_H))):
         _, _, zw, zh = by[name]
         assert w <= zw and h <= zh, f'{name}: needs {w} x {h}, zone is {zw:.0f} x {zh:.0f}'
     _, y, _, h = by['US Bottom Row']

@@ -288,9 +288,13 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Log axes:** `scale='log'` on the axis `space` encoding (XSD `ScaleType-ST`: linear, log, symlog). A synchronised
   second axis needs its own `synchronized='true'` encoding with `scale='log'` too, written by hand (the builder's
   `sync` does not carry a scale).
-- **A non-rectangular zone behind a scatter:** an Area on the first axis at the zone's height for each product,
-  with the products sorted by the x measure (`computed-sort` ascending) so the area runs left to right; the dots on
-  the second axis draw on top. It spans only the first to the last product.
+- **A shaded zone on a scatter (v37):** an Area with the product on Detail draws one sliver per product (v36,
+  thin pink spikes). What works: a Polygon on the first axis with path = `day_index`, its corners on four date rows
+  (86 to 89, always inside the window). One x field serves both panes: `IF MIN([day_index]) = MAX([day_index]) THEN
+  <corner x> ELSE <product cost> END` (a product's dot spans all 90 days, a corner one day), and the zone's y field
+  gives the corner heights. Rows that are not corners return NULL and draw nothing.
+- **Sort options on a canvas table:** a list parameter (dropdown in the card header) and the row order written by
+  the build for every period x platform x sort, so the rank stays a plain dimension on Rows.
 - **Sparklines on a canvas:** one Node Daily row per day gives one point, so draw a Line (path = day index) through
   the scaled values, a second layer for the window in the accent colour. Objects with no daily rows keep their
   row through their dim_nodes-only text layers.
