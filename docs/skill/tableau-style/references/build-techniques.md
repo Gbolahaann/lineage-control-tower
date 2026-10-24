@@ -242,6 +242,34 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **A canvas only as tall as its content**, with spare pixels in both directions: a canvas the full height of its
   card got both scroll bars (Tableau's zone came out a little smaller).
 
+### Performance patterns (v33, to confirm when GB opens it)
+
+- **Top-N and flags that depend only on the filters:** when a ranking or flag depends on nothing but the period and
+  platform parameters (six slowest, biggest change, top 15 by cost, incremental pills), work it out at build time for
+  every combination with the prototype's own rules and write a CASE on `STR([p_period]) + "|" + [p_platform] + "|" +
+  [node_id]`. Rows order by that rank (a discrete dimension), a canvas can draw from it (it reads only the hub and the
+  parameters, so the one-table rule holds), and the numbers shown stay live aggregates. Check the 30-day / All case
+  against the prototype screenshot row for row.
+- **Event markers on a time axis:** constant reference lines, as the IronViz reference writes them:
+  `formula='constant' value='46.5' value-column=<the axis field> label='HubSpot moves' label-type='custom'
+  scope='per-pane'`, styled per id in the `refline` rule (stroke, label colour, font size, `vertical-align top`,
+  `text-align left` or `right` to keep neighbouring labels apart). The value is in axis units (Days Back Mid).
+- **A value axis that follows the data** (Redshift's costs and runtimes are a fraction of the others): no fixed
+  range; the band's height is written per combination as a round number just above the tallest value, so Tableau's
+  automatic axis ends on it, and the axis width is fixed (`<format attr='width' field=<measure> value='40' />` in the
+  `axis` rule, as Tableau saves a dragged axis) on the chart and on its clear-labelled date strip, so they line up.
+- **Line-end names at today's end of a reversed axis:** `mark-labels-mode line-ends` with `mark-labels-line-first
+  true` and `mark-labels-line-last false` (the first point in data order is today), label cull on so lines that end
+  together show one name, and the day axis extended past today (`-26` to `90`) to make room for the names.
+- **Measured-centre text plus live right-aligned numbers on one canvas row:** static texts (name, built as, rows)
+  centred at half their measured width; live aggregates (runtime, change, cost) on a hairline label point 4 px past
+  the column's right edge with `text-align right` (on a map pane the label goes to the left of the point).
+- **When the calc pack and the prototype disagree on a number**, check which definition gives the prototype's
+  figures (v33: model cost is build cost only; the pack's build + query cost moved fct_orders from $118 to $252),
+  build that one, and say so in the changelog and the message to GB.
+- **Bars with two row fields** (name and a tag): give the rank filter and the label track `tc_order` over both fields,
+  or the tag partitions the table calc and each group ranks on its own.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

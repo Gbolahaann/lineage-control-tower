@@ -383,7 +383,7 @@ class Pane:
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
                  transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=(),
-                 mark_fmt=()):
+                 mark_fmt=(), cull=False):
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -398,6 +398,7 @@ class Pane:
         # param (a parameter name: the line follows it) and z (z-order). Their look goes in the sheet's refline rule.
         self.reflines = list(reflines)
         self.mark_fmt = list(mark_fmt)    # extra (attr, value) mark formats, e.g. ('mark-labels-mode', 'line-ends')
+        self.cull = cull                  # hide labels that would overlap (line-end labels that meet)
 
     def refs(self):
         return ([self.color] if self.color else []) + self.text + self.lod + self.tooltip_fields + ([self.path] if self.path else []) \
@@ -423,16 +424,13 @@ class Pane:
             enc.append(f"              <geometry column='[{DS}].[{self.geometry}]' />")
         if self.path:
             enc.append(f"              <path column='{self.path.ref}' />")
-        refl = ''.join(
-            f"            <reference-line axis-column='{rl['axis'].ref}' enable-instant-analytics='false' formula='constant' "
-            f"id='{rl['id']}' label-type='none' scope='per-table' value-column='[Parameters].{PARAM_ID[rl['param']]}' "
-            f"z-order='{rl.get('z', 1)}' />\n" for rl in self.reflines)
+        refl = ''.join(_refline_xml(rl) for rl in self.reflines)
         tip = ('            <customized-tooltip>\n              <formatted-text>\n' + runs_xml(self.tooltip, '                ')
                + '\n              </formatted-text>\n            </customized-tooltip>\n') if self.tooltip else ''
         lab = ('            <customized-label>\n              <formatted-text>\n' + runs_xml(self.label, '                ')
                + '\n              </formatted-text>\n            </customized-label>\n') if self.label else ''
         mark_fmt = [f"                <format attr='mark-labels-show' value='{'true' if self.label_show and self.label else 'false'}' />",
-                    "                <format attr='mark-labels-cull' value='false' />"]
+                    f"                <format attr='mark-labels-cull' value='{'true' if self.cull else 'false'}' />"]
         if self.size is not None:
             mark_fmt.append(f"                <format attr='size' value='{self.size}' />")
         if self.mark_color:
@@ -469,6 +467,19 @@ class Pane:
                 f"                <format attr='minwidth' value='{w}' />\n                <format attr='maxwidth' value='{w}' />\n"
                 f"                <format attr='minheight' value='{h}' />\n                <format attr='maxheight' value='{h}' />\n"
                 "                <format attr='aspect' value='0' />\n              </style-rule>\n")
+
+
+def _refline_xml(rl) -> str:
+    """A reference line: on a parameter (rl['param']), or a constant (rl['value']) with a custom label (rl['label']),
+    written as the IronViz reference workbook (2026.1) writes its constant lines."""
+    ax = rl['axis'].ref
+    if 'param' in rl:
+        return (f"            <reference-line axis-column='{ax}' enable-instant-analytics='false' formula='constant' "
+                f"id='{rl['id']}' label-type='none' scope='per-table' value-column='[Parameters].{PARAM_ID[rl['param']]}' "
+                f"z-order='{rl.get('z', 1)}' />\n")
+    return (f"            <reference-line axis-column='{ax}' enable-instant-analytics='false' formula='constant' "
+            f"id='{rl['id']}' label='{esc(rl['label'])}' label-type='custom' scope='per-pane' tooltip-type='none' "
+            f"value='{rl['value']}' value-column='{ax}' z-order='{rl.get('z', 1)}' />\n")
 
 
 HAIRLINE = 0.0099999997764825821  # the thinnest mark size Tableau stores
@@ -593,7 +604,7 @@ class Sheet:
         refs = self.all_refs()
         calc_names = [r.name for r in refs if r.is_calc]
         order, params, fields = CALCS.closure(calc_names)
-        params |= {rl['param'] for p in self.panes for rl in p.reflines}
+        params |= {rl['param'] for p in self.panes for rl in p.reflines if 'param' in rl}
         fields |= {r.name for r in refs if not r.is_calc}
         fields |= {p.geometry for p in self.panes if p.geometry}
         dep = []
