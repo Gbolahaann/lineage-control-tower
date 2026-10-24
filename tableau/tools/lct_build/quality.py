@@ -315,7 +315,8 @@ def heatmap_sheet() -> Sheet:
     tip = [run(_a('node_name'), 9, INK1, SEMI), run(NL, 7, INK3), run(R(DATE, 'attr'), 7, INK3, SEMI), run('   ', 7, INK3),
            run(_a('Heat Cell Key'), 9, NAVY, SEMI)]
     label = []
-    for f_, size, colour, align, bold in ((name, 8, INK1, 'right', False), (fail, 8, CRIT_INK, 'right', True), (warn, 8, WARN_INK, 'right', True)):
+    # model names left-aligned (GB, v38)
+    for f_, size, colour, align, bold in ((name, 8, INK1, 'left', False), (fail, 8, CRIT_INK, 'right', True), (warn, 8, WARN_INK, 'right', True)):
         label += [f"            <format attr='font-size' field='{f_.ref}' value='{size}' />",
                   f"            <format attr='color' field='{f_.ref}' value='{colour}' />",
                   f"            <format attr='text-align' field='{f_.ref}' value='{align}' />"]
