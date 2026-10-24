@@ -338,6 +338,9 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Button look:** match the prototype's secondary button (white, 1 px line border, radius 8, 9 pt ink text, a small
   outline icon). Icons are PNGs the build draws into `tableau/Shapes/LCT` (embedded in the workbook), not Unicode
   glyphs, which fall back to other fonts.
+  Draw the icon edge to edge in its PNG (padding shrinks it) and size the shape to the text's height (1.2 next to 9 pt;
+  0.55 was tiny, v40). Keep the click bar clear (transparency 0): a white bar squares off the holder's rounded
+  corners. The holder carries the white fill, border and radius, with a few px of padding.
 - **Check CASE keys against the lookup expression:** a bar-width CASE keyed on period|node but looked up with
   period|platform|node returned nothing (the simulator caught it: bars as slivers).
 

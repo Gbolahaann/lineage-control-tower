@@ -525,8 +525,10 @@ def header_sheets() -> list[Sheet]:
     out.append(Sheet('BR Email Button', cols=[(bar, anchor)], hide=[bar, anchor], filters=[R('Is First Date Row')],
                      fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
                      panes=[Pane(lod=list(lod)),
-                            Pane('Bar', axis=bar, mark_color='#ffffff', lod=list(lod), size=1.9890055656433105, label_show=False),
-                            Pane('Shape', axis=anchor, shape=f'{SH.FOLDER}/Email.png', size=0.55, lod=list(lod), text=[glyph],
+                            # clear but clickable: a white bar squared off the holder's rounded corners (v40)
+                            Pane('Bar', axis=bar, mark_color='#ffffff', transparency=0, lod=list(lod), size=1.9890055656433105, label_show=False),
+                            # about the height of the 9 pt text (v40 at 0.55 was far smaller)
+                            Pane('Shape', axis=anchor, shape=f'{SH.FOLDER}/Email.png', size=1.2, lod=list(lod), text=[glyph],
                                  label=[run(glyph, 9, INK1)], align='right')]))
     # the selected node's pills
     pane, path = PILL_PANE, R('Node Path Index', kind='ok')
@@ -548,8 +550,9 @@ def draw_email_icon():
     from PIL import Image, ImageDraw
     img = Image.new('RGBA', (64, 64), (255, 255, 255, 0))
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle([6, 14, 57, 49], radius=5, outline=INK2, width=5)
-    d.line([(9, 18), (32, 36), (54, 18)], fill=INK2, width=5, joint='curve')
+    # edge to edge, so the shape's size is the envelope's (v40's padded icon came out much smaller than the text)
+    d.rounded_rectangle([2, 10, 61, 53], radius=6, outline=INK2, width=6)
+    d.line([(5, 14), (32, 35), (58, 14)], fill=INK2, width=6, joint='curve')
     SH.OUT.mkdir(parents=True, exist_ok=True)
     img.save(SH.OUT / 'Email.png')
 
@@ -667,8 +670,10 @@ def content() -> Z:
         _chip('Models', 112), _chip('Semantic', 112), _chip('Exposures', 96), _chip('Owners', 96), _chip('Unregistered', 112), blank()])
     summary = Z('vert', friendly='BR Summary Column', kids=[sheet('BR Impact Summary', 66), chips])
     message = Z('vert', friendly='BR Message Holder', fixed=MSG_W, kids=[
+        # the prototype's secondary button: white fill, 1 px line, radius 8, the sheet inset so the corners stay round
         Z('horz', friendly='BR Email Button Holder', fixed=34, kids=[sheet('BR Email Button')], style={
-            'border-color': LINE, 'border-style': 'solid', 'border-width': '1', 'corner-radius': '8'}),
+            'background-color': CARD, 'border-color': LINE, 'border-style': 'solid', 'border-width': '1', 'corner-radius': '8',
+            'padding': '3'}),
         blank()])
     head = card('BR Header Card', fixed=HEAD_H, horz=True, pad=(14, 18, 14, 18), kids=[picker, blank(24), summary, message])
     who = card('BR Who Card', fixed=HALF, margins={'right': 7}, kids=[
