@@ -41,8 +41,8 @@ DAYS = 90
 
 # ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 KPI_H, MID_H = 96, 290
-SIDE_W = 530                                   # runtime and product cost cards; 7 px margin-left outside (1fr)
-MAIN_W = 1312 - SIDE_W - 7 - 7                 # 768: cost and expensive cards (1.45fr), 7 px margin-right outside
+SIDE_W = 530                                   # runtime and product cost cards: take the rest, 7 px margin-left outside
+MAIN_W = 1312 - SIDE_W - 7 - 7                 # 768 fixed (775 with its margin, GB): cost and expensive cards line up
 BOTTOM_H = CONTENT_H - KPI_H - 14 - MID_H - 14  # 430: the bottom row takes the rest
 EW = MAIN_W - 2 * 16 - 2 - SH.SLACK            # 730: the expensive-models canvas
 HEAD_H = 22
@@ -51,7 +51,8 @@ TOP_N = 15
 ROW_H = (BOTTOM_H - 2 - 28 - 44 - HEAD_H - 1 - SH.SLACK) // TOP_N
 ROW = (EW, ROW_H)
 # prototype columns (.t, 734 px at 1600): left edges, or right edges for the numbers
-COL = {'dot': 11, 'name': 23, 'built': 182, 'runtime': 392, 'trend': 463, 'rows': 566, 'cost': 618, 'pill': 632}
+# GB (v33b): more room between the columns; the numbers spread over 300 to 600 and the pill clear of the cost
+COL = {'dot': 11, 'name': 23, 'built': 172, 'runtime': 360, 'trend': 432, 'rows': 532, 'cost': 596, 'pill': 614}
 GAP = 4                                         # Tableau leaves about 4 px between a point and a label beside it
 AXIS_W = 40                                     # value axis width on both charts and their (clear) date strips
 COST_X = (0, DAYS, {'reverse': 'true'})         # Days Back Mid, as on Run & failures
@@ -199,12 +200,14 @@ def combo_calcs():
         'PF Runtime Line': '// PF Runtime Line\n// Average successful run that day, in minutes.\n[Runtime Minutes (Daily)]',
         'PF Axis Anchor': '// PF Axis Anchor\n// Point the date labels under the two charts are centred on (strip axis 0 to 1).\nIF NOT ISNULL(MIN([Axis Date Label])) THEN 0.5 END',
         'PF Dot Key': '// PF Dot Key\n// Platform dot colour on a table row.\n[platform_now]',
+        'PF Runtime End Name': ('// PF Runtime End Name\n// The model\'s name on its line\'s last day (today), for the label to its right.\n'
+                                'IF MIN([days_before_as_of]) = 0 THEN ATTR([node_name]) END'),
     }
     t = {'PF Cost Rank': I_DIM, 'Is PF Top Cost Model': B_DIM, 'PF Slowest Rank': I_DIM, 'Is PF Slowest Six': B_DIM,
          'Is PF Slowest Model': B_DIM, 'PF Line Key': S_DIM, 'PF Pill State': S_DIM, 'PF Pill Text': S_DIM,
          'PF Pill Good Text': S_DIM, 'PF Pill Warn Text': S_DIM, 'PF Was Table Text': S_DIM, 'PF Cost Band': R_MEA,
          'PF Runtime Band': R_MEA, 'Model Build Cost (Period)': R_MEA, 'PF Runtime Line': R_MEA, 'PF Axis Anchor': R_MEA,
-         'PF Dot Key': S_DIM}
+         'PF Dot Key': S_DIM, 'PF Runtime End Name': S_MEA}
     return f, t
 
 
@@ -418,7 +421,7 @@ def cost_sheet() -> Sheet:
 
 def runtime_sheet() -> Sheet:
     x, band, line = R('Days Back Mid'), R('PF Runtime Band'), R('PF Runtime Line')
-    key, name = R('PF Line Key'), R('node_name')
+    key, name, end = R('PF Line Key'), R('node_name'), R('PF Runtime End Name')
     color_map(key, {'"Top change"': ACCENT, '"Other"': '#b9c0c7'})
     tip = [run(R('node_name', 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run(R('Tooltip Day Text'), 7, INK3, SEMI), run('   ', 7, INK3),
            run(line, 9, NAVY, SEMI), run(' min average run', 9, INK3)]
@@ -427,18 +430,16 @@ def runtime_sheet() -> Sheet:
                  extra={'axis': _axis_style(band, fmt=MINS) + _axis_width(band)},
                  panes=[Pane('Bar', label_show=False),
                         Pane('Bar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False),
-                        # names at today's end of each line (data order puts the first point at today on the
-                        # reversed axis); overlapping names are hidden, as the prototype shows three of six
-                        Pane('Line', axis=line, color=key, size=0.4, text=[name], tooltip=tip, cull=True,
-                             label=[run(R('node_name'), 7, INK3)],
-                             mark_fmt=[('mark-labels-mode', 'line-ends'), ('mark-labels-line-first', 'true'),
-                                       ('mark-labels-line-last', 'false')])])
+                        # the name only on today's point, to its right (v33b: line-end labels with line-first did
+                        # not show); overlapping names are hidden, as the prototype shows three of six
+                        Pane('Line', axis=line, color=key, size=0.4, lod=[name], text=[end], tooltip=tip, cull=True,
+                             label=[run(end, 7, INK3)], align='right')])
 
 
-def axis_strip(name, x_fixed) -> Sheet:
+def axis_strip(name, x_fixed, label='Axis Date Label') -> Sheet:
     """Date labels under a chart, on its day axis; the clear value axis has the chart's fixed width, so they line up."""
     x, anchor = R('Days Back Mid'), R('PF Axis Anchor')
-    lab = R('Axis Date Label')
+    lab = R(label)
     return Sheet(name, cols=[x], rows=[anchor], hide=[x], fixed={x: x_fixed, anchor: (0, 1)}, tooltip=False,
                  extra={'axis': _axis_style(anchor, False) + _axis_width(anchor)},
                  panes=label_pane(text=[lab], label=[run(lab, 8, INK3)], align='center'))
@@ -521,7 +522,7 @@ def product_sheet() -> Sheet:
            run('COST PER USE   ', 7, INK3, SEMI), run(R('Cost Per Use'), 9, NAVY, SEMI)]
     return Sheet('PF Cost per Data Product Bar', rows=[name, tag], cols=[(cost, track)],
                  filters=[R('Is Platform Match Node'), top], hide=[track, cost], sync=[track],
-                 header_width={name: 196, tag: 70}, sorts=[(name, 'DESC', cost)], extra={'label': label},
+                 header_width={name: 196, tag: 70}, sorts=[(name, 'DESC', cost)], extra={'label': label}, divider='rows',
                  formats={cost: USD, R('Product Uses (Period)'): 'n#,##0;-#,##0', R('Cost Per Use'): 'c"$"#,##0.00;-"$"#,##0.00'},
                  panes=[Pane('Bar', label_show=False),
                         Pane('Bar', axis=cost, mark_color=ACCENT, size=0.3, label_show=False, tooltip=tip),
@@ -530,7 +531,7 @@ def product_sheet() -> Sheet:
 
 
 def sheets() -> list[Sheet]:
-    return (kpi_sheets() + [cost_sheet(), axis_strip('PF Cost Axis', COST_X), runtime_sheet(), axis_strip('PF Runtime Axis', RT_X)]
+    return (kpi_sheets() + [cost_sheet(), axis_strip('PF Cost Axis', COST_X), runtime_sheet(), axis_strip('PF Runtime Axis', RT_X, 'Axis Month Label')]
             + table_sheets() + [product_sheet()])
 
 
@@ -555,24 +556,24 @@ def content() -> Z:
         if i < 3:
             margins['right'] = 7
         kpis.append(card(f'PF KPI {n} Card', [sheet(ws)], fixed=w, pad=(12, 14, 10, 14), margins=margins))
-    cost = card('PF Cost Card', margins={'right': 7}, kids=[
+    cost = card('PF Cost Card', fixed=MAIN_W, margins={'right': 7}, kids=[
         Z('horz', friendly='PF Cost Header', fixed=44, kids=[
             card_header('Cost by platform, per day', 'Estimated USD. Redshift winds down as marketing models move to Snowflake.', None),
             text(_legend([(v, PLAT[k]) for k, v in PLAT_NAME.items()]), fixed=230, **{'text-align': 'right'})]),
         sheet('PF Cost by Platform Bar'),
         sheet('PF Cost Axis', 16)])
-    runtime = card('PF Runtime Card', fixed=SIDE_W, margins={'left': 7}, kids=[
+    runtime = card('PF Runtime Card', margins={'left': 7}, kids=[
         card_header('Runtime of the six slowest models', 'Average successful run per day. The highlighted line is the biggest change.'),
         sheet('PF Slowest Models Runtime Line'),
         sheet('PF Runtime Axis', 16)])
-    expensive = card('PF Expensive Card', margins={'right': 7}, kids=[
+    expensive = card('PF Expensive Card', fixed=MAIN_W, margins={'right': 7}, kids=[
         card_header('Most expensive models in this period',
                     'Dot shows the platform. Flag shows full-refresh tables over 10M rows whose runtime grew more than 25%. '
                     'Click a row to open its lineage.'),
         sheet('PF Most Expensive Models Header', HEAD_H),
         blank(1, LINE),   # the prototype's line under the column titles
         sheet('PF Most Expensive Models Table')])
-    product = card('PF Product Cost Card', fixed=SIDE_W, margins={'left': 7}, kids=[
+    product = card('PF Product Cost Card', margins={'left': 7}, kids=[
         card_header('What each data product costs to keep running',
                     'Upstream build cost split evenly across the exposures each model feeds, plus the product\'s own queries', 58),
         sheet('PF Cost per Data Product Bar')])

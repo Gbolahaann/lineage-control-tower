@@ -263,9 +263,15 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   range; the band's height is written per combination as a round number just above the tallest value, so Tableau's
   automatic axis ends on it, and the axis width is fixed (`<format attr='width' field=<measure> value='40' />` in the
   `axis` rule, as Tableau saves a dragged axis) on the chart and on its clear-labelled date strip, so they line up.
-- **Line-end names at today's end of a reversed axis:** `mark-labels-mode line-ends` with `mark-labels-line-first
-  true` and `mark-labels-line-last false` (the first point in data order is today), label cull on so lines that end
-  together show one name, and the day axis extended past today (`-26` to `90`) to make room for the names.
+- **Names at today's end of a reversed-axis line:** `line-ends` with `mark-labels-line-first true` /
+  `line-last false` showed nothing (v33b). What to use: a label measure filled only on today's point,
+  `IF MIN([days_before_as_of]) = 0 THEN ATTR([node_name]) END`, on the line's Label with text-align right (to the
+  right of the point), label cull on, the name field on Detail to split the lines, and the day axis extended past
+  today (`-26` to `90`) for room. The strip under a narrow chart shows month starts only ("22 Jul" hits "1 Aug").
+- **Two cards that must match across rows:** fix both at the same width and let the cards beside them flex (GB,
+  v33b: the expensive models card should equal the cost card, 775 with its margin).
+- **Canvas column spacing:** check the column titles against each other, not just the cells: "7D VS 28D" and
+  "LARGEST BUILD" touched while the numbers below looked fine (v33b).
 - **Measured-centre text plus live right-aligned numbers on one canvas row:** static texts (name, built as, rows)
   centred at half their measured width; live aggregates (runtime, change, cost) on a hairline label point 4 px past
   the column's right edge with `text-align right` (on a map pane the label goes to the left of the point).
