@@ -101,7 +101,8 @@ label above a thin bar (v23, v24): move the point instead.
 
 - **Bar labels** with `text-align left` sit inside the start of the bar, so the bar runs through the number. Put
   counts on a clear hairline mark on the second axis, just past the longest bar
-  (`WINDOW_MAX([count]) * 1.14`, text-align left), so they line up right-aligned and nothing crosses them.
+  (`WINDOW_MAX([count]) * 1.14`) with alignment **Middle Right** (text-align right, Arial 9 pt), as GB set it
+  (v27), so nothing crosses them.
 - **On a map pane Gantt labels go the other way:** `left` puts the text to the right of the point, `right` to
   the left. Keep the point a few px inside the pane, never on its edge (it gets dropped).
 - **Indenting on a map pane (GB's v13 fix):** a leading run of spaces with Tableau's literal marker,

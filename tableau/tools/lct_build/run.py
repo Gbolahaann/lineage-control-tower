@@ -350,7 +350,8 @@ def why_sheets() -> list[Sheet]:
                      sync=[track], header_width={dim: header_w}, sorts=[(dim, 'DESC', count)], extra={'label': label},
                      panes=[Pane('Bar', label_show=False),
                             Pane('Bar', axis=count, mark_color=CRIT, size=0.3, label_show=False, tooltip=tip),
-                            label_pane(axis=track, text=[count], label=[run(count, 8, INK1, SEMI)], align='left',
+                            # Middle Right at 9 pt, as GB set it in Tableau (v27): the counts sit just past the bars
+                            label_pane(axis=track, text=[count], label=[run(count, 9, INK1, SEMI)], align='right',
                                        tooltip=tip)])
     return [
         Sheet('RUN Failed Count Label', filters=[period, plat], tooltip=False,

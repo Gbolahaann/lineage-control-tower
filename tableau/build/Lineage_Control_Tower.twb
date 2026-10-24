@@ -19230,16 +19230,16 @@
             </customized-tooltip>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]&gt;</run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
@@ -19464,16 +19464,16 @@
             </customized-tooltip>
             <customized-label>
               <formatted-text>
-                <run fontcolor='#16212e' fontname='Arial' fontsize='8' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]&gt;</run>
+                <run fontcolor='#16212e' fontname='Arial' fontsize='9' bold='true'>&lt;[federated.07vo3ft0hzn0yt1e7nb981upju80].[usr:Calculation_1556808545805540049:qk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element='cell'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='label'>
-                <format attr='text-align' value='left' />
+                <format attr='text-align' value='right' />
                 <format attr='vertical-align' value='center' />
               </style-rule>
               <style-rule element='mark'>
