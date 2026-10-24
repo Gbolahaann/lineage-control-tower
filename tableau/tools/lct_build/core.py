@@ -726,6 +726,9 @@ class Sheet:
             axis_attr = 'y-axis-name' if has_dual(self.rows) else 'x-axis-name'
             panes = self.panes[0].xml() + ''.join(p.xml(i, axis_attr) for i, p in enumerate(self.panes[1:], 1))
         else:
+            # extra panes are only written on a dual axis or as marks layers: anything else would be dropped silently
+            # (v39's email button lost its label and showed a default square)
+            assert len(self.panes) == 1, f'{self.name}: {len(self.panes)} panes but no dual axis or layers'
             panes = self.panes[0].xml()
 
         return (f"    <worksheet name='{esc(self.name)}'>\n"

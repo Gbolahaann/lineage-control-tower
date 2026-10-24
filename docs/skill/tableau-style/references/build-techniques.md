@@ -331,6 +331,13 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **URL action (mailto):** an `<action>` with `<activation type='on-select'>`, the source sheet and a `<link
   expression='mailto:?subject=&lt;[ds].[none:Calc:nk]~na&gt;&amp;body=...' url-escape='true'>`, no command; the
   fields on Detail of the button sheet.
+- **Buttons that run an action carry a dual axis:** a white bar on one axis takes the click on the whole button, the
+  label (and any icon as a custom shape with the text to its right) on the other. With a single axis only the first
+  pane is written: v39's email button showed a default square and no text. The builder now refuses a sheet with
+  extra panes and no dual axis or layers.
+- **Button look:** match the prototype's secondary button (white, 1 px line border, radius 8, 9 pt ink text, a small
+  outline icon). Icons are PNGs the build draws into `tableau/Shapes/LCT` (embedded in the workbook), not Unicode
+  glyphs, which fall back to other fonts.
 - **Check CASE keys against the lookup expression:** a bar-width CASE keyed on period|node but looked up with
   period|platform|node returned nothing (the simulator caught it: bars as slivers).
 

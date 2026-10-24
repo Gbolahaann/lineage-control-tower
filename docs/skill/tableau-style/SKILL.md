@@ -132,6 +132,26 @@ Write `.twb` XML only if asked, and always work from a copy. When building in XM
 - If unsure how Tableau writes a feature, ask for a one-sheet Tableau-saved example instead of guessing twice.
 - Add every new finding to `references/build-techniques.md` as it is made.
 
+**One-shot tab recipe** (what got Usage, Data quality and Blast radius right first time on Lineage Control Tower):
+1. **Fold in Gbolahan's last adjusted copy first:** diff it, take every real change into the builder, say what you took.
+2. **Study before asking:** the prototype screenshot, its render code (the real rules: sorting, thresholds, caps, ties),
+   the calc pack section and the build plan's container tree.
+3. **Ask the design forks in one go** (up to four questions, recommended option first): native vs canvas per part,
+   rows that do not fit (scroll, cap, "N more"), how a prototype-only behaviour maps to Tableau (copy to clipboard,
+   clicks), and any spec vs prototype conflict. Ask again when an answer is "something else" without a note.
+4. **Reproduce the prototype's numbers from the marts in Python** before writing a sheet (30 days, all platforms, and
+   the prototype's checks). Where the calc pack and the prototype disagree, match the prototype and say so.
+5. **Write the module from the proven patterns** (`references/build-techniques.md`): build-measured canvases with
+   exact alignment, per-parameter CASE calcs for anything that depends only on the filters or the selection, carrier
+   rows when a canvas needs more points than its data has, DZV on parameter-only calcs, fit checks that assert every
+   canvas fits its zone and the rows end at the content edge.
+6. **Prove it before sending:** build (schema and manifest validation run inside), a layout preview of the dashboard,
+   and a simulation that draws every canvas from its real formulas for the prototype's case and one edge case. Read
+   the simulation against the prototype and fix what differs (a wrong CASE key, a wrong colour, text that does not fit).
+7. **Ship:** a new version name, a changelog row (what, why, what differs from the prototype, what to check first),
+   the skill updated and synced, commit and push, and the file sent with a short note: what is on the tab, what
+   differs from the prototype, and the two or three new techniques to look at first.
+
 ### Other asks
 
 - **"Plan" or "mock up" without a prototype:** go through steps 1 to 6, then offer a quick HTML prototype plus a build plan.

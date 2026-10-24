@@ -185,9 +185,12 @@ def header_calcs():
     f['BR Incident Body'] = _calc('BR Incident Body', 'Ready-to-send message for the email action (calc pack 5.2, written by the build).',
                                   _case(PSEL, {f'{per}|{k}': msg(per, k) for per in PERIODS for k in SELECTABLE}))
     f['BR Incident Subject'] = _calc('BR Incident Subject', 'Email subject.', _case(SEL, {k: f'Heads up: {NODES[k]["node_name"]}' for k in SELECTABLE}))
-    f['BR Email Glyph'] = '// BR Email Glyph\n// The button\'s text.\nMIN("✉   Email incident message")'
+    f['BR Email Glyph'] = '// BR Email Glyph\n// The button\'s text, beside the envelope icon (as the prototype\'s "Copy incident message").\nMIN("Email incident message")'
+    f['BR Email Anchor'] = (f'// BR Email Anchor\n// Where the envelope sits on the button\'s 0 to 1 axis, so icon and text are centred together.\n'
+                            f'MIN({(MSG_W - 2 - (16 + 6 + W8("Email incident message") * 9 / 8)) / 2 / (MSG_W - 2) + 8 / (MSG_W - 2):.3f})')
     t.update({n: S_DIM for n in f})
-    t.update({'Show BR Unregistered Callout': B_DIM, 'Show BR No Owner Callout': B_DIM, 'BR Email Glyph': ('string', 'measure', 'nominal')})
+    t.update({'Show BR Unregistered Callout': B_DIM, 'Show BR No Owner Callout': B_DIM, 'BR Email Glyph': ('string', 'measure', 'nominal'),
+              'BR Email Anchor': R_MEA})
     return f, t
 
 
@@ -513,10 +516,18 @@ def header_sheets() -> list[Sheet]:
                                                          run(_a('BR Chip Unregistered Label'), 7, INK3)]))
     out.append(_scaffold_label('BR Unregistered Callout', [run(_a('BR Unregistered Callout Text'), 8, WARN_INK)], valign='center'))
     out.append(_scaffold_label('BR No Owner Callout', [run(_a('BR No Owner Callout Text'), 8, CRIT_INK, SEMI)], valign='center'))
-    glyph = R('BR Email Glyph')
+    # the prototype's "Copy incident message" button, with an envelope: a white bar takes the click on the whole button,
+    # the envelope is a custom shape with the text to its right. A dual axis, as the Run & failures buttons: with a
+    # single axis only the first pane is written (v39 showed a default square and no text)
+    draw_email_icon()
+    glyph, bar, anchor = R('BR Email Glyph'), R('Full Bar'), R('BR Email Anchor')
     lod = [R('BR Incident Subject'), R('BR Incident Body')]
-    out.append(Sheet('BR Email Button', filters=[R('Is First Date Row')], tooltip=False,
-                     panes=[Pane(lod=list(lod)), button_label_pane(text=[glyph], lod=list(lod), align='center', label=[run(glyph, 8, INK1, SEMI)])]))
+    out.append(Sheet('BR Email Button', cols=[(bar, anchor)], hide=[bar, anchor], filters=[R('Is First Date Row')],
+                     fixed={bar: (0, 1), anchor: (0, 1)}, tooltip=False,
+                     panes=[Pane(lod=list(lod)),
+                            Pane('Bar', axis=bar, mark_color='#ffffff', lod=list(lod), size=1.9890055656433105, label_show=False),
+                            Pane('Shape', axis=anchor, shape=f'{SH.FOLDER}/Email.png', size=0.55, lod=list(lod), text=[glyph],
+                                 label=[run(glyph, 9, INK1)], align='right')]))
     # the selected node's pills
     pane, path = PILL_PANE, R('Node Path Index', kind='ok')
     color_map(R('BR Pill Status Key'), {f'"{k}"': v for k, v in STATUS_TINT.items()})
@@ -530,6 +541,17 @@ def header_sheets() -> list[Sheet]:
     out.append(_grid(Sheet('BR Node Header', rows=[LAT], cols=[LON], filters=[R('Is BR Pill Carrier')], layers=True, no_basemap=True,
                            zoom=None, tooltip=False, panes=[Pane('Automatic', pane_size=pane), *layers]), pane))
     return out
+
+
+def draw_email_icon():
+    """An envelope outline in ink 2, drawn at 4x for the email button's custom shape (embedded with the workbook)."""
+    from PIL import Image, ImageDraw
+    img = Image.new('RGBA', (64, 64), (255, 255, 255, 0))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([6, 14, 57, 49], radius=5, outline=INK2, width=5)
+    d.line([(9, 18), (32, 36), (54, 18)], fill=INK2, width=5, joint='curve')
+    SH.OUT.mkdir(parents=True, exist_ok=True)
+    img.save(SH.OUT / 'Email.png')
 
 
 def _header_canvas(name, prefix, width):
