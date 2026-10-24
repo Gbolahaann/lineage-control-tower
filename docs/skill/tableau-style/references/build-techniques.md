@@ -196,6 +196,9 @@ Draw rounded rectangles (card, border, top edge, pill, chip, dot) as **polygons*
 - **Gantt:** start in hours on an axis fixed 0 to 24, `major-spacing 3`, format `n00":00";-00":00"`. Put the
   selected day in the position calc (`IF [run_date] = [p_gantt_date] THEN ...`), not a filter, so every job keeps its
   row. Banded rows: pane `band-color` + table `band-size`.
+- **Synchronised axes carry the fixed range too:** Tableau writes the partner's `min` / `max` / `range-type='fixed'` on
+  the synchronised axis on every re-save, so the builder does the same.
+- **Thin trend lines:** GB sets line size about 0.21 (compliance lines, v31); 0.4 on single-series lines.
 - **Stacked look on a dual axis without Measure Names:** overlay total (grey) and part (red), synchronised.
 - **Sort by a measure:** `<computed-sort>` after the filters (flags in section 2). Top N: a table-calc filter
   `RANK_UNIQUE(...) <= 7` addressed along the dimension.

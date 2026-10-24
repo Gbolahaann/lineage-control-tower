@@ -646,8 +646,12 @@ class Sheet:
             axis.append(f"            <format attr='display' class='0' field='{raw.ref}' scope='{sc}' value='false' />")
             axis.append(f"            <encoding attr='space' class='0' field='{raw.ref}' field-type='quantitative' max='{mx}' "
                         f"min='{mn}' range-type='fixed' scope='{sc}' type='space' />")
+        # a synchronised axis carries the same fixed range as its partner, as Tableau writes it on re-save (v22b, v31)
+        def sync_range(r):
+            same = [v for f, v in self.fixed.items() if self.scope(f) == self.scope(r)]
+            return f"max='{same[0][1]}' min='{same[0][0]}' range-type='fixed' " if len(same) == 1 else ''
         axis += [f"            <encoding attr='space' class='0' field='{r.ref}' field-type='quantitative' fold='true' "
-                 f"scope='{self.scope(r)}' synchronized='true' type='space' />" for r in self.sync]
+                 f"{sync_range(r)}scope='{self.scope(r)}' synchronized='true' type='space' />" for r in self.sync]
         axis += [f"            <format attr='display' class='0' field='{r.ref}' scope='{self.scope(r)}' value='false' />"
                  for r in self.hide if r.suffix == 'qk']
         head = []

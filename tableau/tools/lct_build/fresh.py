@@ -331,7 +331,7 @@ def compliance_sheets() -> list[Sheet]:
                          Pane('GanttBar', axis=band, mark_color=BAND, size=1.9890055656433105, label_show=False,
                               size_field=R('Compliance Band Length')),
                          # no line-end labels: all three lines end at 100 % and the names piled up (v29); legend in the header
-                         Pane('Line', axis=rate, color=plat, size=0.6, label_show=False, tooltip=tip)])
+                         Pane('Line', axis=rate, color=plat, size=0.207901, label_show=False, tooltip=tip)])  # line size GB, v31
     tick, anchor, lab = R('Freshness Incident Tick'), R('Freshness Incident Anchor'), R('Freshness Incident Label', 'attr')
     itip = [run(R('Incident Marker Label', 'attr'), 9, INK1, SEMI), run(NL, 7, INK3), run(R('title', 'attr'), 9, INK1)]
     incidents = Sheet('FR Incident Markers', cols=[x], rows=[(tick, anchor)], hide=[x, anchor], sync=[anchor],
