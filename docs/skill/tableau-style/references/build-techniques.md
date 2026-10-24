@@ -351,6 +351,16 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Builds must be reproducible:** never let a Python set decide the order of CASE lines (set order changes from
   run to run, so every diff against GB's copy showed rewritten calcs); sort it. Check by building twice and comparing.
 
+### Governance patterns (v44, to confirm when GB opens it)
+
+- **Scenes on the date table:** small fixed pictures (a % grid, bar lists, a split bar, short lists) as one canvas
+  per card: every rectangle 4 date rows and every text one row, per parameter value, from one helper
+  (`gov._scene_calcs`). Budget: 22 rectangles and 90 texts per scene; drop decoration (row lines) before content.
+- **Multi-line cells on a canvas:** one text layer per line, each measured, so left-aligned lines stay flush.
+- **Clicks from rows that are not nodes** (query-history principals): write the target product and its panel
+  values as CASE calcs on the row's key, so the Lineage panel opens right.
+- **Measure the card before promising a row count:** a requested "top 5" may not fit; build what fits, say so.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau
