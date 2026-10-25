@@ -29,6 +29,7 @@ from .shell import CONTENT_H, CONTENT_PAD
 
 P = 'AB'
 DEVELOPER = 'Gbolahan Adebayo'
+LINKEDIN = 'https://www.linkedin.com/in/gbolahan-adebayo/'   # GB, v50: the developer line opens his profile
 LINK = '#005fae'
 CHIP_FILL = '#f5f5f3'
 W = lambda s, pt, b=False: SH.text_width(s, pt, b)
@@ -158,6 +159,19 @@ _t.update(b)
 CALCS.add(formulas=_f, types=_t)
 
 
+CALCS.add(formulas={'AB Developer Name': f'// AB Developer Name\n// The developer line on About; a click opens his LinkedIn profile.\n"{DEVELOPER}"'},
+          types={'AB Developer Name': S_DIM})
+URL_ACTIONS = [('AB Developer', 'AB Open LinkedIn Profile', LINKEDIN)]   # (sheet, caption, url)
+DEHIGHLIGHT = ['AB Developer']
+
+
+def developer_sheet():
+    name = R('AB Developer Name')
+    return Sheet('AB Developer', filters=[R('Is First Date Row')], panes=label_pane(
+        text=[name], valign='top', label=[run('DEVELOPER', 7, INK3, SEMI), run(NL, 7, INK3), run(name, 10, NAVY, SEMI)],
+        tooltip=[run('Open LinkedIn profile', 8, INK2)]))
+
+
 def sheets():
     pane, path, chip, idx = CHAIN_PANE, R('Node Path Index', kind='ok'), R('AB Chain Chip'), R('Node Path Index')
     poly = lambda title, point, colour: Pane('Polygon', title=title, inert=True, mark_color=colour, path=path, label_show=False,
@@ -170,7 +184,7 @@ def sheets():
                         tooltip=False, panes=[Pane('Automatic', pane_size=pane), poly('Edge', 'AB Chain Edge Point', LINE),
                                               poly('Fill', 'AB Chain Fill Point', CHIP_FILL), words('Labels', 'Label', 8, INK1, False),
                                               words('Counts', 'Count', 10, NAVY, True), words('Arrows', 'Arrow', 8, INK3, False)]), pane)
-    return [chain,
+    return [developer_sheet(), chain,
             _scene_sheet('AB Sources Table', 'AB Sources', SRC_PANE, {'Head': (7, INK3, True), 'Term': (8, INK1, False), 'Source': (8, INK2, False)},
                          {'Line': LINE, 'Soft': LINE_SOFT})]
 
@@ -200,7 +214,8 @@ def content() -> Z:
     gap = run(NL, 6, INK2)
     what = card('AB What Card', fixed=WHAT_CARD, margins={'right': 7}, kids=[
         # GB, v47: his name as the developer, a small label line at the top of the card
-        text([run('DEVELOPER', 7, INK3, SEMI), run(NL, 7, INK3), run(DEVELOPER, 10, NAVY, SEMI)], fixed=40),
+        # a one-mark sheet that looks like the v48 text line, so a click can open his LinkedIn profile (URL action)
+        sheet('AB Developer', 40),
         blank(1, LINE_SOFT), blank(10),
         text([run('What this is', 10, INK1, SEMI)], fixed=30),
         _para(body('Lineage Control Tower monitors every data product at Acme Retail Co. and traces each one back through dbt to the raw '
@@ -338,7 +353,8 @@ def action_lines():
     al = ACTION_LISTS
     lines, total = [], 0
     for p, name in [(t[0], t[1]) for t in al.get('TABS', [])]:
-        a, n, u, d = (al['TAB_ACTIONS'].get(p, []), al['TAB_NAV'].get(p, []), al['TAB_URL'].get(p, []), al['DEHIGHLIGHT'].get(p, []))
+        a, n, d = al['TAB_ACTIONS'].get(p, []), al['TAB_NAV'].get(p, []), al['DEHIGHLIGHT'].get(p, [])
+        u = al['TAB_URL'].get(p, []) + al.get('TAB_LINK', {}).get(p, [])
         total += len(a) + len(n) + len(u) + len(d) + len(al['SHELL_ACTIONS'])
         if not (a or n or u or d):
             continue
@@ -351,7 +367,7 @@ def action_lines():
         if n:
             bits.append(f'{len(n)} go to {" / ".join(sorted({x[1] for x in n}))}')
         if u:
-            bits.append(f'{len(u)} email link')
+            bits.append(' and '.join(f'1 {"email" if len(x) == 4 else "web"} link' for x in u))
         if d:
             bits.append(f'{len(d)} highlight reset' + ('s' if len(d) > 1 else ''))
         lines.append((name, '; '.join(bits)))

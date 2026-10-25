@@ -42,12 +42,13 @@ CONTENT = {'HO': health.content, 'RUN': run.content, 'FR': fresh.content, 'PF': 
 TAB_ACTIONS = {'HO': health.ACTIONS, 'RUN': run.ACTIONS, 'FR': fresh.ACTIONS, 'PF': perf.ACTIONS, 'US': usage.ACTIONS, 'QA': quality.ACTIONS, 'BR': blast.ACTIONS, 'GOV': gov.ACTIONS, 'LIN': lineage.ACTIONS}
 TAB_NAV = {'HO': health.NAV_ACTIONS, 'RUN': run.NAV_ACTIONS, 'FR': fresh.NAV_ACTIONS, 'PF': perf.NAV_ACTIONS, 'US': usage.NAV_ACTIONS, 'BR': blast.NAV_ACTIONS, 'GOV': gov.NAV_ACTIONS}
 TAB_URL = {'BR': blast.URL_ACTIONS}   # mailto links: (sheet, caption, subject field, body field)
+TAB_LINK = {'AB': about.URL_ACTIONS}  # web pages: (sheet, caption, url)
 # clickable sheets that clear their selection after a click (one dashboard each; the GL buttons are on all 11)
 DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
                'RUN': run.DEHIGHLIGHT, 'FR': fresh.DEHIGHLIGHT, 'PF': perf.DEHIGHLIGHT, 'US': usage.DEHIGHLIGHT, 'BR': blast.DEHIGHLIGHT, 'GOV': gov.DEHIGHLIGHT,
-               'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
+               'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons'], 'AB': about.DEHIGHLIGHT}
 # the Documentation page lists the parameters and actions from these same lists (build plan 3.11)
-about.ACTION_LISTS.update(TABS=shell.TABS, TAB_ACTIONS=TAB_ACTIONS, TAB_NAV=TAB_NAV, TAB_URL=TAB_URL, DEHIGHLIGHT=DEHIGHLIGHT,
+about.ACTION_LISTS.update(TABS=shell.TABS, TAB_ACTIONS=TAB_ACTIONS, TAB_NAV=TAB_NAV, TAB_URL=TAB_URL, TAB_LINK=TAB_LINK, DEHIGHLIGHT=DEHIGHLIGHT,
                           SHELL_ACTIONS=shell.SHELL_ACTIONS)
 
 
@@ -142,6 +143,15 @@ def actions(dash_sheets) -> str:
                 "      <activation type='on-select' />\n"
                 f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
                 f"      <link caption='{esc(cap)}' delimiter=',' escape='\\' expression='mailto:?subject={ref(subj)}&amp;body={ref(body)}' "
+                "include-null='true' multi-select='false' url-escape='true' />\n"
+                "    </action>\n")
+        # a web page, opened in the browser (About: the developer line opens GB's LinkedIn profile)
+        for ws, cap, url in TAB_LINK.get(tab[0], []):
+            filters.append(
+                f"    <action caption='{esc(cap)}' name='[Action3_{hashlib.md5(cap.encode()).hexdigest().upper()}]'>\n"
+                "      <activation type='on-select' />\n"
+                f"      <source dashboard='{esc(dname)}' type='sheet' worksheet='{esc(ws)}' />\n"
+                f"      <link caption='{esc(cap)}' delimiter=',' escape='\\' expression='{esc(url)}' "
                 "include-null='true' multi-select='false' url-escape='true' />\n"
                 "    </action>\n")
         # Go to Sheet, as in GB's example (Go_to_Sheet_Action_Example.twbx), but with the dashboard on its source
