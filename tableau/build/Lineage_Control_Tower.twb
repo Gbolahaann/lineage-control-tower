@@ -58313,7 +58313,7 @@
                             <format attr='margin' value='0' />
                           </zone-style>
                         </zone>
-                        <zone h='27800' id='464' name='HO Tiles BI Dashboards' show-title='false' w='52938' x='17312' y='37500'>
+                        <zone fixed-size='278' h='27800' id='464' is-fixed='true' name='HO Tiles BI Dashboards' show-title='false' w='52938' x='17312' y='37500'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -58379,7 +58379,7 @@
                             <format attr='margin' value='0' />
                           </zone-style>
                         </zone>
-                        <zone h='7400' id='471' name='HO Tiles Apps ML Notebooks' show-title='false' w='52938' x='17312' y='67100'>
+                        <zone fixed-size='74' h='7400' id='471' is-fixed='true' name='HO Tiles Apps ML Notebooks' show-title='false' w='52938' x='17312' y='67100'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -58445,7 +58445,7 @@
                             <format attr='margin' value='0' />
                           </zone-style>
                         </zone>
-                        <zone h='7400' id='478' name='HO Tiles AI Agents Data Hubs' show-title='false' w='52938' x='17312' y='76300'>
+                        <zone fixed-size='74' h='7400' id='478' is-fixed='true' name='HO Tiles AI Agents Data Hubs' show-title='false' w='52938' x='17312' y='76300'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -58511,7 +58511,7 @@
                             <format attr='margin' value='0' />
                           </zone-style>
                         </zone>
-                        <zone h='7400' id='485' name='HO Tiles Unregistered' show-title='false' w='52938' x='17312' y='85500'>
+                        <zone fixed-size='74' h='7400' id='485' is-fixed='true' name='HO Tiles Unregistered' show-title='false' w='52938' x='17312' y='85500'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -60839,7 +60839,7 @@
                         <format attr='margin-right' value='7' />
                       </zone-style>
                     </zone>
-                    <zone friendly-name='FR Late Now Card' h='41900' id='707' param='vert' type-v2='layout-flow' w='20562' x='77688' y='56700'>
+                    <zone fixed-size='393' friendly-name='FR Late Now Card' h='41900' id='707' is-fixed='true' param='vert' type-v2='layout-flow' w='20562' x='77688' y='56700'>
                       <zone fixed-size='44' h='4400' id='705' is-fixed='true' type-v2='text' w='18000' x='79188' y='58200'>
                         <formatted-text>
                           <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Late right now</run>
@@ -61934,7 +61934,7 @@
                       <format attr='margin-bottom' value='10' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='104' friendly-name='LIN Callout Critical' h='10800' id='835' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='23700'>
+                  <zone fixed-size='104' friendly-name='LIN Callout Critical' h='11600' id='835' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='23700'>
                     <zone h='10400' id='834' name='LIN Panel Callout Critical' show-title='false' w='19125' x='78062' y='23700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
@@ -61948,11 +61948,11 @@
                       <format attr='border-style' value='none' />
                       <format attr='border-width' value='0' />
                       <format attr='margin' value='0' />
-                      <format attr='margin-bottom' value='4' />
+                      <format attr='margin-bottom' value='12' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='104' friendly-name='LIN Callout Warning' h='0' hidden-by-user='true' id='837' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='34500'>
-                    <zone h='0' id='836' name='LIN Panel Callout Warning' show-title='false' w='19125' x='78062' y='34500'>
+                  <zone fixed-size='104' friendly-name='LIN Callout Warning' h='0' hidden-by-user='true' id='837' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='35300'>
+                    <zone h='0' id='836' name='LIN Panel Callout Warning' show-title='false' w='19125' x='78062' y='35300'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -61965,11 +61965,11 @@
                       <format attr='border-style' value='none' />
                       <format attr='border-width' value='0' />
                       <format attr='margin' value='0' />
-                      <format attr='margin-bottom' value='4' />
+                      <format attr='margin-bottom' value='12' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='120' h='12000' id='840' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='34500'>
-                    <zone fixed-size='106' h='12000' id='838' is-fixed='true' name='LIN Panel Detail Labels' show-title='false' w='6625' x='78062' y='34500'>
+                  <zone fixed-size='120' h='12000' id='840' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='35300'>
+                    <zone fixed-size='106' h='12000' id='838' is-fixed='true' name='LIN Panel Detail Labels' show-title='false' w='6625' x='78062' y='35300'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -61977,7 +61977,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone h='12000' id='839' name='LIN Panel Details' show-title='false' w='12500' x='84688' y='34500'>
+                    <zone h='12000' id='839' name='LIN Panel Details' show-title='false' w='12500' x='84688' y='35300'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -61992,8 +61992,8 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='200' friendly-name='LIN Panel Model Section' h='20000' id='811' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='46500'>
-                    <zone fixed-size='24' h='2400' id='801' is-fixed='true' type-v2='text' w='19125' x='78062' y='46500'>
+                  <zone fixed-size='200' friendly-name='LIN Panel Model Section' h='20000' id='811' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='47300'>
+                    <zone fixed-size='24' h='2400' id='801' is-fixed='true' type-v2='text' w='19125' x='78062' y='47300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>RUNTIME, 90 DAYS</run>
                       </formatted-text>
@@ -62005,8 +62005,8 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='804' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='48900'>
-                      <zone fixed-size='190' h='1800' id='802' is-fixed='true' name='LIN Panel Last Run' show-title='false' w='11875' x='78062' y='48900'>
+                    <zone fixed-size='18' h='1800' id='804' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='49700'>
+                      <zone fixed-size='190' h='1800' id='802' is-fixed='true' name='LIN Panel Last Run' show-title='false' w='11875' x='78062' y='49700'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62014,7 +62014,7 @@
                           <format attr='margin' value='0' />
                         </zone-style>
                       </zone>
-                      <zone h='1800' id='803' name='LIN Panel Runtime Change' show-title='false' w='7250' x='89938' y='48900'>
+                      <zone h='1800' id='803' name='LIN Panel Runtime Change' show-title='false' w='7250' x='89938' y='49700'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62029,7 +62029,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='46' h='4600' id='805' is-fixed='true' name='LIN Panel Runtime Trend' show-title='false' w='19125' x='78062' y='50700'>
+                    <zone fixed-size='46' h='4600' id='805' is-fixed='true' name='LIN Panel Runtime Trend' show-title='false' w='19125' x='78062' y='51500'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62037,7 +62037,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='806' is-fixed='true' type-v2='text' w='19125' x='78062' y='55300'>
+                    <zone fixed-size='24' h='2400' id='806' is-fixed='true' type-v2='text' w='19125' x='78062' y='56100'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>RUNS IN PERIOD</run>
                       </formatted-text>
@@ -62049,7 +62049,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='807' is-fixed='true' name='LIN Panel Runs Summary' show-title='false' w='19125' x='78062' y='57700'>
+                    <zone fixed-size='18' h='1800' id='807' is-fixed='true' name='LIN Panel Runs Summary' show-title='false' w='19125' x='78062' y='58500'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62057,7 +62057,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='808' is-fixed='true' type-v2='text' w='19125' x='78062' y='59500'>
+                    <zone fixed-size='24' h='2400' id='808' is-fixed='true' type-v2='text' w='19125' x='78062' y='60300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>TESTS, LAST 30 DAYS</run>
                       </formatted-text>
@@ -62069,7 +62069,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='16' h='1600' id='809' is-fixed='true' name='LIN Panel Test Strip' show-title='false' w='19125' x='78062' y='61900'>
+                    <zone fixed-size='16' h='1600' id='809' is-fixed='true' name='LIN Panel Test Strip' show-title='false' w='19125' x='78062' y='62700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62077,7 +62077,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='810' is-fixed='true' name='LIN Panel Tests Latest' show-title='false' w='19125' x='78062' y='63500'>
+                    <zone fixed-size='18' h='1800' id='810' is-fixed='true' name='LIN Panel Tests Latest' show-title='false' w='19125' x='78062' y='64300'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62092,8 +62092,8 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='172' friendly-name='LIN Panel Source Section' h='0' hidden-by-user='true' id='819' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='66500'>
-                    <zone fixed-size='24' h='2400' id='812' is-fixed='true' type-v2='text' w='19125' x='78062' y='66500'>
+                  <zone fixed-size='172' friendly-name='LIN Panel Source Section' h='0' hidden-by-user='true' id='819' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='67300'>
+                    <zone fixed-size='24' h='2400' id='812' is-fixed='true' type-v2='text' w='19125' x='78062' y='67300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>FRESHNESS NOW</run>
                       </formatted-text>
@@ -62105,7 +62105,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='22' h='2200' id='813' is-fixed='true' name='LIN Panel Freshness Bullet' show-title='false' w='19125' x='78062' y='68900'>
+                    <zone fixed-size='22' h='2200' id='813' is-fixed='true' name='LIN Panel Freshness Bullet' show-title='false' w='19125' x='78062' y='69700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62113,8 +62113,8 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='816' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='71100'>
-                      <zone fixed-size='100' h='1800' id='814' is-fixed='true' name='LIN Panel Lag Now' show-title='false' w='6250' x='78062' y='71100'>
+                    <zone fixed-size='18' h='1800' id='816' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='71900'>
+                      <zone fixed-size='100' h='1800' id='814' is-fixed='true' name='LIN Panel Lag Now' show-title='false' w='6250' x='78062' y='71900'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62122,7 +62122,7 @@
                           <format attr='margin' value='0' />
                         </zone-style>
                       </zone>
-                      <zone h='1800' id='815' name='LIN Panel Lag Thresholds' show-title='false' w='12875' x='84312' y='71100'>
+                      <zone h='1800' id='815' name='LIN Panel Lag Thresholds' show-title='false' w='12875' x='84312' y='71900'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62137,7 +62137,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='817' is-fixed='true' type-v2='text' w='19125' x='78062' y='72900'>
+                    <zone fixed-size='24' h='2400' id='817' is-fixed='true' type-v2='text' w='19125' x='78062' y='73700'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>DAILY WORST LAG, 90 DAYS</run>
                       </formatted-text>
@@ -62149,7 +62149,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='46' h='4600' id='818' is-fixed='true' name='LIN Panel Lag Trend' show-title='false' w='19125' x='78062' y='75300'>
+                    <zone fixed-size='46' h='4600' id='818' is-fixed='true' name='LIN Panel Lag Trend' show-title='false' w='19125' x='78062' y='76100'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62164,8 +62164,8 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='140' friendly-name='LIN Panel Semantic Section' h='0' hidden-by-user='true' id='824' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='66500'>
-                    <zone fixed-size='24' h='2400' id='820' is-fixed='true' type-v2='text' w='19125' x='78062' y='66500'>
+                  <zone fixed-size='140' friendly-name='LIN Panel Semantic Section' h='0' hidden-by-user='true' id='824' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='67300'>
+                    <zone fixed-size='24' h='2400' id='820' is-fixed='true' type-v2='text' w='19125' x='78062' y='67300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>REFRESHES IN PERIOD</run>
                       </formatted-text>
@@ -62177,7 +62177,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='821' is-fixed='true' name='LIN Panel Refresh Summary' show-title='false' w='19125' x='78062' y='68900'>
+                    <zone fixed-size='18' h='1800' id='821' is-fixed='true' name='LIN Panel Refresh Summary' show-title='false' w='19125' x='78062' y='69700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62185,7 +62185,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='822' is-fixed='true' type-v2='text' w='19125' x='78062' y='70700'>
+                    <zone fixed-size='24' h='2400' id='822' is-fixed='true' type-v2='text' w='19125' x='78062' y='71500'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>FAILED REFRESHES PER DAY</run>
                       </formatted-text>
@@ -62197,7 +62197,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='46' h='4600' id='823' is-fixed='true' name='LIN Panel Refresh Failures' show-title='false' w='19125' x='78062' y='73100'>
+                    <zone fixed-size='46' h='4600' id='823' is-fixed='true' name='LIN Panel Refresh Failures' show-title='false' w='19125' x='78062' y='73900'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62212,8 +62212,8 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='180' friendly-name='LIN Panel Exposure Section' h='0' hidden-by-user='true' id='832' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='66500'>
-                    <zone fixed-size='24' h='2400' id='825' is-fixed='true' type-v2='text' w='19125' x='78062' y='66500'>
+                  <zone fixed-size='180' friendly-name='LIN Panel Exposure Section' h='0' hidden-by-user='true' id='832' is-fixed='true' param='vert' type-v2='layout-flow' w='19125' x='78062' y='67300'>
+                    <zone fixed-size='24' h='2400' id='825' is-fixed='true' type-v2='text' w='19125' x='78062' y='67300'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>HEALTH SCORE, 90 DAYS</run>
                       </formatted-text>
@@ -62225,7 +62225,7 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='18' h='1800' id='826' is-fixed='true' name='LIN Panel Score Now' show-title='false' w='19125' x='78062' y='68900'>
+                    <zone fixed-size='18' h='1800' id='826' is-fixed='true' name='LIN Panel Score Now' show-title='false' w='19125' x='78062' y='69700'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62233,7 +62233,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='46' h='4600' id='827' is-fixed='true' name='LIN Panel Score Trend' show-title='false' w='19125' x='78062' y='70700'>
+                    <zone fixed-size='46' h='4600' id='827' is-fixed='true' name='LIN Panel Score Trend' show-title='false' w='19125' x='78062' y='71500'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -62241,7 +62241,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='828' is-fixed='true' type-v2='text' w='19125' x='78062' y='75300'>
+                    <zone fixed-size='24' h='2400' id='828' is-fixed='true' type-v2='text' w='19125' x='78062' y='76100'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>IN THIS PERIOD</run>
                       </formatted-text>
@@ -62253,8 +62253,8 @@
                         <format attr='padding-top' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='50' h='5000' id='831' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='77700'>
-                      <zone fixed-size='106' h='5000' id='829' is-fixed='true' name='LIN Panel Usage Labels' show-title='false' w='6625' x='78062' y='77700'>
+                    <zone fixed-size='50' h='5000' id='831' is-fixed='true' param='horz' type-v2='layout-flow' w='19125' x='78062' y='78500'>
+                      <zone fixed-size='106' h='5000' id='829' is-fixed='true' name='LIN Panel Usage Labels' show-title='false' w='6625' x='78062' y='78500'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62262,7 +62262,7 @@
                           <format attr='margin' value='0' />
                         </zone-style>
                       </zone>
-                      <zone h='5000' id='830' name='LIN Panel Usage Values' show-title='false' w='12500' x='84688' y='77700'>
+                      <zone h='5000' id='830' name='LIN Panel Usage Values' show-title='false' w='12500' x='84688' y='78500'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -62284,7 +62284,7 @@
                       <format attr='margin' value='0' />
                     </zone-style>
                   </zone>
-                  <zone h='27400' id='841' type-v2='empty' w='19125' x='78062' y='66500'>
+                  <zone h='26600' id='841' type-v2='empty' w='19125' x='78062' y='67300'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -68462,7 +68462,7 @@
                   </zone-style>
                 </zone>
                 <zone friendly-name='GOV Bottom Row' h='37800' id='1404' param='horz' type-v2='layout-flow' w='82000' x='16250' y='60800'>
-                  <zone friendly-name='GOV Domain Card' h='36400' id='1393' param='vert' type-v2='layout-flow' w='27333' x='16250' y='62200'>
+                  <zone fixed-size='438' friendly-name='GOV Domain Card' h='36400' id='1393' is-fixed='true' param='vert' type-v2='layout-flow' w='27333' x='16250' y='62200'>
                     <zone fixed-size='44' h='4400' id='1389' is-fixed='true' type-v2='text' w='24771' x='17312' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Coverage by domain</run>
@@ -68516,7 +68516,7 @@
                       <format attr='margin-right' value='7' />
                     </zone-style>
                   </zone>
-                  <zone friendly-name='GOV Hygiene Card' h='36400' id='1398' param='vert' type-v2='layout-flow' w='27333' x='43583' y='62200'>
+                  <zone fixed-size='428' friendly-name='GOV Hygiene Card' h='36400' id='1398' is-fixed='true' param='vert' type-v2='layout-flow' w='27333' x='43583' y='62200'>
                     <zone fixed-size='58' h='5800' id='1394' is-fixed='true' type-v2='text' w='24333' x='45083' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Hygiene score by team</run>
@@ -68574,7 +68574,7 @@
                       <format attr='margin-right' value='7' />
                     </zone-style>
                   </zone>
-                  <zone friendly-name='GOV Gaps Card' h='36400' id='1401' param='vert' type-v2='layout-flow' w='27333' x='70917' y='62200'>
+                  <zone fixed-size='443' friendly-name='GOV Gaps Card' h='36400' id='1401' is-fixed='true' param='vert' type-v2='layout-flow' w='27333' x='70917' y='62200'>
                     <zone fixed-size='44' h='4400' id='1399' is-fixed='true' type-v2='text' w='24771' x='72417' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Gaps to close</run>
@@ -70525,7 +70525,7 @@
                   <format attr='background-color' value='#e6e7e2' />
                 </zone-style>
               </zone>
-              <zone friendly-name='DOC Content' h='87800' id='1598' param='vert' type-v2='layout-flow' w='85500' x='14500' y='12200'>
+              <zone fixed-size='900' friendly-name='DOC Content' h='87800' id='1598' is-fixed='true' param='vert' type-v2='layout-flow' w='85500' x='14500' y='12200'>
                 <zone fixed-size='300' friendly-name='DOC Top Row' h='30000' id='1596' is-fixed='true' param='horz' type-v2='layout-flow' w='82000' x='16250' y='14200'>
                   <zone fixed-size='435' friendly-name='DOC Purpose Card' h='30000' id='1581' is-fixed='true' param='vert' type-v2='layout-flow' w='27625' x='16250' y='14200'>
                     <zone fixed-size='22' h='2200' id='1575' is-fixed='true' type-v2='text' w='25062' x='17312' y='15700'>

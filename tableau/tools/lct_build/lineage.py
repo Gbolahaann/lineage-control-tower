@@ -907,7 +907,7 @@ def content() -> Z:
         # the box and its text are drawn by the sheet, only when the node really has a reason (v49: a stale
         # p_panel_status showed an empty pink box); the container keeps its place in the layout
         return Z('vert', friendly=f'LIN Callout {kind}', fixed=104, dzv=(f'Show Panel Callout {kind}', default),
-                 kids=[sheet(f'LIN Panel Callout {kind}')], style={'margin-bottom': '4'})
+                 kids=[sheet(f'LIN Panel Callout {kind}')], style={'margin-bottom': '12'})   # v48's spacing, so the panel below stays put
 
     def two(left, right, h, lw=None):
         return Z('horz', fixed=h, kids=[sheet(left, lw), sheet(right)])

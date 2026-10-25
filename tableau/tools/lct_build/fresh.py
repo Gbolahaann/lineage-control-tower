@@ -433,8 +433,8 @@ def content() -> Z:
         sheet('FR Late Checks Calendar', 7 * 21),  # compact at the top, as the prototype (7 rows of about 18 px squares)
         blank(),
         text(_legend([('Warn', WARN), ('Error', CRIT), ('On time', '#e3f2e9')]), fixed=22, **{'padding-top': '6'})])
-    # GB set 393 in Pre-Final; Tableau fits it to the 329 the column has left, which is what "the rest" gives here
-    late = card('FR Late Now Card', margins={'left': 7}, kids=[
+    # GB set 393 in Pre-Final (kept as he saved it); Tableau fits it to the 329 the column has left, so the build lays it out as "the rest"
+    late = card('FR Late Now Card', margins={'left': 7}, saved_fixed=393, kids=[
         card_header('Late right now', 'And the data products waiting on them'),
         sheet('FR Late Right Now', 158)])   # GB, Pre-Final
     right = Z('vert', friendly='FR Right Column', fixed=RIGHT_W, style={'margin-left': '7'}, kids=[

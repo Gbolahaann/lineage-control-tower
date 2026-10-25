@@ -403,6 +403,9 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   exposures on that platform, wherever they sit, and every list that can go empty needs an empty-state line
   (DZV on the parameters, with the empty combinations counted by the build).
 - **Top row (GB, Pre-Final):** PERIOD / PLATFORM labels at padding 0, the period hint right-aligned.
+- **Keep GB's sizes literally.** When his fixed sizes overfill a row, don't swap them for flex even if it looks the
+  same: write his number (`saved_fixed`) and lay the zone out at Tableau's real width. After folding in a copy,
+  compare every zone's fixed size and width against his file (576 zones in v50) before shipping.
 
 ## 11. Colours and palettes
 

@@ -835,8 +835,11 @@ class Z:
     _next = 3
 
     def __init__(self, kind, name=None, *, fixed=None, kids=(), style=None, friendly=None, text=None,
-                 image=None, button=None, dzv=None, param=None, weight=1.0):
+                 image=None, button=None, dzv=None, param=None, weight=1.0, saved_fixed=None):
         self.kind, self.name, self.fixed, self.kids = kind, name, fixed, list(kids)
+        # GB's own fixed size, written as he saved it, for a zone Tableau squeezes (his sizes overfill the row): the
+        # build lays the zone out at the width Tableau actually gives it, so canvases are measured right
+        self.saved_fixed = saved_fixed
         self.style, self.friendly, self.text, self.image = dict(style or {}), friendly, text, image
         self.button, self.dzv, self.param, self.weight = button, dzv, param, weight
         self.id = Z._next
@@ -886,8 +889,8 @@ class Z:
         x, y, w, h = self.rect
         a = {'h': round(h * 100000 / H), 'id': self.id, 'w': round(w * 100000 / W),
              'x': round(x * 100000 / W), 'y': round(y * 100000 / H)}
-        if self.fixed is not None:
-            a['fixed-size'] = int(self.fixed)
+        if self.fixed is not None or self.saved_fixed is not None:
+            a['fixed-size'] = int(self.saved_fixed if self.saved_fixed is not None else self.fixed)
             a['is-fixed'] = 'true'
         if self.friendly:
             a['friendly-name'] = self.friendly
@@ -966,13 +969,13 @@ def sheet(name, fixed=None, **style) -> Z:
     return Z('sheet', name, fixed=fixed, style=style)
 
 
-def card(friendly, kids, fixed=None, pad=(14, 16, 14, 16), margins=None, horz=False, **extra) -> Z:
+def card(friendly, kids, fixed=None, pad=(14, 16, 14, 16), margins=None, horz=False, saved_fixed=None, **extra) -> Z:
     st = {**CARD_STYLE, 'padding-top': str(pad[0]), 'padding-right': str(pad[1]),
           'padding-bottom': str(pad[2]), 'padding-left': str(pad[3])}
     for side, v in (margins or {}).items():
         st[f'margin-{side}'] = str(v)
     st.update(extra)
-    return Z('horz' if horz else 'vert', friendly=friendly, fixed=fixed, kids=kids, style=st)
+    return Z('horz' if horz else 'vert', friendly=friendly, fixed=fixed, kids=kids, style=st, saved_fixed=saved_fixed)
 
 
 def card_header(title, subtitle, fixed=44) -> Z:

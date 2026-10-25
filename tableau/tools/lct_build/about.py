@@ -393,6 +393,6 @@ def doc_content() -> Z:
         nk += [run(head, 7, INK3, SEMI), run(NL, 7, INK3), run(s, 8, INK2), run(NL, 8, INK2), run(NL, 6, INK2)]
     note_card = card('DOC Notes Card', fixed=435, margins={'left': 7}, kids=[
         card_header('Build notes', 'For whoever opens this workbook next', 44), text(nk)])
-    return Z('vert', friendly='DOC Content', style=CONTENT_PAD, kids=[
+    return Z('vert', friendly='DOC Content', style=CONTENT_PAD, saved_fixed=900, kids=[   # GB, Pre-Final
         Z('horz', friendly='DOC Top Row', fixed=300, kids=[purpose, params]),
         Z('horz', friendly='DOC Bottom Row', fixed=512, style={'margin-top': '14'}, kids=[actions, note_card])])   # GB, v47

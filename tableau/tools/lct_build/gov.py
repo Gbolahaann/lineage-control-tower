@@ -594,17 +594,17 @@ def content() -> Z:
                 **{'background-color': WARN_TINT, 'border-color': '#f3ddb4', 'border-style': 'solid', 'border-width': '1', 'corner-radius': '8',
                    'padding-left': '10', 'padding-right': '10', 'padding-top': '6', 'margin-top': '6'})
     sprawl = card('GOV Sprawl Card', margins={'left': 7}, kids=[sheet('GOV Sprawl Subtitle', 44), sheet('GOV AI Sprawl List'), warn])
-    # GB, v45: the three bottom cards evened out. His 438 / 428 / 443 overfill the row, so Tableau shows three equal
-    # cards; equal flex widths give exactly that, and let the build measure the canvases right
-    domain = card('GOV Domain Card', margins={'right': 7}, kids=[
+    # GB, v45: the three bottom cards evened out. His 438 / 428 / 443 are written as he saved them; they overfill the
+    # row, so Tableau shows three equal cards, and the build lays them out that way to measure the canvases right
+    domain = card('GOV Domain Card', margins={'right': 7}, saved_fixed=438, kids=[
         card_header('Coverage by domain', 'Green from 90%, amber from 70%'), sheet('GOV Domain Header', HEAD_H), blank(1, LINE),
         sheet('GOV Coverage by Domain Table')])
-    hygiene = card('GOV Hygiene Card', margins={'left': 7, 'right': 7}, kids=[
+    hygiene = card('GOV Hygiene Card', margins={'left': 7, 'right': 7}, saved_fixed=428, kids=[
         card_header('Hygiene score by team', 'Average of documentation and test coverage for the sources and models each team owns', 58),
         sheet('GOV Hygiene by Team Bar'), text([run('EXPOSURE MATURITY', 7, INK3, SEMI)], fixed=24, **{'padding-top': '6'}),
         sheet('GOV Maturity Bar', 26)])
     # the gaps list scrolls (GB, v44): its width leaves room for the scroll bar, its height is free
-    gaps = card('GOV Gaps Card', margins={'left': 7}, kids=[card_header('Gaps to close', 'The quickest wins for the next sprint'), sheet('GOV Gaps List')])
+    gaps = card('GOV Gaps Card', margins={'left': 7}, saved_fixed=443, kids=[card_header('Gaps to close', 'The quickest wins for the next sprint'), sheet('GOV Gaps List')])
     return Z('vert', friendly='GOV Content', style=CONTENT_PAD, kids=[
         Z('horz', friendly='GOV KPI Row', fixed=KPI_H, kids=kpis),
         Z('horz', friendly='GOV Middle Row', fixed=MID_H, style={'margin-top': '14'}, kids=[unreg, sprawl]),

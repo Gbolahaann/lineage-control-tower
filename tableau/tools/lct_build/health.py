@@ -322,7 +322,7 @@ def content() -> Z:
         groups += [sheet(f'HO Tiles {suffix} Header', SH.HEADER_PANE[1]),
                    Z('vert', friendly=f'HO Tiles {suffix} Body', fixed=SH.TILE_PANE[1] * TILE_ROWS[g] + 6, kids=[
                        note('All', 'None on this platform'), note('Attention', 'None need attention on this platform'),
-                       sheet(f'HO Tiles {suffix}')])]
+                       sheet(f'HO Tiles {suffix}', SH.TILE_PANE[1] * TILE_ROWS[g] + 6)])]   # the sheet keeps its own fixed height too
     exposure = card('HO Exposure Card', fixed=SH.EXPOSURE_CARD_W, margins={'right': 7}, kids=[
         Z('horz', friendly='HO Exposure Card Header', fixed=58, kids=[
             card_header('Exposure status', 'Every data product, traced through its full upstream chain. Score is the '
