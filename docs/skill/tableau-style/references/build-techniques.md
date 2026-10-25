@@ -351,7 +351,7 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Builds must be reproducible:** never let a Python set decide the order of CASE lines (set order changes from
   run to run, so every diff against GB's copy showed rewritten calcs); sort it. Check by building twice and comparing.
 
-### Governance patterns (v44, to confirm when GB opens it)
+### Governance patterns (v44; GB's review in v45)
 
 - **Scenes on the date table:** small fixed pictures (a % grid, bar lists, a split bar, short lists) as one canvas
   per card: every rectangle 4 date rows and every text one row, per parameter value, from one helper
@@ -360,6 +360,14 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Clicks from rows that are not nodes** (query-history principals): write the target product and its panel
   values as CASE calcs on the row's key, so the Lineage panel opens right.
 - **Measure the card before promising a row count:** a requested "top 5" may not fit; build what fits, say so.
+- **When a scene runs out of date rows, add a layer, not a trade-off:** a second rectangle set (its own `Rect
+  Point` / `Rect Id` calcs, no texts) drawn as a polygon layer underneath, one fixed `mark-color`. That's how the
+  domain grid got its row lines back (v45) next to 72 rows of chips.
+- **Short lists GB wants scrollable:** list every item; pane height = the longest parameter value's list, width =
+  card canvas - 18 for the scroll bar, `zoom=None`. Check only the width in `check_fit` (v45 gaps).
+- **Spread table columns across the card:** natural widths (widest cell or title, bold where the cell is bold),
+  then share the spare width out evenly between the columns so the last one ends at the right edge. Packing them
+  left with 14 px gaps read as cramped with a blank right side (GB, v44 unregistered table).
 
 ## 11. Colours and palettes
 

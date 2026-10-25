@@ -386,7 +386,8 @@ class Pane:
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
                  transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=(),
-                 mark_fmt=(), cull=False):
+                 mark_fmt=(), cull=False, cell_valign=None):
+        self.cell_valign = cell_valign or valign  # the cell rule's own vertical alignment, when Tableau saved one
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -455,7 +456,7 @@ class Pane:
                 + refl + tip + lab
                 + "            <style>\n              <style-rule element='cell'>\n"
                 f"                <format attr='text-align' value='{self.align}' />\n"
-                f"                <format attr='vertical-align' value='{self.valign}' />\n              </style-rule>\n"
+                f"                <format attr='vertical-align' value='{self.cell_valign}' />\n              </style-rule>\n"
                 "              <style-rule element='label'>\n"
                 f"                <format attr='text-align' value='{self.align}' />\n"
                 f"                <format attr='vertical-align' value='{self.valign}' />\n              </style-rule>\n"

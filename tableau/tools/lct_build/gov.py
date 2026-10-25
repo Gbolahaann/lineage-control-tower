@@ -13,7 +13,10 @@ and platform (the prototype's rules, checked against its figures) and Tableau sw
 - AI-built dashboard sprawl: one two-line row per AI-assisted dashboard on its Exposure Daily rows.
 - Coverage by domain, hygiene by team, exposure maturity and gaps to close: "scenes" on the 90-row date table, every
   rectangle 4 rows and every text one row, written per platform.
-- Gaps: 4 per section and "and N more" (top 5 needs about 350 px; the card has 290).
+- Gaps: every item in each section; the list scrolls (GB, v44).
+
+GB's v44 review: the unregistered table's columns spread across the card, row lines on coverage by domain (a layer of
+its own, so the chips keep their date rows), and the gaps list scrolls with every item.
 """
 
 from __future__ import annotations
@@ -51,6 +54,7 @@ UNREG_CARD = 1312 - SIDE - 7 - 7                 # 870
 BOTTOM_H = CONTENT_H - KPI_H - 14 - MID_H - 14   # 364
 UW = UNREG_CARD - 2 * 16 - 2 - SH.SLACK          # 832: unregistered table canvas
 SW = SIDE - 2 * 16 - 2 - SH.SLACK                # 390: the side canvases
+GW = SW - 18                                     # 372: the gaps list, room for its scroll bar (GB, v44)
 UNREG_ROW, SPRAWL_ROW, DOMAIN_ROW, HEAD_H = 40, 45, 30, 22
 
 
@@ -198,12 +202,14 @@ def _right(x, s, w=W8):
 def domain_scenes():
     pane = (SW, 6 * DOMAIN_ROW + 2)
     cols = {'models': 150, 'docs': 205, 'tests': 275, 'owned': 345}     # chip left edges; models right edge
-    scenes = {}
+    scenes, lines = {}, {}
     for plat in PLATFORMS:
         rects, texts = [], []
-        for i, (d, m, docs, tests, own) in enumerate(CAT[plat]['domains'][:6]):
+        doms = CAT[plat]['domains'][:6]
+        # row lines on a layer of their own (GB, v44): 18 chips x 4 rows already use 72 of the date table's 90 rows
+        lines[plat] = ([(0, (i + 1) * DOMAIN_ROW, SW, (i + 1) * DOMAIN_ROW + 1, 'Line') for i in range(len(doms) - 1)], [])
+        for i, (d, m, docs, tests, own) in enumerate(doms):
             y = i * DOMAIN_ROW + DOMAIN_ROW / 2
-            # no row lines: 18 chips x 4 rows already use 72 of the date table's 90 rows; the tints separate the rows
             texts += [('Name', d, _left(8, d), y), ('Name', str(m), _right(cols['models'], str(m)), y)]
             for col, v in (('docs', docs), ('tests', tests), ('owned', own)):
                 x0 = cols[col]
@@ -216,7 +222,7 @@ def domain_scenes():
         scenes[plat] = (rects, texts)
     heads = [('DOMAIN', 8, 'l'), ('MODELS', cols['models'], 'r'), ('DOCS', cols['docs'] + 22, 'c'), ('TESTS', cols['tests'] + 22, 'c'),
              ('OWNED', cols['owned'] + 22, 'c')]
-    return scenes, pane, heads
+    return scenes, lines, pane, heads
 
 
 def hygiene_scenes():
@@ -252,37 +258,31 @@ def maturity_scenes():
     return scenes, pane
 
 
-GAP_N = 4                                        # per section: 3 x (header + 4 rows + "and N more") fits the 290 px card
-
-
 def gap_scenes():
-    sec_h, item = 20, 15                         # 3 x (20 + 5 x 15) + 4 = 289: fits the card
-    pane = (SW, 3 * (sec_h + (GAP_N + 1) * item) + 4)
-    scenes = {}
+    """Every gap in each section (GB, v44); the pane is as tall as the longest platform's list and scrolls."""
+    sec_h, item = 20, 15
+    scenes, height = {}, 0
     for plat in PLATFORMS:
         rects, texts, y = [], [], 0
         for key, title, dot in (('owner', 'NO OWNER', 'Crit'), ('tests', 'NO TESTS', 'Warn'), ('desc', 'NO DESCRIPTION', 'Warn')):
             items = CAT[plat]['gaps'][key]
             texts.append(('Head', title, _left(0, title, lambda s: W7(s, True)), y + 9))
-            rects.append((0, y + 17, SW, y + 18, 'Line'))
+            rects.append((0, y + 17, GW, y + 18, 'Line'))
             y += sec_h
             if not items:
                 texts.append(('More', 'None', _left(0, 'None'), y + item / 2))
                 y += item
-            for name in items[:GAP_N]:
-                nm = _fit(name, SW - 20, 8)
+            for name in items:
+                nm = _fit(name, GW - 20, 8)
                 texts += [(dot, '●', 5, y + item / 2), ('Item', nm, _left(16, nm), y + item / 2)]
                 y += item
-            if len(items) > GAP_N:
-                more = f'and {len(items) - GAP_N} more'
-                texts.append(('More', more, _left(16, more), y + item / 2))
-            y += item if len(items) > GAP_N else 0
             y += 4
         scenes[plat] = (rects, texts)
-    return scenes, pane
+        height = max(height, y)
+    return scenes, (GW, height)
 
 
-DOMAIN_SCENES, DOMAIN_PANE, DOMAIN_HEADS = domain_scenes()
+DOMAIN_SCENES, DOMAIN_LINES, DOMAIN_PANE, DOMAIN_HEADS = domain_scenes()
 HYGIENE_SCENES, HYGIENE_PANE = hygiene_scenes()
 MATURITY_SCENES, MATURITY_PANE = maturity_scenes()
 GAP_SCENES, GAP_PANE = gap_scenes()
@@ -291,18 +291,27 @@ GAP_SCENES, GAP_PANE = gap_scenes()
 # ================================================================ unregistered table and sprawl list
 
 def _ucols():
+    """Column positions: each column as wide as its widest cell or title, the spare width shared out between them so
+    the last column ends at the card's right edge (GB, v44). Left columns get their left edge, right ones their right."""
     rows = [x for v in UNREG.values() for x in v]
-    x = {'p': 8}
-    x['kind'] = 8 + max(W8(r['p']) for r in rows) + 14
-    x['reads'] = x['kind'] + max(W8(r['kind']) for r in rows) + 14
-    reads_w = max(W8(n + ',') for r in rows for n in r['reads'])
-    x['q'] = x['reads'] + reads_w + 14 + max(W7('QUERIES', True), max(W8(f'{r["q"]:,.0f}') for r in rows))
-    x['gb'] = x['q'] + 14 + max(W7('SCANNED', True), max(W8(f'{r["gb"]:,.0f} GB') for r in rows))
-    x['cost'] = x['gb'] + 14 + max(W7('COST', True), max(W8(f'${r["cost"]:,.0f}') for r in rows))
-    x['first'] = x['cost'] + 14
-    x['likely'] = x['first'] + max(W7('FIRST SEEN', True), max(W8(_short(r['first'])) for r in rows)) + 14
-    assert x['likely'] + max(W8(r['likely']) for r in rows) <= UW - 4, f'GOV unregistered table: {x["likely"]:.0f} of {UW}'
-    return x
+    head = lambda h: W7(h, True)
+    cols = [('p', 'l', max(head('PRINCIPAL'), max(W8(r['p'], True) for r in rows))),
+            ('kind', 'l', max(head('KIND'), max(W8(r['kind']) for r in rows))),
+            ('reads', 'l', max(head('READS'), max(W8(n + ',') for r in rows for n in r['reads']),
+                               max((W8(r['reads'][1] + f' +{len(r["reads"]) - 2}') for r in rows if len(r['reads']) > 2), default=0))),
+            ('q', 'r', max(head('QUERIES'), max(W8(f'{r["q"]:,.0f}') for r in rows))),
+            ('gb', 'r', max(head('SCANNED'), max(W8(f'{r["gb"]:,.0f} GB') for r in rows))),
+            ('cost', 'r', max(head('COST'), max(W8(f'${r["cost"]:,.0f}') for r in rows))),
+            ('first', 'l', max(head('FIRST SEEN'), max(W8(_short(r['first'])) for r in rows))),
+            ('likely', 'l', max(head('LIKELY WHAT'), max(W8(r['likely']) for r in rows)))]
+    edge = 8
+    gap = (UW - 2 * edge - sum(w for _, _, w in cols)) / (len(cols) - 1)
+    assert gap >= 14, f'GOV unregistered table: {gap:.0f} px between columns'
+    x, at = edge, {}
+    for k, a, w in cols:
+        at[k] = x if a == 'l' else x + w
+        x += w + gap
+    return at
 
 
 UCOL = _ucols()
@@ -426,6 +435,7 @@ for fn in (kpi_calcs, unreg_calcs, sprawl_calcs):
     _f.update(a)
     _t.update(b)
 for prefix, scenes, key, pane, styles in (('GOV Domain', DOMAIN_SCENES, '[p_platform]', DOMAIN_PANE, ('Name', 'Good', 'Fair', 'Poor', 'Dash')),
+                                          ('GOV Domain Line', DOMAIN_LINES, '[p_platform]', DOMAIN_PANE, ()),
                                           ('GOV Hygiene', HYGIENE_SCENES, '[p_platform]', HYGIENE_PANE, ('Name', 'Value')),
                                           ('GOV Maturity', MATURITY_SCENES, '[p_platform]', MATURITY_PANE, ('High', 'Medium', 'Low')),
                                           ('GOV Gaps', GAP_SCENES, '[p_platform]', GAP_PANE, ('Head', 'Item', 'More', 'Crit', 'Warn'))):
@@ -445,17 +455,20 @@ def _a(n):
     return R(n, 'attr')
 
 
-def _words(title, point, runs, pane, lod, inert=True, tooltip=None):
+def _words(title, point, runs, pane, lod, inert=True, tooltip=None, cell_valign=None):
     return label_pane(title=title, inert=inert, text=[r['_ref'] for r in runs if '_ref' in r], label=runs, align='center',
-                      valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane, tooltip=tooltip)
+                      valign='center', lod=[R(point, 'clct'), *lod], pane_size=pane, tooltip=tooltip, cell_valign=cell_valign)
 
 
-def _scene_sheet(name, prefix, pane, styles, palette):
-    """A scene on the date table: the rectangles (one colour key) and one text layer per style."""
+def _scene_sheet(name, prefix, pane, styles, palette, under=()):
+    """A scene on the date table: the rectangles (one colour key) and one text layer per style. under: more rectangle
+    sets drawn first, [(prefix, colour)], when one set would need more than the date table's 90 rows."""
     sid, path, di = R(f'{prefix} Rect Id'), R('day_index', kind='ok'), R('day_index')
     color_map(R(f'{prefix} Rect Key'), {f'"{k}"': v for k, v in palette.items()})
-    layers = [Pane('Polygon', title='Shapes', inert=True, color=R(f'{prefix} Rect Key'), path=path, label_show=False,
-                   lod=[R(f'{prefix} Rect Point', 'clct'), sid], pane_size=pane)]
+    layers = [Pane('Polygon', title=f'Shapes {i + 2}', inert=True, mark_color=colour, path=path, label_show=False,
+                   lod=[R(f'{p} Rect Point', 'clct'), R(f'{p} Rect Id')], pane_size=pane) for i, (p, colour) in enumerate(under)]
+    layers.append(Pane('Polygon', title='Shapes', inert=True, color=R(f'{prefix} Rect Key'), path=path, label_show=False,
+                       lod=[R(f'{prefix} Rect Point', 'clct'), sid], pane_size=pane))
     for style, (size, colour, bold) in styles.items():
         layers.append(_words(style, f'{prefix} {style} Point', [run(_a(f'{prefix} {style} Text'), size, colour, SEMI if bold else 'Arial')], pane, [di]))
     return _grid(Sheet(name, rows=[LAT], cols=[LON], layers=True, no_basemap=True, zoom=None, tooltip=False,
@@ -518,7 +531,7 @@ def sprawl_sheets() -> list[Sheet]:
               _words('Name', 'GOV Sprawl Name Point', [run(_a('GOV Sprawl Name Text'), 8, INK1, SEMI)], pane, [key]),
               _words('Meta', 'GOV Sprawl Meta Point', [run(_a('GOV Sprawl Meta Text'), 7, INK3)], pane, [key]),
               _words('Views', 'GOV Sprawl Views Point', [run(_a('GOV Sprawl Views Text'), 8, INK2), run(_a('GOV Sprawl Up Text'), 8, GOOD_INK),
-                                                         run(_a('GOV Sprawl Down Text'), 8, CRIT_INK)], pane, [key])]
+                                                         run(_a('GOV Sprawl Down Text'), 8, CRIT_INK)], pane, [key], cell_valign='bottom')]  # GB, v44
     table = _grid(Sheet('GOV AI Sprawl List', rows=[Cross([Nest([order, key]), LAT])], cols=[LON], filters=[R('Is GOV Sprawl Row')], hide=[order, key],
                         layers=True, no_basemap=True, zoom=None, panes=[Pane('Automatic', lod=[key], pane_size=pane), *layers]), pane)
     sub = Sheet('GOV Sprawl Subtitle', filters=[R('Is First Date Row')], tooltip=False,
@@ -531,7 +544,7 @@ def sheets() -> list[Sheet]:
     sem = {'Name': (8, INK1, False), 'Good': (7, GOOD_INK, True), 'Fair': (7, WARN_INK, True), 'Poor': (7, CRIT_INK, True), 'Dash': (8, INK3, False)}
     return (kpi_sheets() + unreg_sheets() + sprawl_sheets() + [
         _header_canvas('GOV Domain Header', 'GOV Domain', SW),
-        _scene_sheet('GOV Coverage by Domain Table', 'GOV Domain', DOMAIN_PANE, sem, {'Line': LINE_SOFT, **BAND_TINT}),
+        _scene_sheet('GOV Coverage by Domain Table', 'GOV Domain', DOMAIN_PANE, sem, dict(BAND_TINT), under=[('GOV Domain Line', LINE_SOFT)]),
         _scene_sheet('GOV Hygiene by Team Bar', 'GOV Hygiene', HYGIENE_PANE, {'Name': (8, INK1, False), 'Value': (8, INK1, True)},
                      {'Track': '#eef0ee', **BAND_BAR}),
         _scene_sheet('GOV Maturity Bar', 'GOV Maturity', MATURITY_PANE, {'High': (7, NAVY, True), 'Medium': (7, NAVY, True), 'Low': (7, INK2, True)},
@@ -582,6 +595,7 @@ def content() -> Z:
         card_header('Hygiene score by team', 'Average of documentation and test coverage for the sources and models each team owns', 58),
         sheet('GOV Hygiene by Team Bar'), text([run('EXPOSURE MATURITY', 7, INK3, SEMI)], fixed=24, **{'padding-top': '6'}),
         sheet('GOV Maturity Bar', 26)])
+    # the gaps list scrolls (GB, v44): its width leaves room for the scroll bar, its height is free
     gaps = card('GOV Gaps Card', margins={'left': 7}, kids=[card_header('Gaps to close', 'The quickest wins for the next sprint'), sheet('GOV Gaps List')])
     return Z('vert', friendly='GOV Content', style=CONTENT_PAD, kids=[
         Z('horz', friendly='GOV KPI Row', fixed=KPI_H, kids=kpis),
@@ -596,7 +610,7 @@ def check_fit(zones) -> None:
     n_sprawl = max(sum(1 for k in SPRAWL if _in_plat(NODES[k], pl)) for pl in PLATFORMS)
     for name, (w, h) in (('GOV Unregistered Consumers Table', (UW, UNREG_ROW * n_unreg)), ('GOV AI Sprawl List', (SW, SPRAWL_ROW * n_sprawl)),
                          ('GOV Coverage by Domain Table', DOMAIN_PANE), ('GOV Hygiene by Team Bar', HYGIENE_PANE),
-                         ('GOV Maturity Bar', MATURITY_PANE), ('GOV Gaps List', GAP_PANE)):
+                         ('GOV Maturity Bar', MATURITY_PANE), ('GOV Gaps List', (GAP_PANE[0] + 18, 0))):
         _, _, zw, zh = by[name]
         assert w <= zw and h <= zh, f'{name}: needs {w} x {h}, zone is {zw:.0f} x {zh:.0f}'
     _, y, _, h = by['GOV Bottom Row']
