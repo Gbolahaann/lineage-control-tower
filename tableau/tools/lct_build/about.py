@@ -6,8 +6,9 @@ the hint "Period and Platform apply to every other page".
 
 - About: three cards. What this is (two paragraphs, the layer chain, how to use it, the synthetic-data callout and the
   link to Documentation), Where the numbers come from (table and "Built for any tool") and Metric definitions.
-- Layer chain: a scene on the 90-row date table (chips 4 rows each, texts one row each); the counts are LODs on
-  dim_nodes, so they follow the data.
+- Layer chain: six rounded chips, each on one scaffold model's 90 Node Daily rows (as the Blast radius pills); the
+  counts are FIXED counts of dim_nodes, so they follow the data. v47 drew it as a date-table scene with the count LOD
+  in it, and Tableau showed nothing at all: a dim_nodes LOD in a sheet on dim_date blanks the whole sheet.
 - Sources table: a scene too, so rows can be as tall as their wrapped text, with the prototype's row lines.
 - Documentation: text objects only (apart from GL Data Updated). The parameter and action lists are written from the
   builder's own action lists, so they can't drift from the workbook.
@@ -16,15 +17,18 @@ the hint "Period and Platform apply to every other page".
 from __future__ import annotations
 
 import collections
+import csv
 
 from . import shapes as SH
-from .core import (CALCS, CARD, INK1, INK2, INK3, LINE, LINE_SOFT, NAVY, NL, PARAMS, SEMI, Z, blank, card, card_header,
-                   run, sheet, text)
+from .core import (B_DIM, CALCS, CARD, I_DIM, INK1, INK2, INK3, LAT, LINE, LINE_SOFT, LON, NAVY, NL, PARAMS, SEMI, SP_MEA, S_DIM,
+                   Pane, R, Sheet, Z, blank, card, card_header, label_pane, run, sheet, text)
 from .gov import _scene_calcs, _scene_sheet
-from .lineage import _wrap
+from .lineage import _grid, _wrap
+from .usage import _calc, _case, _rounded
 from .shell import CONTENT_H, CONTENT_PAD
 
 P = 'AB'
+DEVELOPER = 'Gbolahan Adebayo'
 LINK = '#005fae'
 CHIP_FILL = '#f5f5f3'
 W = lambda s, pt, b=False: SH.text_width(s, pt, b)
@@ -43,34 +47,39 @@ LAYERS = [('Raw sources', 'source'), ('Staging', 'staging'), ('Intermediate', 'i
 CHIP_H, CHIP_GAP, ARROW = 38, 8, '→'
 
 
+NODES = {r['node_id']: r for r in csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8'))}
+
+
 def _layer_counts():
-    import csv
-    rows = list(csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8')))
-    return {lay: sum(1 for r in rows if r['layer'] == lay) for _, lay in LAYERS}
+    return {lay: sum(1 for r in NODES.values() if r['layer'] == lay) for _, lay in LAYERS}
 
 
 COUNTS = _layer_counts()                         # only to measure the count text; Tableau counts live
 
 
-def chain_scene():
-    rects, texts = [], []
+def chain_layout():
+    """Chip boxes and arrows, wrapped like the prototype: [(x, y, w, label, layer)], [(x, y)] arrow centres."""
+    chips, arrows = [], []
     x = y = 0
     aw = W(ARROW, 8) + 12
     for i, (label, lay) in enumerate(LAYERS):
-        cnt = str(COUNTS[lay])
-        w = max(W(label, 8), W(cnt, 10, True)) + 18
+        w = round(max(W(label, 8), W(str(COUNTS[lay]), 10, True)) + 18)
         if x + w > WHAT_W:
             x, y = 0, y + CHIP_H + CHIP_GAP
-        rects += [(x, y, x + w, y + CHIP_H, 'Edge'), (x + 1, y + 1, x + w - 1, y + CHIP_H - 1, 'Fill')]
-        texts += [('Label', label, x + 9 + W(label, 8) / 2, y + 12), ('Count', cnt, x + 9 + W(cnt, 10, True) / 2, y + 27)]
+        chips.append((x, y, w, label, lay))
         x += w
         if i < len(LAYERS) - 1 and x + aw <= WHAT_W:
-            texts.append(('Arrow', ARROW, x + aw / 2, y + CHIP_H / 2))
+            arrows.append((x + aw / 2, y + CHIP_H / 2))
             x += aw
-    return {'all': (rects, texts)}, (WHAT_W, y + CHIP_H + 1)
+        else:
+            arrows.append(None)
+    return chips, arrows, (WHAT_W, y + CHIP_H + 1)
 
 
-CHAIN_SCENES, CHAIN_PANE = chain_scene()
+CHIPS, ARROWS, CHAIN_PANE = chain_layout()
+# six scaffold models: each one's 90 Node Daily rows draw one chip (rounded, 22 points a corner, as the Blast radius
+# pills), the way the v47 date-table scene could not: it came out blank in Tableau (GB, v47)
+CHAIN_CARRIERS = sorted(k for k, n in NODES.items() if n['resource_type'] == 'model')[:len(LAYERS)]
 
 
 # ================================================================ where the numbers come from
@@ -108,23 +117,60 @@ SRC_SCENES, SRC_PANE = sources_scene()
 
 # ---------------------------------------------------------------- calcs
 _f, _t = {}, {}
-for prefix, scenes, pane, styles in (('AB Chain', CHAIN_SCENES, CHAIN_PANE, ('Label', 'Count', 'Arrow')),
-                                     ('AB Sources', SRC_SCENES, SRC_PANE, ('Head', 'Term', 'Source'))):
-    a, b = _scene_calcs(prefix, scenes, '"all"', pane, styles)
-    _f.update(a)
-    _t.update(b)
-# the counts are live: one FIXED count of dim_nodes per chip, on the row the build gave that chip's count
-_rows = [i for i, t in enumerate(CHAIN_SCENES['all'][1]) if t[0] == 'Count']
-_f['AB Chain Count Text'] = ('// AB Chain Count Text\n// Nodes in each layer, counted live from dim_nodes (one row per node), on the row of its chip.\n'
-                            'CASE [day_index]\n' + '\n'.join(
-                                f'WHEN {r} THEN STR({{ FIXED : COUNTD(IF [layer] = "{lay}" THEN [node_id (dim_nodes.csv)] END) }})'
-                                for r, (_, lay) in zip(_rows, LAYERS)) + '\nEND')
+a, b = _scene_calcs('AB Sources', SRC_SCENES, '"all"', SRC_PANE, ('Head', 'Term', 'Source'))
+_f.update(a)
+_t.update(b)
+
+
+def _chain_calcs():
+    pane, idx, f = CHAIN_PANE, '[Node Path Index]', {}
+    chip = '[AB Chain Chip]'
+    f['AB Chain Chip'] = _calc('AB Chain Chip', 'Which chip a scaffold model\'s Node Daily rows draw (0 to 5, raw sources first).',
+                               _case('[node_id (dim_nodes.csv)]', {k: str(i) for i, k in enumerate(CHAIN_CARRIERS)}, quote=False))
+    f['Is AB Chain Carrier'] = _calc('Is AB Chain Carrier', 'The six scaffold models. Put on Filters (True).', f'NOT ISNULL({chip})')
+    edge = {i: _rounded(idx, x, w, y, y + CHIP_H, 6, pane) for i, (x, y, w, _l, _y) in enumerate(CHIPS)}
+    fill = {i: _rounded(idx, x + 1, w - 2, y + 1, y + CHIP_H - 1, 5, pane) for i, (x, y, w, _l, _y) in enumerate(CHIPS)}
+    f['AB Chain Edge Point'] = _calc('AB Chain Edge Point', 'Chip outline: a rounded box in the line colour, rows 0 to 87.', _case(chip, edge, quote=False))
+    f['AB Chain Fill Point'] = _calc('AB Chain Fill Point', 'Chip fill, 1 px inside the outline.', _case(chip, fill, quote=False))
+    at = lambda x, y: f'MAKEPOINT({(pane[1] / 2 - y) / 100:.4f}, {(x - pane[0] / 2) / 100:.4f})'
+    f['AB Chain Label Text'] = _calc('AB Chain Label Text', 'Layer name (row 0 of its chip).',
+                                     f'IF {idx} = 0 THEN ' + _case(chip, {i: c[3] for i, c in enumerate(CHIPS)}) + ' END')
+    f['AB Chain Label Point'] = _calc('AB Chain Label Point', 'Left in the chip, top line (centred at half its measured width).',
+                                      f'IF {idx} = 0 THEN ' + _case(chip, {i: at(x + 9 + W(lab, 8) / 2, y + 12) for i, (x, y, _w, lab, _l) in enumerate(CHIPS)},
+                                                                    quote=False) + ' END')
+    counts = {i: f'{{ FIXED : COUNTD(IF [layer] = "{lay}" THEN [node_id (dim_nodes.csv)] END) }}' for i, (*_r, lay) in enumerate(CHIPS)}
+    f['AB Chain Count Text'] = _calc('AB Chain Count Text', 'Nodes in the layer, counted live from dim_nodes (row 1 of its chip).',
+                                     f'IF {idx} = 1 THEN STR(' + _case(chip, counts, quote=False) + ') END')
+    f['AB Chain Count Point'] = _calc('AB Chain Count Point', 'Left in the chip, under the name (measured from today\'s count).',
+                                      f'IF {idx} = 1 THEN ' + _case(chip, {i: at(x + 9 + W(str(COUNTS[lay]), 10, True) / 2, y + 27)
+                                                                           for i, (x, y, _w, _lab, lay) in enumerate(CHIPS)}, quote=False) + ' END')
+    f['AB Chain Arrow Text'] = _calc('AB Chain Arrow Text', 'The arrow after a chip (row 2), not after the last.',
+                                     f'IF {idx} = 2 THEN ' + _case(chip, {i: ARROW for i, a in enumerate(ARROWS) if a}) + ' END')
+    f['AB Chain Arrow Point'] = _calc('AB Chain Arrow Point', 'Between two chips.',
+                                      f'IF {idx} = 2 THEN ' + _case(chip, {i: at(*a) for i, a in enumerate(ARROWS) if a}, quote=False) + ' END')
+    t = {n: (SP_MEA if n.endswith('Point') else B_DIM if n.startswith('Is ') else I_DIM if n == 'AB Chain Chip' else S_DIM) for n in f}
+    return f, t
+
+
+a, b = _chain_calcs()
+_f.update(a)
+_t.update(b)
 CALCS.add(formulas=_f, types=_t)
 
 
 def sheets():
-    return [_scene_sheet('AB Layer Chain', 'AB Chain', CHAIN_PANE, {'Label': (8, INK1, False), 'Count': (10, NAVY, True), 'Arrow': (8, INK3, False)},
-                         {'Edge': LINE, 'Fill': CHIP_FILL}),
+    pane, path, chip, idx = CHAIN_PANE, R('Node Path Index', kind='ok'), R('AB Chain Chip'), R('Node Path Index')
+    poly = lambda title, point, colour: Pane('Polygon', title=title, inert=True, mark_color=colour, path=path, label_show=False,
+                                             lod=[R(point, 'clct'), chip], pane_size=pane)
+    words = lambda title, n, size, colour, bold: label_pane(title=title, inert=True, text=[R(f'AB Chain {n} Text', 'attr')],
+                                                           label=[run(R(f'AB Chain {n} Text', 'attr'), size, colour, SEMI if bold else 'Arial')],
+                                                           align='center', valign='center', lod=[R(f'AB Chain {n} Point', 'clct'), chip, idx],
+                                                           pane_size=pane)
+    chain = _grid(Sheet('AB Layer Chain', rows=[LAT], cols=[LON], filters=[R('Is AB Chain Carrier')], layers=True, no_basemap=True, zoom=None,
+                        tooltip=False, panes=[Pane('Automatic', pane_size=pane), poly('Edge', 'AB Chain Edge Point', LINE),
+                                              poly('Fill', 'AB Chain Fill Point', CHIP_FILL), words('Labels', 'Label', 8, INK1, False),
+                                              words('Counts', 'Count', 10, NAVY, True), words('Arrows', 'Arrow', 8, INK3, False)]), pane)
+    return [chain,
             _scene_sheet('AB Sources Table', 'AB Sources', SRC_PANE, {'Head': (7, INK3, True), 'Term': (8, INK1, False), 'Source': (8, INK2, False)},
                          {'Line': LINE, 'Soft': LINE_SOFT})]
 
@@ -153,6 +199,9 @@ def content() -> Z:
     body = lambda s, b=False: run(s, 9, INK1 if b else INK2, SEMI if b else 'Arial')
     gap = run(NL, 6, INK2)
     what = card('AB What Card', fixed=WHAT_CARD, margins={'right': 7}, kids=[
+        # GB, v47: his name as the developer, a small label line at the top of the card
+        text([run('DEVELOPER', 7, INK3, SEMI), run(NL, 7, INK3), run(DEVELOPER, 10, NAVY, SEMI)], fixed=40),
+        blank(1, LINE_SOFT), blank(10),
         text([run('What this is', 10, INK1, SEMI)], fixed=30),
         _para(body('Lineage Control Tower monitors every data product at Acme Retail Co. and traces each one back through dbt to the raw '
                    'tables that feed it. It answers one question per page: what broke, who is affected, what is slow, what is expensive, '
@@ -173,9 +222,10 @@ def content() -> Z:
         blank(),
         # the D5 link: a text button (Tableau centres its caption, so the button is as wide as the text)
         Z('horz', friendly='AB Docs Link Row', fixed=28, kids=[
-            Z('button', fixed=int(W('Documentation for developers ›', 8)) + 16, button=dict(
+            # GB, v47: 192 wide, no padding, Tableau's own button border setting
+            Z('button', fixed=192, style={'padding': '0'}, button=dict(
                 target='Documentation', caption='Documentation for developers ›', color=LINK, font='Arial', size=8,
-                format={'background-color': CARD, 'border-style': 'none'})),
+                format={'background-color': CARD})),
             blank()])])
     sources = card('AB Sources Card', fixed=SRC_CARD, margins={'left': 7, 'right': 7}, kids=[
         card_header('Where the numbers come from', 'In production, every table maps to something you already have'),
@@ -345,4 +395,4 @@ def doc_content() -> Z:
         card_header('Build notes', 'For whoever opens this workbook next', 44), text(nk)])
     return Z('vert', friendly='DOC Content', style=CONTENT_PAD, kids=[
         Z('horz', friendly='DOC Top Row', fixed=300, kids=[purpose, params]),
-        Z('horz', friendly='DOC Bottom Row', style={'margin-top': '14'}, kids=[actions, note_card])])
+        Z('horz', friendly='DOC Bottom Row', fixed=512, style={'margin-top': '14'}, kids=[actions, note_card])])   # GB, v47

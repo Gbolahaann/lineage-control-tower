@@ -369,11 +369,13 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   then share the spare width out evenly between the columns so the last one ends at the right edge. Packing them
   left with 14 px gaps read as cramped with a blank right side (GB, v44 unregistered table).
 
-### About and Documentation patterns (v47, to confirm when GB opens it)
+### About and Documentation patterns (v47, v48)
 
-- **Live numbers on a scene:** a scene's text can be a live calc. The layer chain's counts are
-  `CASE [day_index] WHEN <row> THEN STR({ FIXED : COUNTD(IF [layer] = "staging" THEN [node_id (dim_nodes.csv)] END) }) END`
-  on the date table: geometry from the build, values from the data.
+- **Never put a dim_nodes LOD in a date-table scene.** v47's layer chain mixed
+  `{ FIXED : COUNTD(... [node_id (dim_nodes.csv)] ...) }` into a sheet on `day_index`, and Tableau drew nothing, not
+  even the chips (the sources scene on the same page, with no LOD, was fine). Live node counts go on rows that already
+  sit on dim_nodes: v48 draws each chip on one scaffold model's Node Daily rows (rounded, `_rounded` on
+  `Node Path Index`, outline = a line-colour polygon under a fill polygon inset 1 px), texts on rows 0 to 2.
 - **Tables with uneven rows:** draw them as one scene (header, lines, wrapped cells, one text per line), not one
   pane per row, so each row is as tall as its text (sources table, 8 rows, 1 to 3 lines).
 - **Text-only tables (Documentation):** one text zone per column, a line per row, side by side in a horizontal
