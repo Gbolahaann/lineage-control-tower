@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import blast, core, fresh, gov, health, lineage, perf, quality, run, shapes, shell, usage  # noqa: E402
+from lct_build import about, blast, core, fresh, gov, health, lineage, perf, quality, run, shapes, shell, usage  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -37,7 +37,8 @@ MASTER = ROOT / 'tableau' / 'Lineage_Control_Tower_Project_Dashboard.twb'
 OUT = ROOT / 'tableau' / 'build' / 'Lineage_Control_Tower.twb'
 VERSIONS = ROOT / 'tableau' / 'versions'
 
-CONTENT = {'HO': health.content, 'RUN': run.content, 'FR': fresh.content, 'PF': perf.content, 'US': usage.content, 'QA': quality.content, 'BR': blast.content, 'GOV': gov.content, 'LIN': lineage.content}          # tab prefix -> content tree builder (others get the placeholder)
+CONTENT = {'HO': health.content, 'RUN': run.content, 'FR': fresh.content, 'PF': perf.content, 'US': usage.content, 'QA': quality.content, 'BR': blast.content, 'GOV': gov.content, 'LIN': lineage.content,
+           'AB': about.content, 'DOC': about.doc_content}          # tab prefix -> content tree builder (others get the placeholder)
 TAB_ACTIONS = {'HO': health.ACTIONS, 'RUN': run.ACTIONS, 'FR': fresh.ACTIONS, 'PF': perf.ACTIONS, 'US': usage.ACTIONS, 'QA': quality.ACTIONS, 'BR': blast.ACTIONS, 'GOV': gov.ACTIONS, 'LIN': lineage.ACTIONS}
 TAB_NAV = {'HO': health.NAV_ACTIONS, 'RUN': run.NAV_ACTIONS, 'FR': fresh.NAV_ACTIONS, 'PF': perf.NAV_ACTIONS, 'US': usage.NAV_ACTIONS, 'BR': blast.NAV_ACTIONS, 'GOV': gov.NAV_ACTIONS}
 TAB_URL = {'BR': blast.URL_ACTIONS}   # mailto links: (sheet, caption, subject field, body field)
@@ -45,6 +46,9 @@ TAB_URL = {'BR': blast.URL_ACTIONS}   # mailto links: (sheet, caption, subject f
 DEHIGHLIGHT = {'HO': [f'HO Tiles {g[1]}' for g in health.TILE_GROUPS] + ['HO Needs Attention List', 'HO Tile View Buttons'],
                'RUN': run.DEHIGHLIGHT, 'FR': fresh.DEHIGHLIGHT, 'PF': perf.DEHIGHLIGHT, 'US': usage.DEHIGHLIGHT, 'BR': blast.DEHIGHLIGHT, 'GOV': gov.DEHIGHLIGHT,
                'LIN': ['LIN Lineage Graph', 'LIN Lineage Table', 'LIN View Buttons']}
+# the Documentation page lists the parameters and actions from these same lists (build plan 3.11)
+about.ACTION_LISTS.update(TABS=shell.TABS, TAB_ACTIONS=TAB_ACTIONS, TAB_NAV=TAB_NAV, TAB_URL=TAB_URL, DEHIGHLIGHT=DEHIGHLIGHT,
+                          SHELL_ACTIONS=shell.SHELL_ACTIONS)
 
 
 def dashboard(tab, window_ids):
@@ -52,7 +56,9 @@ def dashboard(tab, window_ids):
     body = CONTENT[p]() if p in CONTENT else shell.content_placeholder(tab)
     main = Z('vert', friendly=f'{p} Main', kids=[shell.header(tab), blank(1, core.LINE), shell.filter_band(tab),
                                                  blank(1, core.LINE), body])
-    root = Z('basic', kids=[Z('horz', friendly=f'{p} Root', kids=[shell.nav(p, name), blank(1, core.LINE), main])])
+    # Documentation sits under About in the nav, so About stays highlighted there
+    active = 'About & how to use' if p == 'DOC' else name
+    root = Z('basic', kids=[Z('horz', friendly=f'{p} Root', kids=[shell.nav(p, active), blank(1, core.LINE), main])])
     root.layout(0, 0, W, H)
     panel = shell.info_panel(tab)
     panel.layout(1172, 130, 400, 420)
@@ -75,6 +81,8 @@ def dashboard(tab, window_ids):
         blast.check_fit(zones)
     if p == 'GOV':
         gov.check_fit(zones)
+    if p == 'AB':
+        about.check_fit(zones)
     xml = (f"    <dashboard enable-sort-zone-taborder='true' name='{esc(name)}'>\n"
            "      <style>\n        <style-rule element='table'>\n"
            f"          <format attr='background-color' value='{core.CANVAS}' />\n        </style-rule>\n      </style>\n"
@@ -276,7 +284,7 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     check_spatial_tables(t)
-    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + blast.sheets() + gov.sheets() + lineage.sheets()
+    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + blast.sheets() + gov.sheets() + lineage.sheets() + about.sheets()
     for so in sheet_objs:
         so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
     dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})

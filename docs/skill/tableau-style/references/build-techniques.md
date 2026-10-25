@@ -369,6 +369,22 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   then share the spare width out evenly between the columns so the last one ends at the right edge. Packing them
   left with 14 px gaps read as cramped with a blank right side (GB, v44 unregistered table).
 
+### About and Documentation patterns (v47, to confirm when GB opens it)
+
+- **Live numbers on a scene:** a scene's text can be a live calc. The layer chain's counts are
+  `CASE [day_index] WHEN <row> THEN STR({ FIXED : COUNTD(IF [layer] = "staging" THEN [node_id (dim_nodes.csv)] END) }) END`
+  on the date table: geometry from the build, values from the data.
+- **Tables with uneven rows:** draw them as one scene (header, lines, wrapped cells, one text per line), not one
+  pane per row, so each row is as tall as its text (sources table, 8 rows, 1 to 3 lines).
+- **Text-only tables (Documentation):** one text zone per column, a line per row, side by side in a horizontal
+  container; the build asserts no cell wraps. No tab stops needed.
+- **Pages that document the workbook** read the builder's own lists (actions, parameters), so they can't drift.
+- **A text link to another page:** a `button` zone with `button-type='text'`, as wide as its caption (Tableau
+  centres the caption), with no border and a card fill.
+- **A fixed size leaves out the zone's own margins:** a 456 px card with `margin-right` 7 takes 463.
+- **Pages without period or platform effect:** keep the controls for a steady layout and swap the period hint
+  for a plain italic text, "Period and Platform apply to every other page".
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

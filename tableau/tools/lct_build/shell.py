@@ -209,7 +209,9 @@ def filter_band(tab) -> Z:
              style={'background-color': CARD, 'padding-left': '28', 'padding-right': '28'}, kids=[
         label('PERIOD', 51), track(f'{p} Period Track', 'GL Period Buttons', 265), blank(18),
         label('PLATFORM', 69), track(f'{p} Platform Track', 'GL Platform Buttons', 380), blank(18),
-        sheet('GL Period Hint', None, **{'padding-top': '4'})])
+        # About and Documentation don't use them (build plan 3.10): the controls stay, the hint says so
+        text([run('Period and Platform apply to every other page', 8, INK3, BOOK, italic='true')], **{'padding-top': '17'})
+        if p in ('AB', 'DOC') else sheet('GL Period Hint', None, **{'padding-top': '4'})])
 
 
 CONTENT_PAD = {'padding-top': '20', 'padding-right': '28', 'padding-bottom': '14', 'padding-left': '28'}
