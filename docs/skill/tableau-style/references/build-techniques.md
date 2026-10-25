@@ -387,6 +387,23 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
 - **Pages without period or platform effect:** keep the controls for a steady layout and swap the period hint
   for a plain italic text, "Period and Platform apply to every other page".
 
+### Launch walkthrough lessons (v49)
+
+- **An over-full row is the real cause of most scroll bars.** Fixed sizes that add up to more than their container
+  are squeezed by Tableau, so every canvas inside comes out narrower than the build measured (GB's 438 / 428 / 443
+  Governance cards in 1312: Tableau showed three cards of 437; hygiene drew a scroll bar and cut its % values). `Z.layout`
+  now asserts fixed sizes fit; reproduce what Tableau shows (equal flex cards, or "takes the rest") instead.
+- **Map canvases need 12 px spare** in their zone (`SH.MAP_SLACK`), plus 18 for a vertical scroll bar. 4 to 8 px
+  showed horizontal scroll bars (Freshness late now, Usage ranked).
+- **Row headers print NULL as "Null".** A text calc on Rows needs `ELSE ""` (Data quality fail / warn counts).
+- **Anything a dropdown can change must not hang on click-written parameters.** A parameter control can't run an
+  action, so DZV on p_panel_* went stale after a pick in Blast radius. Pills and callouts whose look depends on the
+  node are canvases keyed by the parameter-driven node id, with the node's values written by the build.
+- **Platform filters and causes:** an alert list under a platform filter should keep the causes that break
+  exposures on that platform, wherever they sit, and every list that can go empty needs an empty-state line
+  (DZV on the parameters, with the empty combinations counted by the build).
+- **Top row (GB, Pre-Final):** PERIOD / PLATFORM labels at padding 0, the period hint right-aligned.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

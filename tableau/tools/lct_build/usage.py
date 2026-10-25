@@ -43,10 +43,9 @@ DAYS = 90
 # ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 TOP_H = 330
 HALF = (1312 - 14) // 2                         # 649: the top cards, a 7 px margin on the inner side
-SEM_W = 643                                     # semantic card (GB, v36); 7 px margin-left outside
-RANK_W = 1312 - SEM_W - 7 - 7                   # 655: the ranked card takes the rest
-RCW = RANK_W - 2 * 16 - 2 - SH.SLACK - 18       # 599: ranked canvas, room for its own scroll bar (GB, v36)
-SCW = SEM_W - 2 * 16 - 2 - SH.SLACK             # 605: semantic canvas
+SEM_W, RANK_W = 648, 649                        # GB, Pre-Final: 649 + 7 + 7 + 648 = the content's 1312 (no gap on the right)
+RCW = RANK_W - 2 * 16 - 2 - SH.MAP_SLACK - 18   # 585: ranked canvas, room for its own scroll bar (GB, v36)
+SCW = SEM_W - 2 * 16 - 2 - SH.MAP_SLACK         # 602: semantic canvas
 HEAD_H = 22
 ROWS_AVAIL = CONTENT_H - TOP_H - 14 - 2 - 28 - 44 - HEAD_H - 1 - SH.SLACK   # height left for table rows
 ROW_H = 27                                      # the prototype's rows; the ranked table scrolls (GB, v36)
@@ -641,16 +640,16 @@ def content() -> Z:
         card_header('Consumption by consumer type, per day', 'Each type is counted in its own unit, so each gets its own scale'),
         Z('horz', friendly='US Multiples Row 1', kids=[multiple(c1, n1, t1, {'right': 8}), multiple(c2, n2, t2, {'left': 8})]),
         Z('horz', friendly='US Multiples Row 2', style={'margin-top': '10'}, kids=[multiple(c3, n3, t3, {'right': 8}), multiple(c4, n4, t4, {'left': 8})])])
-    ranked = card('US Ranked Card', margins={'right': 7}, kids=[
+    ranked = card('US Ranked Card', fixed=RANK_W, margins={'right': 7}, kids=[   # 649 (GB, Pre-Final)
         Z('horz', friendly='US Ranked Header', fixed=44, kids=[
             # shorter than the prototype's subtitle, so it stays on one line beside the sort dropdown
             card_header('Data products ranked by use', 'Uses, change against the period before, cost per use. '
                         'Click a row to open its lineage.', None),
             # sort dropdown (GB, v36): the build writes the row order for each choice
-            text([run('Sort by', 8, INK3)], fixed=46, **{'padding-top': '8', 'text-align': 'right'}),
+            text([run('Sort by', 8, INK3)], fixed=46, **{'padding': '0', 'padding-bottom': '8'}),   # GB, Pre-Final
             Z('paramctrl', param='p_us_sort', fixed=132, style={'padding-top': '4', 'padding-bottom': '14', 'padding-left': '6'})]),
         sheet('US Ranked Products Header', HEAD_H), blank(1, LINE), sheet('US Ranked Products Table')])
-    semantic = card('US Semantic Card', fixed=SEM_W, margins={'left': 7}, kids=[  # 643 (GB, v36)
+    semantic = card('US Semantic Card', fixed=SEM_W, margins={'left': 7}, kids=[  # 648 (GB, Pre-Final)
         card_header('BI semantic layer refreshes', 'dbt can be green while an extract fails. This is where that shows.'),
         sheet('US Semantic Refresh Header', HEAD_H), blank(1, LINE), sheet('US Semantic Refresh Table')])
     return Z('vert', friendly='US Content', style=CONTENT_PAD, kids=[

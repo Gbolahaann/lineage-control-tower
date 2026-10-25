@@ -43,7 +43,7 @@ KPI_H = 96
 BODY_H = CONTENT_H - KPI_H - 14                  # 734
 RIGHT_W = 420                                    # right column; 7 px margin-left outside
 ISSUES_H, COVER_H = 220, 248                     # the prototype's cards (with their 7 px margins)
-CANVAS_W = RIGHT_W - 2 * 16 - 2 - SH.SLACK       # 382: the bar lists
+CANVAS_W = RIGHT_W - 2 * 16 - 2 - SH.MAP_SLACK   # 374: the bar lists
 KF_W = CANVAS_W - 18                             # 364: tests that keep failing, room for its scroll bar
 KF_ROW = (KF_W, 44)
 # bar-list rows: as tall as each card allows (the prototype's are 29 px)
@@ -150,8 +150,9 @@ def kpi_calcs():
         'QA No Tests Text': ('// QA No Tests Text\n// "14 of 82 models have no tests".\n'
                              'STR(INT([Models Without Tests])) + " of " + STR(INT([Models In Scope])) + " models have no tests"'),
         'Heat Order': '// Heat Order\n// Heatmap rows, most failure days first, then warning days (Heatmap Sort turned around).\n-[Heatmap Sort]',
-        'Heat Fail Text': '// Heat Fail Text\n// "6F" in red beside the model name.\nIF [Fail Days In Period] > 0 THEN STR([Fail Days In Period]) + "F" END',
-        'Heat Warn Text': '// Heat Warn Text\n// "8W" in amber ink.\nIF [Warn Days In Period] > 0 THEN STR([Warn Days In Period]) + "W" END',
+        # blank, not Null, when there are none: these are row headers and Tableau prints a NULL header as "Null" (v48)
+        'Heat Fail Text': '// Heat Fail Text\n// "6F" in red beside the model name; blank when the model had no failing day.\nIF ZN([Fail Days In Period]) > 0 THEN STR([Fail Days In Period]) + "F" ELSE "" END',
+        'Heat Warn Text': '// Heat Warn Text\n// "8W" in amber ink; blank when the model had no warning day.\nIF ZN([Warn Days In Period]) > 0 THEN STR([Warn Days In Period]) + "W" ELSE "" END',
         'Heat Cell Key': '// Heat Cell Key\n// Heatmap square colour (its own palette: pale green for passed).\n[Worst Test Label]',
         'QA Monday Label': ('// QA Monday Label\n// Date labels over the heatmap: Mondays, "Mon 21 Sep" on the 30-day strip.\n'
                             "IF DATEPART('weekday', [date (dim_date.csv)], 'monday') = 1\n"

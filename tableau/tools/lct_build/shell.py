@@ -83,7 +83,8 @@ def gl_sheets() -> list[Sheet]:
                   extra_runs=[('Platform Dot Snowflake', 8, PLAT['snowflake']),
                               ('Platform Dot Databricks', 8, PLAT['databricks']),
                               ('Platform Dot Redshift', 8, PLAT['redshift'])]),
-        Sheet('GL Period Hint', tooltip=False, panes=label_pane(text=[R('Period Hint Label')],
+        # right-aligned, so the hint sits at the right edge of the band (GB, Pre-Final)
+        Sheet('GL Period Hint', tooltip=False, panes=label_pane(text=[R('Period Hint Label')], cell_align='right',
               label=[run(R('Period Hint Label'), 8, INK3, BOOK, italic='true')])),
         Sheet('GL Data Updated', tooltip=False, panes=label_pane(text=[R('Data Updated Date Text'), R('History Label')],
               align='right', label=[run('Data updated on ', 8, INK3), run(R('Data Updated Date Text'), 8, INK1, SEMI),
@@ -204,13 +205,14 @@ def track(friendly, sheet_name, width):
 
 def filter_band(tab) -> Z:
     p = tab[0]
-    label = lambda t, w: text([run(t, 7, INK3, SEMI)], fixed=w, **{'padding-top': '19'})
+    # padding 0, as GB set the labels on Health (Pre-Final), on every page
+    label = lambda t, w: text([run(t, 7, INK3, SEMI)], fixed=w, padding='0')
     return Z('horz', friendly=f'{p} Filter Band', fixed=51,
              style={'background-color': CARD, 'padding-left': '28', 'padding-right': '28'}, kids=[
         label('PERIOD', 51), track(f'{p} Period Track', 'GL Period Buttons', 265), blank(18),
         label('PLATFORM', 69), track(f'{p} Platform Track', 'GL Platform Buttons', 380), blank(18),
         # About and Documentation don't use them (build plan 3.10): the controls stay, the hint says so
-        text([run('Period and Platform apply to every other page', 8, INK3, BOOK, italic='true')], **{'padding-top': '17'})
+        text([run('Period and Platform apply to every other page', 8, INK3, BOOK, align=2, italic='true')], **{'padding-top': '17'})
         if p in ('AB', 'DOC') else sheet('GL Period Hint', None, **{'padding-top': '4'})])
 
 

@@ -444,8 +444,7 @@ def content() -> Z:
             card_header('Failed and skipped model runs per day',
                         'A failed model makes everything downstream skip. Ticks mark incidents. Click a day to load its run timeline below.',
                         None),  # flex: in a horizontal row a fixed size is a width
-            text(_legend([('Failed', CRIT, '■'), ('Skipped because upstream failed', SKIP_GREY, '■')]), fixed=270,
-                 **{'text-align': 'right'})]),
+            text(_legend([('Failed', CRIT, '■'), ('Skipped because upstream failed', SKIP_GREY, '■')]), fixed=270)]),  # left (GB, Pre-Final)
         sheet('RUN Incident Markers', 18),
         sheet('RUN Daily Failures Bar'),
         sheet('RUN Daily Axis', 16)])

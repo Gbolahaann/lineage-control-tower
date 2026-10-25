@@ -39,15 +39,15 @@ PLAT_NAME = {'snowflake': 'Snowflake', 'databricks': 'Databricks', 'redshift': '
 # ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 RIGHT_W = 649                                   # right column; 7 px margin-left outside
 LEFT_W = 1312 - RIGHT_W - 7 - 7                 # 649: bullets card, 7 px margin-right outside
-BW = LEFT_W - 2 * 16 - 2 - SH.SLACK            # 611: bullet canvas width
+BW = LEFT_W - 2 * 16 - 2 - SH.MAP_SLACK        # 603: bullet canvas width
 ROW = (BW, 22)                                  # one pane per source: 27 rows fill about 594 px (GB: about 607, v29)
 NAME_W, VALUE_W, GAP = 200, 64, 10              # prototype .brow: 200px | bullet | 64px, gap 10
 BX0, BX1 = NAME_W + GAP, BW - VALUE_W - GAP     # 210 .. 537: the bullet
 BY0, BY1, LY0, LY1 = 4, 18, 8.5, 13.5           # bullet band 14 px, lag bar 5 px centred in it
 COMP_H = 411                                    # compliance card; the bottom row takes the rest
-CAL_OUT = 289                                   # calendar card 289 px with its 7 px margin (GB, v30)
-LATE_W = RIGHT_W - CAL_OUT - 7                  # 353: late-now card takes the rest (its 7 px margin outside)
-LW = LATE_W - 2 * 16 - 2 - 8                    # 351: late-now canvas, 8 px spare so no scroll bar can appear
+CAL_OUT = 320                                   # calendar card 313 px with its 7 px margin (GB, Pre-Final; v30 was 289)
+LATE_W = RIGHT_W - CAL_OUT - 7                  # 322: late-now card takes the rest (its 7 px margin outside)
+LW = LATE_W - 2 * 16 - 2 - SH.MAP_SLACK         # 276: late-now canvas; v48's 8 px spare still drew a scroll bar
 LH_AVAIL = (CONTENT_H - COMP_H - 7 - 7) - 28 - 2 - 44 - 12   # room inside the card; the canvas is only as tall as its content
 X_AXIS = (0, 90, {'reverse': 'true'})           # Days Back Mid, as on Run & failures
 # 7-day rolling compliance never drops below 99.4 %, so the axis is 99 % to 100 % (GB, v30: the daily spikes on 0 % to
@@ -433,9 +433,10 @@ def content() -> Z:
         sheet('FR Late Checks Calendar', 7 * 21),  # compact at the top, as the prototype (7 rows of about 18 px squares)
         blank(),
         text(_legend([('Warn', WARN), ('Error', CRIT), ('On time', '#e3f2e9')]), fixed=22, **{'padding-top': '6'})])
+    # GB set 393 in Pre-Final; Tableau fits it to the 329 the column has left, which is what "the rest" gives here
     late = card('FR Late Now Card', margins={'left': 7}, kids=[
         card_header('Late right now', 'And the data products waiting on them'),
-        sheet('FR Late Right Now')])
+        sheet('FR Late Right Now', 158)])   # GB, Pre-Final
     right = Z('vert', friendly='FR Right Column', fixed=RIGHT_W, style={'margin-left': '7'}, kids=[
         compliance,
         # the last row is flexible, so it always reaches the bottom padding (skill: sizing)

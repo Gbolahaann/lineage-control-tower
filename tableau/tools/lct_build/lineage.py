@@ -753,11 +753,7 @@ def panel_sheets() -> list[Sheet]:
         _lines('LIN Exposure Header', [run(R('Exposure Access Line'), 8, INK3)], R('Is Selected Exposure')),
         _lines('LIN Panel Header', [run(R('Panel Kind Line'), 8, INK3), run(NL, 8, INK3), run(R('Panel Name'), 11, INK1, SEMI)],
                node, valign='top'),
-        _lines('LIN Panel Moved Tag', [run(R('Panel Moved Tag'), 7, INK2)], node, align='center'),
-        _lines('LIN Panel Callout Critical', [run(R('Panel Callout Reason'), 8, CRIT_INK), run(NL, 6, CRIT_INK),
-                                              run(R('Panel Callout Error'), 7, CRIT_INK)], node, valign='top'),
-        _lines('LIN Panel Callout Warning', [run(R('Panel Callout Reason'), 8, WARN_INK), run(NL, 6, WARN_INK),
-                                             run(R('Panel Callout Error'), 7, WARN_INK)], node, valign='top'),
+        # the callouts and pills are canvases now, drawn from the node's own data (panel.py, v49)
         _lines('LIN Panel Detail Labels', [run('Owner', 8, INK3), run(NL, 8, INK3), run('Team', 8, INK3), run(NL, 8, INK3),
                                            run('Slack', 8, INK3), run(NL, 8, INK3), run('dbt project', 8, INK3), run(NL, 8, INK3),
                                            run('Schema', 8, INK3), run(NL, 8, INK3), run('Documented', 8, INK3), run(NL, 8, INK3),
@@ -903,29 +899,15 @@ def content() -> Z:
             sheet('LIN Lineage Table Header', 22), sheet('LIN Lineage Table')]),
         text(rs, fixed=LEGEND_H, **{'padding-top': '6'})])
 
-    pills = Z('horz', friendly='LIN Panel Pills', fixed=22, style={'margin-bottom': '10'}, kids=[
-        _pill('✕  Critical', CRIT_INK, CRIT_TINT, '#f2cdca', 'Show Panel Pill Critical', True),
-        _pill('▲  Warning', WARN_INK, WARN_TINT, '#f3e0be', 'Show Panel Pill Warning'),
-        _pill('✓  Healthy', GOOD_INK, '#eaf6ef', '#cfe8da', 'Show Panel Pill Healthy'),
-        _pill('–  No data', INK2, NONE_TINT, LINE, 'Show Panel Pill No Data'),
-        _pill('✕  Do not use', CRIT_INK, CRIT_TINT, '#f2cdca', 'Show Panel Trust Do Not Use'),
-        _pill('▲  Use with caution', WARN_INK, WARN_TINT, '#f3e0be', 'Show Panel Trust Use With Caution'),
-        _pill('✓  Trusted', GOOD_INK, '#eaf6ef', '#cfe8da', 'Show Panel Trust Trusted'),
-        _pill('■  Snowflake', PLAT_COL['Snowflake'], '#f5f5f3', LINE, 'Show Panel Platform Snowflake', True),
-        _pill('■  Databricks', PLAT_COL['Databricks'], '#f5f5f3', LINE, 'Show Panel Platform Databricks'),
-        _pill('■  Redshift', PLAT_COL['Redshift'], '#f5f5f3', LINE, 'Show Panel Platform Redshift'),
-        Z('horz', friendly='LIN Moved Tag', fixed=150, dzv=('Show Panel Moved', False), kids=[sheet('LIN Panel Moved Tag')],
-          style={'background-color': '#f5f5f3', 'border-color': LINE, 'border-style': 'solid', 'border-width': '1',
-                 'corner-radius': '4', 'margin-right': '6'}),
-        _pill('AI-built', AI_INK, '#eef0fb', '#d9dcf4', 'Show Panel AI Built'),
-        _pill('Not registered', WARN_INK, WARN_TINT, '#f3ddb4', 'Show Panel Not Registered'),
-        blank()])
+    # one canvas, drawn from the panel node's own data (v49): the DZV pills followed the last click and went stale
+    # when a dropdown picked the node (GB: fct_experiment_results Healthy in the table, Critical in the panel)
+    pills = Z('horz', friendly='LIN Panel Pills', fixed=22, style={'margin-bottom': '10'}, kids=[sheet('LIN Panel Pills')])
 
     def callout(kind, bg, border, default):
+        # the box and its text are drawn by the sheet, only when the node really has a reason (v49: a stale
+        # p_panel_status showed an empty pink box); the container keeps its place in the layout
         return Z('vert', friendly=f'LIN Callout {kind}', fixed=104, dzv=(f'Show Panel Callout {kind}', default),
-                 kids=[sheet(f'LIN Panel Callout {kind}')],
-                 style={'background-color': bg, 'border-color': border, 'border-style': 'solid', 'border-width': '1',
-                        'corner-radius': '8', 'padding': '10', 'margin-bottom': '12'})
+                 kids=[sheet(f'LIN Panel Callout {kind}')], style={'margin-bottom': '4'})
 
     def two(left, right, h, lw=None):
         return Z('horz', fixed=h, kids=[sheet(left, lw), sheet(right)])

@@ -315,6 +315,6 @@ def attention_sheet() -> Sheet:
     ]
     return _grid(Sheet(
         'HO Needs Attention List', rows=[Cross([Nest([order, nkey]), LAT])], cols=[LON],
-        filters=[R('Is Attention Node'), R('Is Platform Match Node')], hide=[order, nkey],
+        filters=[R('Is Attention Node'), R('Is Attention Platform Match')], hide=[order, nkey],   # v49: causes on other platforms too
         layers=True, no_basemap=True, zoom=None,
         panes=[Pane('Automatic', lod=ids, pane_size=pane), *layers]), pane)

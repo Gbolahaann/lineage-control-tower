@@ -52,9 +52,14 @@ KPI_H, MID_H = 96, 356
 SIDE = 428                                       # sprawl, domain, hygiene and gaps cards
 UNREG_CARD = 1312 - SIDE - 7 - 7                 # 870
 BOTTOM_H = CONTENT_H - KPI_H - 14 - MID_H - 14   # 364
-UW = UNREG_CARD - 2 * 16 - 2 - SH.SLACK          # 832: unregistered table canvas
-SW = SIDE - 2 * 16 - 2 - SH.SLACK                # 390: the side canvases
-GW = SW - 18                                     # 372: the gaps list, room for its scroll bar (GB, v44)
+UW = UNREG_CARD - 2 * 16 - 2 - SH.MAP_SLACK      # 824: unregistered table canvas
+SPW = SIDE - 2 * 16 - 2 - SH.MAP_SLACK           # 382: the sprawl list
+# the bottom row: GB's 438 / 428 / 443 (v45) add up to more than the row, so Tableau shows three even cards of 1312 / 3
+# (437.3 px each, margins included); the canvases are sized to those, with the map spare (v48: hygiene drew a scroll bar)
+BOTTOM_CARD = 1312 / 3
+DW = int(BOTTOM_CARD - 7 - 2 - 2 * 16 - SH.MAP_SLACK)        # 384: coverage by domain
+HW = int(BOTTOM_CARD - 2 * 7 - 2 - 2 * 16 - SH.MAP_SLACK)    # 377: hygiene and maturity
+GW = int(BOTTOM_CARD - 7 - 2 - 2 * 16 - SH.MAP_SLACK - 18)   # 366: the gaps list, room for its scroll bar (GB, v44)
 UNREG_ROW, SPRAWL_ROW, DOMAIN_ROW, HEAD_H = 40, 45, 30, 22
 
 
@@ -200,14 +205,15 @@ def _right(x, s, w=W8):
 
 
 def domain_scenes():
-    pane = (SW, 6 * DOMAIN_ROW + 2)
-    cols = {'models': 150, 'docs': 205, 'tests': 275, 'owned': 345}     # chip left edges; models right edge
+    pane = (DW, 6 * DOMAIN_ROW + 2)
+    cols = {'models': 150, 'owned': DW - 45}                           # chip left edges, 70 apart; models right edge
+    cols['tests'], cols['docs'] = cols['owned'] - 70, cols['owned'] - 140
     scenes, lines = {}, {}
     for plat in PLATFORMS:
         rects, texts = [], []
         doms = CAT[plat]['domains'][:6]
         # row lines on a layer of their own (GB, v44): 18 chips x 4 rows already use 72 of the date table's 90 rows
-        lines[plat] = ([(0, (i + 1) * DOMAIN_ROW, SW, (i + 1) * DOMAIN_ROW + 1, 'Line') for i in range(len(doms) - 1)], [])
+        lines[plat] = ([(0, (i + 1) * DOMAIN_ROW, DW, (i + 1) * DOMAIN_ROW + 1, 'Line') for i in range(len(doms) - 1)], [])
         for i, (d, m, docs, tests, own) in enumerate(doms):
             y = i * DOMAIN_ROW + DOMAIN_ROW / 2
             texts += [('Name', d, _left(8, d), y), ('Name', str(m), _right(cols['models'], str(m)), y)]
@@ -228,27 +234,27 @@ def domain_scenes():
 def hygiene_scenes():
     n = max(len(CAT[p]['teams']) for p in PLATFORMS)
     row = 31
-    pane = (SW, n * row)
+    pane = (HW, n * row)
     scenes = {}
     for plat in PLATFORMS:
         rects, texts = [], []
         for i, (t, h, _n, _d, _tc) in enumerate(CAT[plat]['teams']):
             y0 = i * row + row - 9
-            rects += [(0, y0, SW, y0 + 4, 'Track'), (0, y0, max(2, SW * h), y0 + 4, BAND(h))]
-            texts += [('Name', t, _left(0, t), i * row + 9), ('Value', f'{h * 100:.0f}%', _right(SW, f'{h * 100:.0f}%', lambda s: W8(s, True)), i * row + 9)]
+            rects += [(0, y0, HW, y0 + 4, 'Track'), (0, y0, max(2, HW * h), y0 + 4, BAND(h))]
+            texts += [('Name', t, _left(0, t), i * row + 9), ('Value', f'{h * 100:.0f}%', _right(HW, f'{h * 100:.0f}%', lambda s: W8(s, True)), i * row + 9)]
         scenes[plat] = (rects, texts)
     return scenes, pane
 
 
 def maturity_scenes():
-    pane = (SW, 22)
+    pane = (HW, 22)
     scenes = {}
     for plat in PLATFORMS:
         mat = CAT[plat]['mat']
         total = sum(mat.values()) or 1
         rects, texts, x = [], [], 0
         for k, ck in (('high', 'High'), ('medium', 'Medium'), ('low', 'Low')):
-            w = SW * mat.get(k, 0) / total
+            w = HW * mat.get(k, 0) / total
             if w:
                 rects.append((x + 1, 1, x + w - 1, 21, ck))
                 s = f'{k.title()} {mat.get(k, 0)}'
@@ -371,14 +377,14 @@ def _headings(prefix, heads, width):
 
 
 def sprawl_calcs():
-    pane, f = (SW, SPRAWL_ROW), {}
+    pane, f = (SPW, SPRAWL_ROW), {}
     NODE = '[node_id (dim_nodes.csv)]'
     member = {f'{pl}|{k}': 'TRUE' for pl in PLATFORMS for k in SPRAWL if _in_plat(NODES[k], pl)}
     f['Is GOV Sprawl Row'] = _calc('Is GOV Sprawl Row', 'AI-assisted dashboards under the platform filter. Put on Filters (True).',
                                    _case(f'[p_platform] + "|" + {NODE}', member, 'FALSE', False))
     f['GOV Sprawl Order'] = _calc('GOV Sprawl Order', 'In catalogue order (the prototype\'s).', _case(NODE, {k: i for i, k in enumerate(SPRAWL)}, quote=False))
     name = {k: _fit(NODES[k]['display_name'], 220, 8, True) for k in SPRAWL}
-    meta = {k: _fit(f'{NODES[k]["owner_name"]} · created {_short(dt.date.fromisoformat(NODES[k]["created_date"]))} · maturity {NODES[k]["maturity"]}', SW - 8, 7)
+    meta = {k: _fit(f'{NODES[k]["owner_name"]} · created {_short(dt.date.fromisoformat(NODES[k]["created_date"]))} · maturity {NODES[k]["maturity"]}', SPW - 8, 7)
             for k in SPRAWL}
     pk = f'STR([p_period]) + "|" + {NODE}'
     views = {f'{p}|{k}': f'{SPRAWL_VALS[(p, k)][0]:,.0f} views' for p in PERIODS for k in SPRAWL}
@@ -392,10 +398,10 @@ def sprawl_calcs():
     at = lambda cx, y: f'MAKEPOINT({(pane[1] / 2 - y) / 100:.4f}, {(cx - pane[0] / 2) / 100:.4f})'
     f['GOV Sprawl Name Point'] = _calc('GOV Sprawl Name Point', 'Name, first line, left.', _case(NODE, {k: at(8 + W8(v, True) / 2, 14) for k, v in name.items()}, quote=False))
     f['GOV Sprawl Meta Point'] = _calc('GOV Sprawl Meta Point', 'Meta, second line, left.', _case(NODE, {k: at(8 + W7(v) / 2, 31) for k, v in meta.items()}, quote=False))
-    right = {k: at(SW - 4 - (W8(views[k]) + W8(up.get(k, '') or dn.get(k, ''))) / 2, 14) for k in views}
+    right = {k: at(SPW - 4 - (W8(views[k]) + W8(up.get(k, '') or dn.get(k, ''))) / 2, 14) for k in views}
     f['GOV Sprawl Views Point'] = _calc('GOV Sprawl Views Point', 'Views and change, right, first line.', _case(pk, right, quote=False))
-    f['GOV Sprawl Divider Point'] = _calc('GOV Sprawl Divider Point', 'Line under each row.', _rounded('[Exposure Path Index]', 0, SW, SPRAWL_ROW - 1, SPRAWL_ROW, 0, pane))
-    f['GOV Sprawl Row Point'] = _calc('GOV Sprawl Row Point', 'The row (takes the click).', _rounded('[Exposure Path Index]', 0, SW, 0, SPRAWL_ROW - 1, 0, pane))
+    f['GOV Sprawl Divider Point'] = _calc('GOV Sprawl Divider Point', 'Line under each row.', _rounded('[Exposure Path Index]', 0, SPW, SPRAWL_ROW - 1, SPRAWL_ROW, 0, pane))
+    f['GOV Sprawl Row Point'] = _calc('GOV Sprawl Row Point', 'The row (takes the click).', _rounded('[Exposure Path Index]', 0, SPW, 0, SPRAWL_ROW - 1, 0, pane))
     # card subtitle: how many AI dashboards, and how many share one semantic object
     sub = {}
     for pl in PLATFORMS:
@@ -442,7 +448,7 @@ for prefix, scenes, key, pane, styles in (('GOV Domain', DOMAIN_SCENES, '[p_plat
     a, b = _scene_calcs(prefix, scenes, key, pane, styles)
     _f.update(a)
     _t.update(b)
-_f.update(_headings('GOV Domain', DOMAIN_HEADS, SW))
+_f.update(_headings('GOV Domain', DOMAIN_HEADS, DW))
 _t.update({'GOV Domain Heading': S_DIM, 'GOV Domain Heading Point': SP_MEA})
 _f['Is GOV Heading Row'] = '// Is GOV Heading Row\n// One date row per column title. Put on Filters (True).\n[day_index] < 8'
 _t['Is GOV Heading Row'] = B_DIM
@@ -521,7 +527,7 @@ def unreg_sheets() -> list[Sheet]:
 
 
 def sprawl_sheets() -> list[Sheet]:
-    key, order, pane = R('node_id (dim_nodes.csv)'), R('GOV Sprawl Order', kind='ok'), (SW, SPRAWL_ROW)
+    key, order, pane = R('node_id (dim_nodes.csv)'), R('GOV Sprawl Order', kind='ok'), (SPW, SPRAWL_ROW)
     path = R('Exposure Path Index', kind='ok')
     clicks = [R('Clear Node Value'), R('Clear Node Key Value'), *[R(f) for f, _ in PANEL_WRITES]]
     tip = [run(_a('GOV Sprawl Name Text'), 9, INK1, SEMI), run(NL, 7, INK3), run('CLICK TO OPEN ITS LINEAGE', 7, INK3, SEMI)]
@@ -543,7 +549,7 @@ def sprawl_sheets() -> list[Sheet]:
 def sheets() -> list[Sheet]:
     sem = {'Name': (8, INK1, False), 'Good': (7, GOOD_INK, True), 'Fair': (7, WARN_INK, True), 'Poor': (7, CRIT_INK, True), 'Dash': (8, INK3, False)}
     return (kpi_sheets() + unreg_sheets() + sprawl_sheets() + [
-        _header_canvas('GOV Domain Header', 'GOV Domain', SW),
+        _header_canvas('GOV Domain Header', 'GOV Domain', DW),
         _scene_sheet('GOV Coverage by Domain Table', 'GOV Domain', DOMAIN_PANE, sem, dict(BAND_TINT), under=[('GOV Domain Line', LINE_SOFT)]),
         _scene_sheet('GOV Hygiene by Team Bar', 'GOV Hygiene', HYGIENE_PANE, {'Name': (8, INK1, False), 'Value': (8, INK1, True)},
                      {'Track': '#eef0ee', **BAND_BAR}),
@@ -588,16 +594,17 @@ def content() -> Z:
                 **{'background-color': WARN_TINT, 'border-color': '#f3ddb4', 'border-style': 'solid', 'border-width': '1', 'corner-radius': '8',
                    'padding-left': '10', 'padding-right': '10', 'padding-top': '6', 'margin-top': '6'})
     sprawl = card('GOV Sprawl Card', margins={'left': 7}, kids=[sheet('GOV Sprawl Subtitle', 44), sheet('GOV AI Sprawl List'), warn])
-    # GB, v45: the three bottom cards evened out (domain 438, hygiene 428, gaps 443 including margins)
-    domain = card('GOV Domain Card', fixed=438, margins={'right': 7}, kids=[
+    # GB, v45: the three bottom cards evened out. His 438 / 428 / 443 overfill the row, so Tableau shows three equal
+    # cards; equal flex widths give exactly that, and let the build measure the canvases right
+    domain = card('GOV Domain Card', margins={'right': 7}, kids=[
         card_header('Coverage by domain', 'Green from 90%, amber from 70%'), sheet('GOV Domain Header', HEAD_H), blank(1, LINE),
         sheet('GOV Coverage by Domain Table')])
-    hygiene = card('GOV Hygiene Card', fixed=SIDE, margins={'left': 7, 'right': 7}, kids=[
+    hygiene = card('GOV Hygiene Card', margins={'left': 7, 'right': 7}, kids=[
         card_header('Hygiene score by team', 'Average of documentation and test coverage for the sources and models each team owns', 58),
         sheet('GOV Hygiene by Team Bar'), text([run('EXPOSURE MATURITY', 7, INK3, SEMI)], fixed=24, **{'padding-top': '6'}),
         sheet('GOV Maturity Bar', 26)])
     # the gaps list scrolls (GB, v44): its width leaves room for the scroll bar, its height is free
-    gaps = card('GOV Gaps Card', fixed=443, margins={'left': 7}, kids=[card_header('Gaps to close', 'The quickest wins for the next sprint'), sheet('GOV Gaps List')])
+    gaps = card('GOV Gaps Card', margins={'left': 7}, kids=[card_header('Gaps to close', 'The quickest wins for the next sprint'), sheet('GOV Gaps List')])
     return Z('vert', friendly='GOV Content', style=CONTENT_PAD, kids=[
         Z('horz', friendly='GOV KPI Row', fixed=KPI_H, kids=kpis),
         Z('horz', friendly='GOV Middle Row', fixed=MID_H, style={'margin-top': '14'}, kids=[unreg, sprawl]),
@@ -609,9 +616,9 @@ def check_fit(zones) -> None:
     by = {(z.name or z.friendly): z.rect for z in zones}
     n_unreg = max(len(v) for v in UNREG.values())
     n_sprawl = max(sum(1 for k in SPRAWL if _in_plat(NODES[k], pl)) for pl in PLATFORMS)
-    for name, (w, h) in (('GOV Unregistered Consumers Table', (UW, UNREG_ROW * n_unreg)), ('GOV AI Sprawl List', (SW, SPRAWL_ROW * n_sprawl)),
+    for name, (w, h) in (('GOV Unregistered Consumers Table', (UW, UNREG_ROW * n_unreg)), ('GOV AI Sprawl List', (SPW, SPRAWL_ROW * n_sprawl)),
                          ('GOV Coverage by Domain Table', DOMAIN_PANE), ('GOV Hygiene by Team Bar', HYGIENE_PANE),
-                         ('GOV Maturity Bar', MATURITY_PANE), ('GOV Gaps List', (GAP_PANE[0] + 18, 0))):
+                         ('GOV Maturity Bar', MATURITY_PANE), ('GOV Gaps List', (GAP_PANE[0] + 18 + SH.MAP_SLACK, 0))):
         _, _, zw, zh = by[name]
         assert w <= zw and h <= zh, f'{name}: needs {w} x {h}, zone is {zw:.0f} x {zh:.0f}'
     _, y, _, h = by['GOV Bottom Row']

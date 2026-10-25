@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lct_build import about, blast, core, fresh, gov, health, lineage, perf, quality, run, shapes, shell, usage  # noqa: E402
+from lct_build import about, blast, core, fresh, gov, health, lineage, panel, perf, quality, run, shapes, shell, usage  # noqa: E402
 from lct_build.core import (CALCS, DS, H, PARAM_ID, R, W, Z, blank, datasource_style, esc, parameters_datasource,  # noqa: E402
                             stable_guid, stable_uuid)
 
@@ -284,7 +284,7 @@ def build(master: Path, out: Path) -> Path:
     t = t.replace("<format attr='font-family' value='Tableau Book' />", "<format attr='font-family' value='Arial' />", 1)
 
     check_spatial_tables(t)
-    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + blast.sheets() + gov.sheets() + lineage.sheets() + about.sheets()
+    sheet_objs = shell.gl_sheets() + health.sheets() + run.sheets() + fresh.sheets() + perf.sheets() + usage.sheets() + quality.sheets() + blast.sheets() + gov.sheets() + lineage.sheets() + panel.sheets() + about.sheets()
     for so in sheet_objs:
         so.dehighlight = any(so.name in v for v in DEHIGHLIGHT.values())
     dzv_calcs = sorted({z.dzv[0] for tab in shell.TABS for z in (CONTENT[tab[0]]().walk() if tab[0] in CONTENT else []) if z.dzv})

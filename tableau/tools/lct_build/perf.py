@@ -44,7 +44,7 @@ KPI_H, MID_H = 96, 290
 SIDE_W = 530                                   # runtime and product cost cards: take the rest, 7 px margin-left outside
 MAIN_W = 1312 - SIDE_W - 7 - 7                 # 768 fixed (775 with its margin, GB): cost and expensive cards line up
 BOTTOM_H = CONTENT_H - KPI_H - 14 - MID_H - 14  # 430: the bottom row takes the rest
-EW = MAIN_W - 2 * 16 - 2 - SH.SLACK            # 730: the expensive-models canvas
+EW = MAIN_W - 2 * 16 - 2 - SH.MAP_SLACK        # 722: the expensive-models canvas
 HEAD_H = 22
 TOP_N = 15
 # 15 rows fit the card without a scroll bar (GB: no scroll bars): prototype rows are 27 px, these about 21

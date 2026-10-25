@@ -39,6 +39,9 @@ EXPOSURE_CARD_W, RIGHT_COLUMN_W = 881, 417
 TILE_ZONE_W = EXPOSURE_CARD_W - 2 * 16 - 2          # 847
 ALERT_ZONE_W = RIGHT_COLUMN_W - 2 * 16 - 2          # 383
 SLACK = 4
+# a map canvas needs this much spare width in its zone, or Tableau draws a horizontal scroll bar: v48 showed one at
+# 4 and 8 px spare (Governance hygiene, Freshness late now, Usage ranked) and none at 14 (Governance domain)
+MAP_SLACK = 12
 
 TILE_PANE = ((TILE_ZONE_W - SLACK) // 5, 68)        # 168 x 68: 5 across, 6px between rows
 TILE_W, TILE_H = TILE_PANE[0] - 8, 62               # 160 x 62 card, 8px between columns (prototype .xgrid)

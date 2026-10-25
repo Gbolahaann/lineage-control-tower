@@ -36,8 +36,8 @@ W = lambda s, pt, b=False: SH.text_width(s, pt, b)
 # ---------------------------------------------------------------- geometry (content 1312 x CONTENT_H)
 # the prototype's 1.1fr : 1fr : 1fr: 456 / 414 / 414 visible (a fixed size leaves out the zone's own margins)
 WHAT_CARD, SRC_CARD = 456, 414
-WHAT_W = WHAT_CARD - 2 - 2 * 16 - SH.SLACK       # 418: the layer chain
-SRC_W = SRC_CARD - 2 - 2 * 16 - SH.SLACK         # 376: the sources table
+WHAT_W = WHAT_CARD - 2 - 2 * 16 - SH.MAP_SLACK   # 410: the layer chain
+SRC_W = SRC_CARD - 2 - 2 * 16 - SH.MAP_SLACK     # 368: the sources table
 
 
 # ================================================================ layer chain

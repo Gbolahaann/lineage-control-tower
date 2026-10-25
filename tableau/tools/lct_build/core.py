@@ -386,8 +386,9 @@ class Pane:
                  tooltip=None, size=None, axis=None, align='left', valign='center', label_show=True, mark_color=None,
                  geometry=None, stroke=None, title=None, inert=False, path=None, cell_style=True,
                  transparency=None, pane_size=None, shape=None, shape_field=None, size_field=None, reflines=(),
-                 mark_fmt=(), cull=False, cell_valign=None):
-        self.cell_valign = cell_valign or valign  # the cell rule's own vertical alignment, when Tableau saved one
+                 mark_fmt=(), cull=False, cell_valign=None, cell_align=None):
+        self.cell_valign = cell_valign or valign
+        self.cell_align = cell_align or align  # the cell rule's own text alignment, when Tableau saved one  # the cell rule's own vertical alignment, when Tableau saved one
         self.mark, self.color, self.text, self.lod = mark, color, list(text), list(lod)
         self.tooltip_fields, self.label, self.tooltip = list(tooltip_fields), label, tooltip
         self.size, self.axis, self.align, self.valign, self.label_show = size, axis, align, valign, label_show
@@ -455,7 +456,7 @@ class Pane:
                 + ("            <encodings>\n" + '\n'.join(enc) + '\n            </encodings>\n' if enc else '')
                 + refl + tip + lab
                 + "            <style>\n              <style-rule element='cell'>\n"
-                f"                <format attr='text-align' value='{self.align}' />\n"
+                f"                <format attr='text-align' value='{self.cell_align}' />\n"
                 f"                <format attr='vertical-align' value='{self.cell_valign}' />\n              </style-rule>\n"
                 "              <style-rule element='label'>\n"
                 f"                <format attr='text-align' value='{self.align}' />\n"
@@ -867,6 +868,9 @@ class Z:
         shown = lambda k: not (k.dzv and k.dzv[1] is False)
         fixed = sum(outer(k) for k in self.kids if k.fixed is not None and shown(k))
         flex = [k for k in self.kids if k.fixed is None and shown(k)]
+        # fixed sizes that add up to more than the container: Tableau squeezes them and the canvases inside come out
+        # narrower than the build measured (v48: Governance hygiene and Freshness late now drew scroll bars)
+        assert fixed <= main + 0.5 or main <= 0, f'{self.friendly or self.name}: fixed sizes need {fixed:.0f} px, it has {main:.0f}'
         free = max(main - fixed, 0)
         tw = sum(k.weight for k in flex) or 1
         pos = cx if self.kind == 'horz' else cy

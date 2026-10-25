@@ -187,6 +187,83 @@ def tile_sheets() -> list[Sheet]:
     return cards.tile_sheets() + [buttons]
 
 
+def _attention_platforms():
+    """Each alert node's own platforms plus those of the at-risk exposures it feeds (GB, v48: with Platform =
+    Databricks, Exposures at risk said 2 of 6 while Needs attention was empty, because the causes sit on Snowflake)."""
+    import csv
+    nodes = {r['node_id']: r for r in csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8'))}
+    blast = list(csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'mart_blast_radius.csv', encoding='utf-8')))
+    at_risk = lambda r: r['current_status_code'] in ('2', '3')
+    out = {}
+    for k, r in sorted(nodes.items()):
+        if r['resource_type'] == 'exposure' or not at_risk(r):
+            continue
+        plats = set(filter(None, r['platform_filter_values'].split('|')))
+        for b in blast:
+            e = nodes.get(b['exposure_id'])
+            if b['node_id'] == k and e and at_risk(e):
+                plats |= set(filter(None, e['platform_filter_values'].split('|')))
+        out[k] = '|' + '|'.join(sorted(plats)) + '|'
+    return out
+
+
+_ap = _attention_platforms()
+CALCS.add(formulas={
+    'Attention Platforms': ('// Attention Platforms\n// The platforms an alert belongs to: its own, plus those of the at-risk exposures it feeds\n'
+                            '// (written by the build from dim_nodes and the blast radius).\nCASE [node_id (dim_nodes.csv)]\n'
+                            + '\n'.join(f'WHEN "{k}" THEN "{v}"' for k, v in _ap.items()) + '\nEND'),
+    'Is Attention Platform Match': ('// Is Attention Platform Match\n// Keeps an alert under a platform filter when it sits on that platform or breaks an\n'
+                                    '// exposure there, so Needs attention is never empty while Exposures at risk is not 0. Put on Filters (True).\n'
+                                    '[p_platform] = "All" OR CONTAINS([Attention Platforms], "|" + [p_platform] + "|")'),
+}, types={'Attention Platforms': S_DIM, 'Is Attention Platform Match': B_DIM})
+
+
+def _empty_groups():
+    """(group, view) -> the platforms where that group has no tile, for the "None on this platform" lines."""
+    import csv
+    sort = {'BI dashboards': 1, 'Apps, ML and notebooks': 2, 'AI agents and data hubs': 3, 'Unregistered, found in query history': 4}
+    rows = [r for r in csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8')) if r['resource_type'] == 'exposure']
+    out = {}
+    for g, _s, _t in TILE_GROUPS:
+        for view, need in (('All', lambda r: True), ('Attention', lambda r: r['current_status_code'] in ('2', '3'))):
+            out[(g, view)] = [p for p in ('snowflake', 'databricks', 'redshift')
+                              if not any(sort[r['exposure_group']] == g and f'|{p}|' in r['platform_filter_values'] and need(r) for r in rows)]
+    return out
+
+
+CALCS.add(formulas={
+    f'Show Tiles Empty {g} {view}': (f'// Show Tiles Empty {g} {view}\n// DZV: the group has no tile under this platform'
+                                     f'{" and Needs attention" if view == "Attention" else ""} (counted by the build). Reads parameters only.\n'
+                                     + f'[p_tile_view] = {"\"All\"" if view == "All" else "\"Needs attention\""} AND ('
+                                     + (' OR '.join(f'[p_platform] = "{p}"' for p in ps) or 'FALSE') + ')')
+    for (g, view), ps in _empty_groups().items()
+}, types={f'Show Tiles Empty {g} {v}': B_DIM for g, _s, _t in TILE_GROUPS for v in ('All', 'Attention')})
+
+
+def _attention_notes():
+    """Platforms with no alert at all, and platforms whose list shows causes that sit elsewhere (for the two notes)."""
+    import csv
+    own = {r['node_id']: r['platform_filter_values'] for r in csv.DictReader(open(SH.ROOT / 'data' / 'marts' / 'dim_nodes.csv', encoding='utf-8'))}
+    empty, cross = [], []
+    for p in ('snowflake', 'databricks', 'redshift'):
+        shown = [k for k, v in _ap.items() if f'|{p}|' in v]
+        if not shown:
+            empty.append(p)
+        elif any(f'|{p}|' not in own[k] for k in shown):
+            cross.append(p)
+    return empty, cross
+
+
+_empty, _cross = _attention_notes()
+_in = lambda ps: ' OR '.join(f'[p_platform] = "{p}"' for p in ps) or 'FALSE'
+CALCS.add(formulas={
+    'Show Attention Empty': ('// Show Attention Empty\n// DZV: "Nothing needs attention" on a platform with no alert (worked out by the build). Reads parameters only.\n'
+                             + _in(_empty)),
+    'Show Attention Cross Note': ('// Show Attention Cross Note\n// DZV: the note under the list when it shows causes from another platform. Reads parameters only.\n'
+                                  + _in(_cross)),
+}, types={'Show Attention Empty': B_DIM, 'Show Attention Cross Note': B_DIM})
+
+
 def attention_sheet() -> Sheet:
     return cards.attention_sheet()
 
@@ -237,10 +314,15 @@ def content() -> Z:
         kpis.append(card(f'HO KPI {n} Card', [sheet(f'HO {n} KPI', 66), sheet(f'HO {n} KPI Trend', None, **{'padding-top': '8'})],
                          fixed=w, pad=(12, 14, 10, 14), margins=margins))
     groups = []
-    for g, suffix, _ in TILE_GROUPS:
-        # a little slack under each grid so Tableau never adds a scroll bar
+    for g, suffix, title in TILE_GROUPS:
+        # a little slack under each grid so Tableau never adds a scroll bar. The layout stays put under a filter; an
+        # empty group says so (v49: GB saw blank groups with Platform = Databricks), on its title's line
+        note = lambda view, msg: Z('vert', friendly=f'HO Tiles {suffix} Empty {view}', fixed=22, dzv=(f'Show Tiles Empty {g} {view}', False),
+                                   kids=[text([run(title, 7, INK3, SEMI), run('     ' + msg, 8, INK3, italic='true')], **{'padding-top': '2'})])
         groups += [sheet(f'HO Tiles {suffix} Header', SH.HEADER_PANE[1]),
-                   sheet(f'HO Tiles {suffix}', SH.TILE_PANE[1] * TILE_ROWS[g] + 6)]
+                   Z('vert', friendly=f'HO Tiles {suffix} Body', fixed=SH.TILE_PANE[1] * TILE_ROWS[g] + 6, kids=[
+                       note('All', 'None on this platform'), note('Attention', 'None need attention on this platform'),
+                       sheet(f'HO Tiles {suffix}')])]
     exposure = card('HO Exposure Card', fixed=SH.EXPOSURE_CARD_W, margins={'right': 7}, kids=[
         Z('horz', friendly='HO Exposure Card Header', fixed=58, kids=[
             card_header('Exposure status', 'Every data product, traced through its full upstream chain. Score is the '
@@ -254,7 +336,13 @@ def content() -> Z:
         card('HO Attention Card', margins={'bottom': 7}, kids=[
             card_header('Needs attention now', 'Upstream nodes that are failing, late or warning. Click one to see who '
                         'is affected.', 58),
-            sheet('HO Needs Attention List')]),
+            # v49: under a platform filter the list keeps the causes that break exposures there, wherever they sit
+            Z('vert', friendly='HO Attention Empty', fixed=40, dzv=('Show Attention Empty', False), kids=[
+                text([run('Nothing needs attention on this platform right now.', 9, INK2)], **{'padding-top': '8'})]),
+            sheet('HO Needs Attention List'),
+            Z('vert', friendly='HO Attention Cross Note', fixed=34, dzv=('Show Attention Cross Note', False), kids=[
+                text([run('Some of these sit on another platform, but they break exposures on this one.', 8, INK3, italic='true')],
+                     **{'padding-top': '6'})])]),
         card('HO Layer Card', fixed=198, margins={'top': 7}, kids=[
             card_header('Health by layer', 'Where in the chain the trouble sits, right now'),
             sheet('HO Layer Health Bar')])])
