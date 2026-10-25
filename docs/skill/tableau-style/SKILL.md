@@ -129,11 +129,14 @@ Write `.twb` XML only if asked, and always work from a copy. When building in XM
 - Validate every build before sending it (schema, manifest flags, fit checks; `references/build-techniques.md` section 2).
 - Give every rebuild a new version name and log it in the versions changelog with what changed and why.
 - When Gbolahan sends an adjusted copy, diff it completely (sheets, dashboards, calc formulas), ignore Tableau's re-save noise, fold every real change into the builder and say what you took.
+- **His sizes are sacred.** Keep every fixed size and width exactly as he saved it, even when it looks the same as a flexible zone, and never "tidy" one he did not ask about. After folding in a copy, compare every zone's fixed size and width against his file and report the result (`references/build-techniques.md`, launch lessons).
+- When he asks to apply one of his changes "to other pages", apply the same rule everywhere and say where.
 - If unsure how Tableau writes a feature, ask for a one-sheet Tableau-saved example instead of guessing twice.
 - Add every new finding to `references/build-techniques.md` as it is made.
 
 **One-shot tab recipe** (what got Usage, Data quality and Blast radius right first time on Lineage Control Tower):
 1. **Fold in Gbolahan's last adjusted copy first:** diff it, take every real change into the builder, say what you took.
+   If he says he made changes and no file came with the message, ask for it before building.
 2. **Study before asking:** the prototype screenshot, its render code (the real rules: sorting, thresholds, caps, ties),
    the calc pack section and the build plan's container tree.
 3. **Ask the design forks in one go** (up to four questions, recommended option first): native vs canvas per part,
@@ -148,9 +151,19 @@ Write `.twb` XML only if asked, and always work from a copy. When building in XM
 6. **Prove it before sending:** build (schema and manifest validation run inside), a layout preview of the dashboard,
    and a simulation that draws every canvas from its real formulas for the prototype's case and one edge case. Read
    the simulation against the prototype and fix what differs (a wrong CASE key, a wrong colour, text that does not fit).
+   Then walk it the way a viewer will: every platform and period, every dropdown (not just clicks), the empty cases.
+   Say plainly that simulations are not Tableau renders and name what only Tableau can confirm.
 7. **Ship:** a new version name, a changelog row (what, why, what differs from the prototype, what to check first),
    the skill updated and synced, commit and push, and the file sent with a short note: what is on the tab, what
    differs from the prototype, and the two or three new techniques to look at first.
+
+**Finishing a dashboard (what Lineage Control Tower ended with):**
+- An About page (what this is, where the numbers come from, metric definitions) and a Documentation page for
+  developers (parameters, actions and build notes written from the builder's own lists, so they cannot drift).
+- His name as the developer on About, linking to his LinkedIn profile (a one-mark sheet with a URL action, because
+  a Tableau text box cannot hold a link). Ask for the exact URL; never guess it.
+- A launch walkthrough before recording or publishing: he clicks through everything, the fixes come back as one
+  version, each checked with a picture.
 
 ### Other asks
 
@@ -170,6 +183,14 @@ Write `.twb` XML only if asked, and always work from a copy. When building in XM
 8. There are no `(copy)` names or unused calcs. **Every** calc has a `// <exact name>` header (run `scripts/profile_twb.py`; `hygiene.calc_missing_header` and `hygiene.calc_header_drift` must be empty).
 9. "Data updated on" is dynamic. The Documentation page is current, including the change log.
 10. The layout is checked at the published size. Corporate work is checked on Server or Cloud, not just Desktop.
+11. No horizontal scroll bar or clipped text anywhere at the published size: no container whose fixed sizes add up to
+    more than it has, and every map canvas at least 12 px narrower than its zone (30 px if it scrolls vertically).
+12. Every filter value leaves something to read: an empty list or tile group says why ("None on this platform"), and
+    an alert list under a platform filter keeps the causes that break exposures on that platform.
+13. Row headers never print "Null" (`ELSE ""` on text calcs used as headers).
+14. Anything a dropdown can change looks right after a dropdown pick, not only after a click (parameter controls
+    cannot run actions, so DZV on click-written parameters goes stale).
+15. Every link opens the right page (URL actions, navigation buttons, mailto).
 
 ## References
 

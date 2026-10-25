@@ -407,6 +407,15 @@ From GB's example (How to Use a Border to Highlight Selections in Tableau) and t
   same: write his number (`saved_fixed`) and lay the zone out at Tableau's real width. After folding in a copy,
   compare every zone's fixed size and width against his file (576 zones in v50) before shipping.
 
+### Links (v51)
+
+- **A link on a dashboard** (the developer's LinkedIn on About): a text box cannot hold one, so make the line a
+  one-mark sheet (`Is First Date Row` filter, a label-only pane with the same runs as the text) and give it a URL
+  action: an `<action>` with a `<link expression='https://...'>` and no command, beside the filter actions
+  (`TAB_LINK` in the builder; the mailto email button is the same pattern with field inserts). Add a tooltip
+  ("Open LinkedIn profile") and a dehighlight so it does not stay selected. On Tableau Public the link opens a new
+  tab; some browsers ask first.
+
 ## 11. Colours and palettes
 
 - A palette only applies if the coloured field also has a data-source-level `<column-instance>`; otherwise Tableau

@@ -4,7 +4,7 @@ A reference design for monitoring a modern data team's data products (BI dashboa
 
 **The data model is the product. The BI layer is interchangeable.**
 
-This repo holds the synthetic dataset, the generator that builds it, the Tableau-ready mart layer, the approved HTML mockup and the Tableau workbook. The flagship dashboard is a Tableau Public workbook, with a Claude-built data hub as the second build. The full design is in [docs/spec.md](docs/spec.md).
+This repo holds the synthetic dataset, the generator that builds it, the Tableau-ready mart layer, the approved HTML mockup and the Tableau workbook (11 dashboards, built by code; latest version `tableau/versions/v51-linkedin.twbx`). The flagship dashboard is a Tableau Public workbook, with a Claude-built data hub as the second build. The full design is in [docs/spec.md](docs/spec.md).
 
 > Acme Retail Co. is fictional. Every name, email, number and URL in this repo is synthetic. No real company, client or employer data is used anywhere.
 
@@ -36,12 +36,23 @@ mockup/
   src/               mockup source, assembled by src/build.py
   data/lct_agg.json  the aggregate the mockup and marts are built from
 tableau/
-  Lineage_Control_Tower_Project_Dashboard.twb   the workbook, data source connected (multi-fact model)
+  Lineage_Control_Tower_Project_Dashboard.twb   the master: Tableau-saved, data source connected (multi-fact model)
+  tools/build_workbook.py  builds the whole workbook from the master (run it, open the .twbx)
+  tools/lct_build/   one module per dashboard (health, run, fresh, lineage, blast, quality, perf, usage, gov, about)
+                     plus the shared shell, cards, shapes and the Lineage side panel
+  tools/twbdiff.py   diffs a Tableau-saved copy against a build (how review edits get folded back in)
+  tools/validate_twb.py  checks a workbook against Tableau's schema and manifest rules before it is sent
+  build/             the latest build
+  versions/          every build ever sent (v01 to v51) and CHANGELOG.md: what changed in each and why
+  Image/, Shapes/    nav buttons, icons and custom shapes the build embeds
 docs/
   spec.md            the project spec
   data_dictionary.md every raw table and column, what it means and where it comes from in a real company
   tableau-data-model.md  the Tableau data model: relationships, mart grains, parameters, hard charts
-  phase4_handoff.md  where the Tableau build stands and what comes next
+  tableau-build-plan.md  the build plan: every dashboard's container tree, sizes and decisions
+  tableau-calc-pack.md   every calculated field, with its comment header
+  skill/tableau-style/   the Tableau style skill this was built with, and the build techniques it learned
+  img/               prototype screenshots and the check images from each build
 validation/
   check_world.py     graph sanity checks
   check_stories.py   one pass/fail check and one chart per story
@@ -59,6 +70,46 @@ python mockup/src/build.py mockup/src mockup/data/lct_agg.json mockup/lineage-co
 ```
 
 Tableau connects to `data/marts/`, not the raw tables. A multi-fact model cannot mix a dimension from one fact table with a measure from another, so the cross-table graph logic (exposure status, upstream culprits, reachability, lineage layout) is computed in the mart layer, the way a `dbt_ops` project would do it. See [docs/tableau-data-model.md](docs/tableau-data-model.md).
+
+## The Tableau workbook
+
+Eleven dashboards: Health overview, Run & failures, Freshness & SLAs, Lineage explorer, Blast radius, Data quality,
+Performance & cost, Usage & adoption, Governance, About & how to use, and a Documentation page for developers.
+
+```bash
+python3 tableau/tools/build_workbook.py --tag my-version   # writes tableau/build/ and tableau/versions/my-version.twbx
+```
+
+Nothing is clicked together by hand. The builder writes the workbook XML from the master file: calculated fields
+(every one with a `// name` comment header), sheets, dashboards, containers, parameters and actions. Each build is
+checked against Tableau's schema, and every chart drawn in code is checked to fit its zone before the file is written,
+so there are no scroll bars. Two builds of the same code are byte-identical.
+
+### How the shapes are drawn: map layers as a drawing board
+
+Tableau has no "draw a rounded box here" tool, so most of the custom visuals (the exposure tiles, alert cards, the
+lineage graph, pills, chips and the tables with row lines) are drawn on a **map**.
+
+- **The map is a blank canvas.** A map sheet with the background map switched off and its axes fixed to a set range
+  becomes a sheet of paper exactly as many pixels wide and tall as its zone. One unit of latitude or longitude is
+  100 px, so the builder can say "put this at x = 120 px, y = 40 px" and Tableau puts it there.
+- **Every shape is a polygon.** `MAKEPOINT(y, x)` turns a pair of numbers into a point; a polygon mark joins points in
+  the order of a "path" field. Four points make a rectangle. A rounded rectangle uses 88 points, 22 round each corner,
+  worked out with sine and cosine in the calc, so pills and cards get real rounded corners.
+- **Map layers stack like tracing paper.** Each layer is one kind of mark: an outline polygon, a fill polygon on top
+  of it, then a layer of text, then an icon. A pill is two polygons (the outline 1 px bigger than the fill) and a word.
+- **Rows of data are the points.** A polygon needs one data row per corner point. Where a table has enough rows (90 days
+  of history per model, 90 dates), each row becomes a point. Where it does not, a "carrier" borrows the 90 daily rows of
+  a few models just to have points to draw with.
+- **Text is placed by measurement.** Tableau centres a label on its point and does not wrap it, so the builder measures
+  every word with the same font at build time, places it at half its width from the edge it should line up with, and
+  wraps long text into lines itself.
+- **Values that depend only on the filters are worked out in advance.** For every period, platform and selection,
+  the builder computes the numbers and positions and writes them as `CASE` calcs, so Tableau only switches between
+  them. The numbers stay exact and the dashboards stay fast.
+
+The full playbook, including what did not work, is in
+[docs/skill/tableau-style/references/build-techniques.md](docs/skill/tableau-style/references/build-techniques.md).
 
 ## The company
 
