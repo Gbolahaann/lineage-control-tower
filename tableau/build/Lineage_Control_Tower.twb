@@ -67178,8 +67178,8 @@
                   </zone-style>
                 </zone>
                 <zone friendly-name='GOV Bottom Row' h='37800' id='1359' param='horz' type-v2='layout-flow' w='82000' x='16250' y='60800'>
-                  <zone fixed-size='428' friendly-name='GOV Domain Card' h='36400' id='1348' is-fixed='true' param='vert' type-v2='layout-flow' w='27188' x='16250' y='62200'>
-                    <zone fixed-size='44' h='4400' id='1344' is-fixed='true' type-v2='text' w='24625' x='17312' y='63700'>
+                  <zone fixed-size='438' friendly-name='GOV Domain Card' h='36400' id='1348' is-fixed='true' param='vert' type-v2='layout-flow' w='27812' x='16250' y='62200'>
+                    <zone fixed-size='44' h='4400' id='1344' is-fixed='true' type-v2='text' w='25250' x='17312' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Coverage by domain</run>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
@@ -67193,7 +67193,7 @@
                         <format attr='padding-bottom' value='10' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='22' h='2200' id='1345' is-fixed='true' name='GOV Domain Header' show-title='false' w='24625' x='17312' y='68100'>
+                    <zone fixed-size='22' h='2200' id='1345' is-fixed='true' name='GOV Domain Header' show-title='false' w='25250' x='17312' y='68100'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -67201,7 +67201,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='1' h='100' id='1346' is-fixed='true' type-v2='empty' w='24625' x='17312' y='70300'>
+                    <zone fixed-size='1' h='100' id='1346' is-fixed='true' type-v2='empty' w='25250' x='17312' y='70300'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -67210,7 +67210,7 @@
                         <format attr='background-color' value='#e6e7e2' />
                       </zone-style>
                     </zone>
-                    <zone h='26700' id='1347' name='GOV Coverage by Domain Table' show-title='false' w='24625' x='17312' y='70400'>
+                    <zone h='26700' id='1347' name='GOV Coverage by Domain Table' show-title='false' w='25250' x='17312' y='70400'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -67232,8 +67232,8 @@
                       <format attr='margin-right' value='7' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='428' friendly-name='GOV Hygiene Card' h='36400' id='1353' is-fixed='true' param='vert' type-v2='layout-flow' w='27625' x='43438' y='62200'>
-                    <zone fixed-size='58' h='5800' id='1349' is-fixed='true' type-v2='text' w='24625' x='44938' y='63700'>
+                  <zone fixed-size='428' friendly-name='GOV Hygiene Card' h='36400' id='1353' is-fixed='true' param='vert' type-v2='layout-flow' w='27625' x='44062' y='62200'>
+                    <zone fixed-size='58' h='5800' id='1349' is-fixed='true' type-v2='text' w='24625' x='45562' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Hygiene score by team</run>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
@@ -67247,7 +67247,7 @@
                         <format attr='padding-bottom' value='10' />
                       </zone-style>
                     </zone>
-                    <zone h='22600' id='1350' name='GOV Hygiene by Team Bar' show-title='false' w='24625' x='44938' y='69500'>
+                    <zone h='22600' id='1350' name='GOV Hygiene by Team Bar' show-title='false' w='24625' x='45562' y='69500'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -67255,7 +67255,7 @@
                         <format attr='margin' value='0' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='24' h='2400' id='1351' is-fixed='true' type-v2='text' w='24625' x='44938' y='92100'>
+                    <zone fixed-size='24' h='2400' id='1351' is-fixed='true' type-v2='text' w='24625' x='45562' y='92100'>
                       <formatted-text>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='7' bold='true'>EXPOSURE MATURITY</run>
                       </formatted-text>
@@ -67267,7 +67267,7 @@
                         <format attr='padding-top' value='6' />
                       </zone-style>
                     </zone>
-                    <zone fixed-size='26' h='2600' id='1352' is-fixed='true' name='GOV Maturity Bar' show-title='false' w='24625' x='44938' y='94500'>
+                    <zone fixed-size='26' h='2600' id='1352' is-fixed='true' name='GOV Maturity Bar' show-title='false' w='24625' x='45562' y='94500'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -67290,8 +67290,8 @@
                       <format attr='margin-right' value='7' />
                     </zone-style>
                   </zone>
-                  <zone friendly-name='GOV Gaps Card' h='36400' id='1356' param='vert' type-v2='layout-flow' w='27188' x='71062' y='62200'>
-                    <zone fixed-size='44' h='4400' id='1354' is-fixed='true' type-v2='text' w='24625' x='72562' y='63700'>
+                  <zone fixed-size='443' friendly-name='GOV Gaps Card' h='36400' id='1356' is-fixed='true' param='vert' type-v2='layout-flow' w='28125' x='71688' y='62200'>
+                    <zone fixed-size='44' h='4400' id='1354' is-fixed='true' type-v2='text' w='25562' x='73188' y='63700'>
                       <formatted-text>
                         <run fontcolor='#16212e' fontname='Arial' fontsize='10' bold='true'>Gaps to close</run>
                         <run fontcolor='#7a838e' fontname='Arial' fontsize='8'>Æ&#10;</run>
@@ -67305,7 +67305,7 @@
                         <format attr='padding-bottom' value='10' />
                       </zone-style>
                     </zone>
-                    <zone h='29000' id='1355' name='GOV Gaps List' show-title='false' w='24625' x='72562' y='68100'>
+                    <zone h='29000' id='1355' name='GOV Gaps List' show-title='false' w='25562' x='73188' y='68100'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
